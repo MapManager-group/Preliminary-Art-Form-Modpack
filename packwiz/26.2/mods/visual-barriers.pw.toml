@@ -1,0 +1,13 @@
+name = "Visual Barriers"
+filename = "VisualBarriers-1.1-26.2.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/nxrRNRFK/versions/qxKVw4J7/VisualBarriers-1.1-26.2.jar"
+hash-format = "sha512"
+hash = "f9144ea74c0e04e3bab859a143d29e39b4e3d21b3f9ad3cddb53d148b7d415e315c8dbd9b350cfcc60e3265657a3b67ae64e736898f784df3e8b5ea39b49833e"
+
+[update]
+[update.modrinth]
+mod-id = "nxrRNRFK"
+version = "qxKVw4J7"

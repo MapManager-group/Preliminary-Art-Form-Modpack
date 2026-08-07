@@ -1,0 +1,32 @@
+# Preliminary Art Form
+
+[English](README_en.md)
+
+> "preliminary art form" is about the trance you have when working on a thing for so long that it becomes second nature.
+>
+> -- C418, One.
+
+一个简单且全面的建筑专用整合包，包含了所有你需要的建筑创作工具和辅助功能。
+
+**Preliminary Art Form** 起初是为 **LorianStudio** 的建筑社区服务器设计的定制客户端，因此有内部开发别名 **LorianDesign**，后续计划发展为支持多版本的原版 Minecraft 全能建筑设计整合包。
+
+---
+
+本仓库为 **Preliminary Art Form** 的项目开发仓库，使用 [packwiz](https://packwiz.infra.link/) 进行项目管理，仅提供 Modrinth `.mrpack` 格式构建。
+
+## 当前开发版本（WIP）
+
+| Minecraft | Loader        | Pack version | Packwiz project  |
+| --------- | ------------- | ------------ | ---------------- |
+| 26.2      | Fabric 0.19.3 | 26.2-A1.1    | `packwiz/26.2`   |
+
+## 快速开始
+
+将 `packwiz.exe` 放在根目录下并运行如下命令：
+
+```powershell
+.\scripts\validate.ps1 -MinecraftVersion 26.2
+.\scripts\build.ps1 -MinecraftVersion 26.2
+```
+
+构建产物位于 `.\dist` 目录，详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。

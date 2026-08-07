@@ -1,0 +1,13 @@
+name = "Locator Heads"
+filename = "locator-heads-2.4.2.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/L4pt5egz/versions/OPUaj8dP/locator-heads-2.4.2.jar"
+hash-format = "sha512"
+hash = "388c9d80279b0ed03cd0f6daae214a6a47062b41d4de395b8dc72f025d703609418b506749e309b1e91c5d1b34a81f4aee452aed849bb802c618e5b703037714"
+
+[update]
+[update.modrinth]
+mod-id = "L4pt5egz"
+version = "OPUaj8dP"

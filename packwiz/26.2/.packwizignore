@@ -1,0 +1,13 @@
+# Development-only files
+/.packwizignore
+/README.md
+/*.mrpack
+
+# Never package local or runtime state if it is introduced accidentally
+**/accounts.json
+**/blob_cache/
+**/blueprints/
+**/hotbars/
+*.log
+*.bak
+*.backup

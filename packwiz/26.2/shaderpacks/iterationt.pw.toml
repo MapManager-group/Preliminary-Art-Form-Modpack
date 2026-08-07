@@ -1,0 +1,9 @@
+name = "iterationT"
+filename = "iterationT 3.2.0.zip"
+side = "client"
+
+[download]
+url = "https://mediafilez.forgecdn.net/files/8105/693/iterationT%203.2.0.zip"
+hash-format = "sha512"
+hash = "8a5691d9212c89b1be73aeb4a5653cebc75364e7c56a4686abe2e99d622db576baa8d775c6976e528d0e66b765c1c586dac1e8ca13f90f7d3de5f601dcea8864"
+

@@ -1,0 +1,16 @@
+#Specifies whether to enable the mod
+enabled = true
+
+[windows]
+	#Specifies whether to enable the mod on Windows
+	enabled = true
+
+[linux]
+	#Specifies whether to enable the mod on Linux
+	enabled = true
+	#Specifies the app id and window class name
+	app_id = ""
+	#Specifies the app name when generating the desktop file. Note that this changes the Name property in the desktop file, not the name of the file itself.
+	desktop_file_name = ""
+	#When enabled, explicitly flush dbus connection when sending message
+	explicit_flush = false

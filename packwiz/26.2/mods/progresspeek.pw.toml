@@ -1,0 +1,13 @@
+name = "Progress Peek"
+filename = "progresspeek-1.0.2+26.2-fabric.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/1A2XNzUB/versions/v1zRGFfV/progresspeek-1.0.2%2B26.2-fabric.jar"
+hash-format = "sha512"
+hash = "a32792654b548592b97d99beb0e1db6d926ce45b2a1b919437275a3c65d4d8ffde4b2e04a8e53bcfc525ba3f71254eafeee82c19018af994dcf77413b6e69576"
+
+[update]
+[update.modrinth]
+mod-id = "1A2XNzUB"
+version = "v1zRGFfV"

@@ -1,0 +1,13 @@
+name = "LotTweaks"
+filename = "LotTweaks-mc26.2-fabric-2.4.3.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/DtVaIVx6/versions/VD39GVCE/LotTweaks-mc26.2-fabric-2.4.3.jar"
+hash-format = "sha512"
+hash = "894bc47d27395502f584a1648f10d87b8936e34cf6ccfbf14b951424bdaccc6aa1fa143833607e55449f3d9f4e05b20cb4c8a913b20de8aea64e5ebc0db84008"
+
+[update]
+[update.modrinth]
+mod-id = "DtVaIVx6"
+version = "VD39GVCE"

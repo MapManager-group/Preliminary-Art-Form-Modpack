@@ -1,0 +1,13 @@
+name = "Visual Keymap"
+filename = "visual-keymap-26.2-1.4.0.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/uJWhARde/versions/6NMHi0cj/visual-keymap-26.2-1.4.0.jar"
+hash-format = "sha512"
+hash = "b028fcacb35dc4b91fd14dabd4898abd42a15dee2236029bafbfff58f2b99e389f3d427f44f0797bcda828b5ebc0b786a8a8d68f21c232964ae00cb54ae42943"
+
+[update]
+[update.modrinth]
+mod-id = "uJWhARde"
+version = "6NMHi0cj"

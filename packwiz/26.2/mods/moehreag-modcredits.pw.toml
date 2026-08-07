@@ -1,0 +1,13 @@
+name = "Mod Credits"
+filename = "modcredits-2.1.0+26.2-rc-2.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/pR1Fpbbv/versions/s7Zi5N7a/modcredits-2.1.0%2B26.2-rc-2.jar"
+hash-format = "sha512"
+hash = "2198aafabce05138b6eb16cf1b440aa7384a8cb8fd50ccd9297abcfa46923e106d2032877fadafe23d8b0ec5d213d445f25f2ae1d38596dff863ef4a62229c70"
+
+[update]
+[update.modrinth]
+mod-id = "pR1Fpbbv"
+version = "s7Zi5N7a"

@@ -1,0 +1,13 @@
+name = "Auto Reconnect Reforged"
+filename = "autoreconnectrf-fabric-3.103.0+26.2.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/PRy8Khga/versions/vHDagTHf/autoreconnectrf-fabric-3.103.0%2B26.2.jar"
+hash-format = "sha512"
+hash = "d51ff1c81126bfcc393a9a34271bca8ed2ed301be98e5405294195df94e21e08ab3a4e10a34828b5e48c6124c2db98e0443983fecc88fae5d430b020fa0c7ae2"
+
+[update]
+[update.modrinth]
+mod-id = "PRy8Khga"
+version = "vHDagTHf"

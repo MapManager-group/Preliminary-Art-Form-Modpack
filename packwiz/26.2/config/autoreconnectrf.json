@@ -1,0 +1,32 @@
+{
+  "options": {
+    "delays": [
+      3,
+      10,
+      30,
+      60
+    ],
+    "initial": false,
+    "infinite": false,
+    "conditionType": false,
+    "conditionKeys": [
+      "disconnect.loginFailedInfo",
+      "disconnect.spam",
+      "disconnect.timeout",
+      "disconnect.unknownHost",
+      "multiplayer.disconnect.banned",
+      "multiplayer.disconnect.code_of_conduct",
+      "multiplayer.disconnect.incompatible",
+      "multiplayer.disconnect.ip_banned",
+      "multiplayer.disconnect.kicked",
+      "multiplayer.disconnect.name_taken",
+      "multiplayer.disconnect.not_whitelisted",
+      "multiplayer.disconnect.outdated_client",
+      "multiplayer.disconnect.outdated_server"
+    ],
+    "conditionPatterns": [],
+    "autoMessages": [],
+    "commandSigning": false,
+    "regexIds": false
+  }
+}

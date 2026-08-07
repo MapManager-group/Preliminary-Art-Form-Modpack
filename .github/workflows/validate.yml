@@ -1,0 +1,38 @@
+name: Validate modpack
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install packwiz
+        shell: pwsh
+        run: |
+          go install github.com/packwiz/packwiz@latest
+          Copy-Item (Join-Path (go env GOPATH) 'bin/packwiz.exe') ./packwiz.exe
+
+      - name: Validate
+        shell: pwsh
+        run: ./scripts/validate.ps1 -MinecraftVersion 26.2
+
+      - name: Verify generated index is committed
+        shell: pwsh
+        run: git diff --exit-code -- packwiz/26.2/pack.toml packwiz/26.2/index.toml
+
+      - name: Build Modrinth package
+        shell: pwsh
+        run: ./scripts/build.ps1 -MinecraftVersion 26.2
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Preliminary-Art-Form-26.2
+          path: dist/*.mrpack

@@ -1,0 +1,13 @@
+name = "Async"
+filename = "async-fabric-0.2.4+alpha-26.2.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/vEC2jm6I/versions/DqR432Bq/async-fabric-0.2.4%2Balpha-26.2.jar"
+hash-format = "sha512"
+hash = "8a341d00e10c6e0be69758948d9c92102f6248cba7711df162828c3aa978fc26b5954a54940efd8ad4373ec72d3c25030b12b3f2c473d8b1eb09a4214c96d70d"
+
+[update]
+[update.modrinth]
+mod-id = "vEC2jm6I"
+version = "DqR432Bq"

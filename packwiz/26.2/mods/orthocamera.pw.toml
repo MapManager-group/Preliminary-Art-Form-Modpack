@@ -1,0 +1,13 @@
+name = "OrthoCamera"
+filename = "OrthoCamera-0.1.11+26.2.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/OB69KhRA/versions/nURmQGL6/OrthoCamera-0.1.11%2B26.2.jar"
+hash-format = "sha512"
+hash = "e5ca75d01160c81d7419c8b19512228b4ce983be783c310e8d754e538dab1205969c64862cd1e0a5c6d83a275465dd2bd457af1c078f7d402dd941e5ff09de13"
+
+[update]
+[update.modrinth]
+mod-id = "OB69KhRA"
+version = "nURmQGL6"

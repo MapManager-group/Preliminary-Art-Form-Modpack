@@ -1,0 +1,17 @@
+# Local tools and migration input
+/packwiz.exe
+
+# Build output and caches
+/dist/
+*.mrpack
+/.packwiz-cache/
+
+# IDE and operating-system files
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.log
+*.bak
+*.backup
