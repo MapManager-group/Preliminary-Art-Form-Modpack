@@ -18,7 +18,7 @@
 
 | Minecraft | Loader        | Pack version | Packwiz project  |
 | --------- | ------------- | ------------ | ---------------- |
-| 26.2      | Fabric 0.19.3 | 26.2-A1.1    | `packwiz/26.2`   |
+| 26.2      | Fabric 0.19.3 | 26.2-A1.1    | `packwiz/26.2` |
 
 ## 快速开始
 
@@ -29,4 +29,11 @@
 .\scripts\build.ps1 -MinecraftVersion 26.2
 ```
 
-构建产物位于 `.\dist` 目录，详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
+构建产物位于 `dist/` 目录，详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
+
+## 项目文档
+
+- [开发指南](docs/DEVELOPMENT.md)
+- [Modrinth 打包说明](docs/PACKAGING.md)
+- [Minecraft 26.2 迁移记录](docs/MIGRATION-26.2.md)
+- [更新日志](docs/CHANGELOG.md)

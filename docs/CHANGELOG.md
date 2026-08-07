@@ -2,8 +2,12 @@
 
 All notable pack changes are documented here in English using Gitmoji + Conventional Commits.
 
-## 26.2-A1.1
+## 2026-08-07
 
+### 26.2-A1.1
+
+- 👷 ci(workflow): limit modpack validation triggers
+- 📝 docs(repo): reorganize project documentation
 - 🐛 fix(ci): normalize packwiz index hashes for LF checkouts
 - 🎉 chore(repo): initialize the Minecraft 26.2 and Fabric 0.19.3 packwiz project
 - 📦 build(pack): migrate external metadata and curated overrides from the existing Modrinth package

@@ -7,13 +7,13 @@
 1. 使用 packwiz 添加或更新依赖，不要提交下载后的 JAR 文件。
 2. 修改配置等内部文件后运行 `scripts/refresh.ps1`。
 3. 运行 `scripts/validate.ps1` 和 `scripts/build.ps1`。
-4. 在 `CHANGELOG.md` 中记录影响用户的变更。
+4. 在 `docs/CHANGELOG.md` 中记录影响用户的变更。
 
 禁止提交启动器配置、账号数据、缓存、日志、存档和生成的 `.mrpack` 文件。
 
 ## Git 与更新日志规范
 
-提交信息和 `CHANGELOG.md` 条目使用英文，并遵循 **Gitmoji + Conventional Commits**：
+提交信息和 `docs/CHANGELOG.md` 条目使用英文，并遵循 **Gitmoji + Conventional Commits**：
 
 ```text
 ✨ feat(pack): add a building utility mod

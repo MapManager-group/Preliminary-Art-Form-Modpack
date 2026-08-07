@@ -95,7 +95,7 @@ Set-Location ..\..
 4. 配置文件是否改名、废弃或新增字段。
 5. 根目录 `README.md` 与 `README_en.md` 的版本表。
 6. `.github/workflows/validate.yml` 中需要验证和构建的版本。
-7. `CHANGELOG.md` 中对应版本的英文更新记录。
+7. `docs/CHANGELOG.md` 中对应版本的英文更新记录。
 
 ### 3.2 方式二：从旧版本迁移
 
@@ -236,7 +236,7 @@ Set-Location .\packwiz\26.2
 Set-Location ..\..
 ```
 
-固定适用于已知新版本存在兼容问题、必须暂时停留在特定版本的项目。应在英文 `CHANGELOG.md` 或相关开发记录中说明原因。
+固定适用于已知新版本存在兼容问题、必须暂时停留在特定版本的项目。应在英文 `docs/CHANGELOG.md` 或相关开发记录中说明原因。
 
 ### 5.5 移除依赖
 
@@ -337,7 +337,7 @@ Copy-Item -Recurse `
 
 ## 8. 更新日志与提交
 
-项目文档默认使用中文，只有 `README_en.md` 使用英文。`CHANGELOG.md` 和 Git 提交信息是例外：二者必须使用英文，并同时遵循 **Gitmoji + Conventional Commits**。
+项目文档默认使用中文，只有 `README_en.md` 使用英文。`docs/CHANGELOG.md` 和 Git 提交信息是例外：二者必须使用英文，并同时遵循 **Gitmoji + Conventional Commits**。
 
 更新日志示例：
 
@@ -356,4 +356,4 @@ git add <本次修改的文件>
 git commit -m "✨ feat(pack): add a building utility mod"
 ```
 
-每个提交应保持原子化，不夹带无关修改。提交前确认 `pack.toml`、`index.toml`、相关 `.pw.toml`、配置和英文 `CHANGELOG.md` 已同步更新。
+每个提交应保持原子化，不夹带无关修改。提交前确认 `pack.toml`、`index.toml`、相关 `.pw.toml`、配置和英文 `docs/CHANGELOG.md` 已同步更新。

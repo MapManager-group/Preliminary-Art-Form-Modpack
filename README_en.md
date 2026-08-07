@@ -16,9 +16,9 @@ This repository contains the development sources for **Preliminary Art Form**. I
 
 ## Current development version (WIP)
 
-| Minecraft | Loader        | Pack version | Packwiz project |
-| --------- | ------------- | ------------ | --------------- |
-| 26.2      | Fabric 0.19.3 | 26.2-A1.1    | `packwiz/26.2`  |
+| Minecraft | Loader        | Pack version | Packwiz project  |
+| --------- | ------------- | ------------ | ---------------- |
+| 26.2      | Fabric 0.19.3 | 26.2-A1.1    | `packwiz/26.2` |
 
 ## Quick start
 
@@ -29,4 +29,11 @@ Place `packwiz.exe` in the repository root and run:
 .\scripts\build.ps1 -MinecraftVersion 26.2
 ```
 
-Build artifacts are written to `.\dist`. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
+Build artifacts are written to `dist/`. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
+
+## Project documentation
+
+- [Development guide](docs/DEVELOPMENT.md) (Chinese)
+- [Modrinth packaging](docs/PACKAGING.md) (Chinese)
+- [Minecraft 26.2 migration notes](docs/MIGRATION-26.2.md) (Chinese)
+- [Changelog](docs/CHANGELOG.md) (English)
