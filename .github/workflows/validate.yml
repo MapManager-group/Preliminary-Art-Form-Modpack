@@ -2,7 +2,15 @@ name: Validate modpack
 
 on:
   push:
+    paths:
+      - "packwiz/**"
+      - "scripts/**"
+      - ".github/workflows/validate.yml"
   pull_request:
+    paths:
+      - "packwiz/**"
+      - "scripts/**"
+      - ".github/workflows/validate.yml"
 
 jobs:
   validate:
