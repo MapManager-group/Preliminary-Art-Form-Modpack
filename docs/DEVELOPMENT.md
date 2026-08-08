@@ -62,10 +62,25 @@ git status --short
 .\scripts\refresh.ps1 -MinecraftVersion 26.2
 ```
 
-`update --all` 可能引入不兼容更新；执行后请检查差异并进行实际启动测试。移除、固定或解除固定依赖时，运行下列交互式命令，完成后刷新索引：
+`update --all` 可能引入不兼容更新；执行后请检查差异并进行实际启动测试。
+
+删除通过 packwiz 添加的 Mod、资源包或光影包时，运行下列命令并在交互列表中选择目标资源：
 
 ```powershell
 .\packwiz.exe --cache .\.packwiz-cache --pack-file .\packwiz\26.2\pack.toml remove
+.\scripts\refresh.ps1 -MinecraftVersion 26.2
+```
+
+删除 `config/`、`resourcepacks/`、`shaderpacks/` 等目录中的本地资源时，删除对应文件或目录后刷新索引：
+
+```powershell
+Remove-Item -Recurse -LiteralPath .\packwiz\26.2\resourcepacks\<资源目录>
+.\scripts\refresh.ps1 -MinecraftVersion 26.2
+```
+
+固定或解除固定依赖时，使用下列交互式命令，完成后刷新索引：
+
+```powershell
 .\packwiz.exe --cache .\.packwiz-cache --pack-file .\packwiz\26.2\pack.toml pin
 .\packwiz.exe --cache .\.packwiz-cache --pack-file .\packwiz\26.2\pack.toml unpin
 .\scripts\refresh.ps1 -MinecraftVersion 26.2
