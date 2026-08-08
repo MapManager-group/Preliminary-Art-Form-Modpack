@@ -3,43 +3,43 @@ module.exports = {
   // 类型
   types: [
     {
-      value: "feat",
+      value: "✨ feat",
       name: "✨ feat: 新功能"
     },
     {
-      value: "fix",
+      value: "🐛 fix",
       name: "🐛 fix: Bug 修复"
     },
     {
-      value: "docs",
+      value: "📝 docs",
       name: "📝 docs: 文档修改"
     },
     {
-      value: "style",
+      value: "🎨 style",
       name: "🎨 style: 格式调整"
     },
     {
-      value: "refactor",
+      value: "♻️ refactor",
       name: "♻️ refactor: 重构代码"
     },
     {
-      value: "perf",
+      value: "⚡ perf",
       name: "⚡ perf: 性能优化"
     },
     {
-      value: "test",
+      value: "✅ test",
       name: "✅ test: 测试相关"
     },
     {
-      value: "build",
+      value: "📦 build",
       name: "📦 build: 构建相关"
     },
     {
-      value: "ci",
+      value: "👷 ci",
       name: "👷 ci: CI/CD"
     },
     {
-      value: "chore",
+      value: "🔧 chore",
       name: "🔧 chore: 其他修改"
     }
   ],
