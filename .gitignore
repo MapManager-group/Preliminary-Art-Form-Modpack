@@ -5,10 +5,10 @@
 /dist/
 *.mrpack
 /.packwiz-cache/
+/node_modules/
 
 # IDE and operating-system files
 /.idea/
-/.vscode/
 .DS_Store
 Thumbs.db
 Desktop.ini

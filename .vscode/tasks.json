@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Git Commit CZ",
+            "type": "shell",
+            "command": "npm run commit",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "Packwiz Update",
+            "type": "shell",
+            "command": "packwiz refresh",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        },
+        {
+            "label": "Build MRPack",
+            "type": "shell",
+            "command": "packwiz modpack export",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build"
+            }
+        }
+    ]
+}
