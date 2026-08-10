@@ -3,6 +3,7 @@
   "tasks": [
     {
       "label": "Git Commit CZ",
+      "detail": "启动 Git Commit CZ；进行规范化的提交。",
       "type": "process",
       "command": "npm",
       "args": ["run", "commit"],

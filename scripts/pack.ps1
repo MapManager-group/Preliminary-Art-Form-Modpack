@@ -49,6 +49,17 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# packwiz 会输出 UTF-8 项目名称；显式设置控制台编码以正确显示中文名称。
+try {
+    $Utf8Encoding = [System.Text.UTF8Encoding]::new($false)
+    [Console]::InputEncoding = $Utf8Encoding
+    [Console]::OutputEncoding = $Utf8Encoding
+    $OutputEncoding = $Utf8Encoding
+}
+catch {
+    # 非交互宿主可能不支持设置控制台编码，保留宿主默认行为。
+}
+
 # ── 路径解析 ──────────────────────────────────────────────
 $ScriptDir  = $PSScriptRoot
 $RepoRoot   = Resolve-Path "$ScriptDir/.." | Select-Object -ExpandProperty Path
@@ -227,9 +238,22 @@ function Invoke-Add {
     Write-Color "✅ $slug 已添加至 $TargetFolder/" $Green
     Invoke-PackwizRefresh
 
-    # 提示提交信息
+    # 建议提交信息使用 packwiz 写入的项目显示名，而不是用户输入的 URL。
+    $commitTarget = $slug
+    if ($targets.Count -eq 1) {
+        $entrySlug = if ($targets[0] -match 'modrinth\.com/(?:mod|resourcepack|shader)/([^/?#]+)') {
+            $Matches[1]
+        } else {
+            $targets[0]
+        }
+        $entry = Get-PackEntries | Where-Object {
+            $_.Folder -eq $TargetFolder -and $_.Slug -eq $entrySlug
+        } | Select-Object -First 1
+        if ($entry) { $commitTarget = $entry.Name }
+    }
+
     $scope = if ($TargetFolder -eq 'mods') { 'mod' } else { 'resource' }
-    Write-Color "💡 建议提交: ✨ feat($scope): add $slug" $Magenta
+    Write-Color "💡 建议提交: ✨ feat($scope): 添加 $commitTarget" $Magenta
 }
 
 function Invoke-Remove {
@@ -258,6 +282,7 @@ function Invoke-Update {
     Invoke-Packwiz {
         $pArgs = @('--cache', $CacheDir, 'update')
         if ($targets) { $pArgs += $targets }
+        else { $pArgs += '--all' }
         & $PackwizBin @pArgs
         if ($LASTEXITCODE -ne 0) { throw "packwiz update failed (exit $LASTEXITCODE)" }
     }
@@ -439,13 +464,12 @@ function Confirm-Removal([string]$Slug) {
 function Select-NextAction([string]$Operation) {
     while ($true) {
         Write-Color ''
-        $answer = Read-Host "$Operation 后 [r=继续 / m=主菜单(默认) / 0=退出]"
+        $answer = Read-Host "$Operation 后 [r=继续 / Enter=主菜单 / 0=退出]"
         switch ($answer.Trim().ToLowerInvariant()) {
             'r' { return 'repeat' }
-            'm' { return 'menu' }
             '' { return 'menu' }
             '0' { return 'exit' }
-            default { Write-Color '请输入 r、m 或 0。' $Yellow }
+            default { Write-Color '请输入 r、Enter 或 0。' $Yellow }
         }
     }
 }

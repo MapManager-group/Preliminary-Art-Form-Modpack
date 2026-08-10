@@ -37,7 +37,7 @@ git status --short
 .\scripts\pack.ps1 help                                     # 查看帮助
 ```
 
-`add / remove / update / pin / unpin` 完成后自动刷新索引，并提示建议的 commit 信息。交互菜单中的每项操作完成后均可选择继续同类操作、返回主菜单或退出；移除依赖前还会要求确认，便于连续清理依赖时避免误删。
+`add / remove / update / pin / unpin` 完成后自动刷新索引，并提示建议的 commit 信息。交互菜单中的每项操作完成后可输入 `r` 继续同类操作、直接按 Enter 返回主菜单，或输入 `0` 退出；移除依赖前还会要求确认，便于连续清理依赖时避免误删。
 
 ### 版本指定
 

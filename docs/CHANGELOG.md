@@ -1,19 +1,5 @@
 # Changelog
 
-## 2026-08-07
-
-### (Modpack)26.2-A1.1
-
-- 🎉 chore(repo): initialize the Minecraft 26.2 and Fabric 0.19.3 packwiz project
-- 📦 build(pack): migrate external metadata and curated overrides from the existing Modrinth package
-- 🙈 chore(axiom): exclude the blueprint library pending manual migration and license review
-
-### (repo)
-
-- 🐛 fix(ci): normalize packwiz index hashes for LF checkouts
-- 👷 ci(workflow): limit modpack validation triggers
-- 📝 docs(repo): reorganize project documentation
-
 ## 2026-08-10
 
 ### (Modpack)26.2-A1.2
@@ -28,3 +14,18 @@
 - 👷 ci(github): 工作流新增多版本支持
 - 👷 ci(packwiz): 重做packwiz管理脚本
 - 📝 docs(packwiz): 重写packwiz开发文档
+
+
+## 2026-08-07
+
+### (Modpack)26.2-A1.1
+
+- 🎉 chore(repo): initialize the Minecraft 26.2 and Fabric 0.19.3 packwiz project
+- 📦 build(pack): migrate external metadata and curated overrides from the existing Modrinth package
+- 🙈 chore(axiom): exclude the blueprint library pending manual migration and license review
+
+### (repo)
+
+- 🐛 fix(ci): normalize packwiz index hashes for LF checkouts
+- 👷 ci(workflow): limit modpack validation triggers
+- 📝 docs(repo): reorganize project documentation
