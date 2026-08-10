@@ -31,7 +31,7 @@ Place `packwiz.exe` in the repository root. Use `pack.ps1` as the single entry p
 .\scripts\pack.ps1 -Version 26.2 build          # Build a specific version
 ```
 
-Local build artifacts are written to `dist/`. GitHub Actions automatically discovers every version under `packwiz/`, validates and builds each one, then uploads a version-named ZIP artifact. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
+Local build artifacts are written to `dist/`. GitHub Actions automatically discovers every version under `packwiz/`, validates and builds each one, then uploads a version-named artifact; extracting the download once yields the corresponding `.mrpack`. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
 
 ## Project documentation
 

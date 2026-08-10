@@ -9,7 +9,7 @@
 3. 运行 `.\scripts\pack.ps1 validate` 和 `.\scripts\pack.ps1 build`，确认校验通过并成功导出 `.mrpack`。
 4. 在 `docs/CHANGELOG.md` 中记录影响用户的变更。
 
-推送或创建 Pull Request 后，GitHub Actions 会自动扫描所有包含 `pack.toml` 的版本目录。每个版本会独立校验、构建，并上传一个以 Minecraft 版本命名的 ZIP artifact。
+推送或创建 Pull Request 后，GitHub Actions 会自动扫描所有包含 `pack.toml` 的版本目录。每个版本会独立校验、构建，并上传一个以 Minecraft 版本命名的 artifact；下载后解压即可获得 `.mrpack`。
 
 禁止提交启动器配置、账号数据、缓存、日志、存档和生成的 `.mrpack` 文件。
 

@@ -31,7 +31,7 @@
 .\scripts\pack.ps1 -Version 26.2 build          # 构建指定版本
 ```
 
-本地构建产物位于 `dist/` 目录。GitHub Actions 会自动发现 `packwiz/` 下的全部版本，分别校验、构建并上传以 Minecraft 版本命名的 ZIP artifact。详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
+本地构建产物位于 `dist/` 目录。GitHub Actions 会自动发现 `packwiz/` 下的全部版本，分别校验、构建并上传以 Minecraft 版本命名的 artifact；下载后解压即可获得对应的 `.mrpack`。详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
 
 ## 项目文档
 

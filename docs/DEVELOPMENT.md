@@ -84,6 +84,6 @@ npm run commit
 GitHub Actions（`.github/workflows/validate.yml`）在 `packwiz/**` 或 `scripts/**` 变动时自动运行：
 
 1. **discover**：扫描 `packwiz/` 下所有含 `pack.toml` 的版本目录
-2. **validate-and-build（matrix × 版本）**：逐个版本执行校验 → 索引一致性检查 → 构建 `.mrpack` → 压缩为独立 ZIP → 按 Minecraft 版本上传 artifact
+2. **validate-and-build（matrix × 版本）**：逐个版本执行校验 → 索引一致性检查 → 构建 `.mrpack` → 按 Minecraft 版本上传独立 artifact
 
 **新增版本目录无需修改 CI。**
