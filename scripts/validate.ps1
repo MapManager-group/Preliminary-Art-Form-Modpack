@@ -1,5 +1,6 @@
 ﻿param(
-    [string]$MinecraftVersion = "26.2"
+    [string]$MinecraftVersion = "26.2",
+    [switch]$PromptCleanForbidden
 )
 
 $ErrorActionPreference = "Stop"
@@ -25,7 +26,25 @@ $forbiddenFiles = Get-ChildItem -LiteralPath $packDirectory -Recurse -File | Whe
 }
 if ($forbiddenDirectories -or $forbiddenFiles) {
     $paths = @($forbiddenDirectories.FullName) + @($forbiddenFiles.FullName)
-    throw "Forbidden runtime or deferred content found:`n$($paths -join "`n")"
+    if (-not $PromptCleanForbidden) {
+        throw "Forbidden runtime or deferred content found:`n$($paths -join "`n")"
+    }
+
+    Write-Output "⚠ 发现不应纳入整合包的运行时或延后迁移内容：`n$($paths -join "`n")"
+    $answer = Read-Host '是否删除以上路径并继续校验？[y/N]'
+    if ($answer.Trim().ToLowerInvariant() -notin @('y', 'yes')) {
+        throw "Forbidden runtime or deferred content found:`n$($paths -join "`n")"
+    }
+
+    $packRoot = ([System.IO.Path]::GetFullPath($packDirectory)).TrimEnd('\', '/')
+    foreach ($path in $paths) {
+        $resolvedPath = (Resolve-Path -LiteralPath $path).Path
+        if (-not $resolvedPath.StartsWith("$packRoot$([System.IO.Path]::DirectorySeparatorChar)", [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to delete path outside the selected pack: $resolvedPath"
+        }
+        Remove-Item -LiteralPath $resolvedPath -Recurse -Force
+    }
+    Write-Output "✓ 已清理 $($paths.Count) 个运行时或延后迁移路径"
 }
 
 Write-Output "✓ 无敏感/运行时残留文件"

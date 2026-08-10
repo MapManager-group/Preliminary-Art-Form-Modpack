@@ -48,6 +48,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$script:PromptForbiddenCleanup = [Environment]::UserInteractive -and -not $env:CI
 
 # packwiz 会输出 UTF-8 项目名称；显式设置控制台编码以正确显示中文名称。
 try {
@@ -177,10 +178,16 @@ function Get-PackEntries {
             $slug = $_.Name -replace '\.pw\.toml$', ''
             $ct = (Get-Content $_.FullName -TotalCount 3) -join "`n"
             $nm = if ($ct -match 'name\s*=\s*"([^"]+)"') { $Matches[1] } else { $slug }
-            $entries += @{ Slug = $slug; Name = $nm; Folder = $mf }
+            $entries += @{ Slug = $slug; Name = $nm; Folder = $mf; Path = $_.FullName }
         }
     }
     return $entries
+}
+
+function Get-ModrinthEntries {
+    @(Get-PackEntries | Where-Object {
+        (Get-Content $_.Path -Raw -Encoding utf8) -match '(?m)^\[update\.modrinth\]'
+    })
 }
 
 # ── packwiz 调用 ──────────────────────────────────────────
@@ -237,6 +244,7 @@ function Invoke-Add {
 
     Write-Color "✅ $slug 已添加至 $TargetFolder/" $Green
     Invoke-PackwizRefresh
+    Invoke-Validate
 
     # 建议提交信息使用 packwiz 写入的项目显示名，而不是用户输入的 URL。
     $commitTarget = $slug
@@ -271,6 +279,7 @@ function Invoke-Remove {
 
     Write-Color "✅ $slug 已移除" $Green
     Invoke-PackwizRefresh
+    Invoke-Validate
 
     Write-Color "💡 建议提交: 🐛 fix(packwiz): remove $slug" $Magenta
 }
@@ -289,6 +298,7 @@ function Invoke-Update {
 
     Write-Color '✅ 更新完成' $Green
     Invoke-PackwizRefresh
+    Invoke-Validate
 
     $scope = if ($targets) { $targets[0] } else { '--all' }
     Write-Color "💡 建议提交: ⬆️ chore(mod): update $scope" $Magenta
@@ -301,6 +311,7 @@ function Invoke-Pin {
         if ($LASTEXITCODE -ne 0) { throw "packwiz pin failed (exit $LASTEXITCODE)" }
     }
     Invoke-PackwizRefresh
+    Invoke-Validate
     Write-Color "💡 建议提交: 📌 chore(packwiz): pin dependencies" $Magenta
 }
 
@@ -311,6 +322,7 @@ function Invoke-Unpin {
         if ($LASTEXITCODE -ne 0) { throw "packwiz unpin failed (exit $LASTEXITCODE)" }
     }
     Invoke-PackwizRefresh
+    Invoke-Validate
     Write-Color "💡 建议提交: 📌 chore(packwiz): unpin dependencies" $Magenta
 }
 
@@ -323,18 +335,19 @@ function Invoke-List {
 }
 
 function Invoke-Refresh {
-    Invoke-PackwizRefresh
+    Invoke-Validate
 }
 
 function Invoke-Validate {
     Write-Color "🔍 校验整合包 ($ResolvedVersion) ..." $Cyan
     $valScript = Join-Path $ScriptDir 'validate.ps1'
-    & $valScript -MinecraftVersion $ResolvedVersion
+    & $valScript -MinecraftVersion $ResolvedVersion -PromptCleanForbidden:$script:PromptForbiddenCleanup
     Write-Color "✅ 校验通过" $Green
 }
 
 function Invoke-Build {
     Write-Color "📦 导出 Modrinth .mrpack ($ResolvedVersion) ..." $Cyan
+    Invoke-Validate
 
     # 读取 pack 版本号
     $packFile = Join-Path $PackDir 'pack.toml'
@@ -363,6 +376,49 @@ function Invoke-Build {
     }
 
     Write-Color "✅ 构建完成: $outputPath" $Green
+}
+
+function Invoke-SetModrinthVersion {
+    param(
+        [hashtable]$Entry,
+        [string]$VersionUrl
+    )
+
+    if (-not (Test-Path $Entry.Path -PathType Leaf)) {
+        throw "找不到依赖元数据: $($Entry.Path)"
+    }
+
+    # 保留原始元数据；指定版本链接无效时恢复，避免依赖因替换失败而丢失。
+    $originalMetadata = [System.IO.File]::ReadAllBytes($Entry.Path)
+    try {
+        Write-Color "↩ 正在将 $($Entry.Name) 替换为指定版本 ..." $Cyan
+        Invoke-Packwiz {
+            & $PackwizBin --cache $CacheDir remove $Entry.Slug
+            if ($LASTEXITCODE -ne 0) { throw "packwiz remove failed (exit $LASTEXITCODE)" }
+        }
+        Invoke-Packwiz {
+            $pArgs = @(
+                '--cache', $CacheDir,
+                'modrinth', 'add',
+                '--meta-folder', $Entry.Folder,
+                '--meta-folder-base', '.',
+                $VersionUrl
+            )
+            & $PackwizBin @pArgs
+            if ($LASTEXITCODE -ne 0) { throw "packwiz modrinth add failed (exit $LASTEXITCODE)" }
+        }
+    }
+    catch {
+        if (-not (Test-Path $Entry.Path -PathType Leaf)) {
+            [System.IO.File]::WriteAllBytes($Entry.Path, $originalMetadata)
+            Write-Color '↩ 指定版本替换失败，已恢复原始元数据。' $Yellow
+        }
+        throw
+    }
+
+    Invoke-PackwizRefresh
+    Invoke-Validate
+    Write-Color "💡 建议提交: ⏪ fix(mod): 回退 $($Entry.Name) 到指定版本" $Magenta
 }
 
 function Invoke-Help {
@@ -414,8 +470,8 @@ function Show-Menu {
         @{Key='5'; Label='unpin    '; Desc='解除版本固定'}
         @{Key='6'; Label='list     '; Desc='列出当前依赖'}
         @{Key='7'; Label='refresh  '; Desc='刷新索引'}
-        @{Key='8'; Label='validate '; Desc='校验整合包'}
-        @{Key='9'; Label='build    '; Desc='导出 .mrpack'}
+        @{Key='8'; Label='build    '; Desc='校验并导出 .mrpack'}
+        @{Key='9'; Label='version  '; Desc='指定/回退 Modrinth 版本'}
         @{Key='0'; Label='exit     '; Desc='退出'}
     )
     foreach ($item in $items) {
@@ -427,7 +483,7 @@ function Show-Menu {
     return $items
 }
 
-function Select-Entry($entries, $title) {
+function Select-Entry($entries, $title, [switch]$ReturnEntry) {
     if (-not $entries) { Write-Color '⚠ 没有可用的依赖' $Yellow; return $null }
     Write-Color "  $title（输入编号或 slug）:" $Cyan
     for ($i = 0; $i -lt $entries.Count; $i++) {
@@ -441,8 +497,12 @@ function Select-Entry($entries, $title) {
     if ($sel -match '^\d+$') {
         $idx = [int]$sel - 1
         if ($idx -ge 0 -and $idx -lt $entries.Count) {
+            if ($ReturnEntry) { return $entries[$idx] }
             return $entries[$idx].Slug
         }
+    }
+    if ($ReturnEntry) {
+        return $entries | Where-Object { $_.Slug -eq $sel } | Select-Object -First 1
     }
     return $sel
 }
@@ -450,6 +510,20 @@ function Select-Entry($entries, $title) {
 function Confirm-Removal([string]$Slug) {
     while ($true) {
         $answer = Read-Host "确认移除 '$Slug'？[y/N]"
+        switch ($answer.Trim().ToLowerInvariant()) {
+            'y' { return $true }
+            'yes' { return $true }
+            '' { return $false }
+            'n' { return $false }
+            'no' { return $false }
+            default { Write-Color '请输入 y 或 n。' $Yellow }
+        }
+    }
+}
+
+function Confirm-VersionReplacement([string]$Name, [string]$VersionUrl) {
+    while ($true) {
+        $answer = Read-Host "确认将 '$Name' 替换为此版本？[y/N] $VersionUrl"
         switch ($answer.Trim().ToLowerInvariant()) {
             'y' { return $true }
             'yes' { return $true }
@@ -544,8 +618,24 @@ function Show-InteractiveMenu {
             '5' { $next = Invoke-InteractiveFlow '解除版本固定' { Invoke-Unpin } }
             '6' { $next = Invoke-InteractiveFlow '查看依赖列表' { Invoke-List } }
             '7' { $next = Invoke-InteractiveFlow '刷新索引' { Invoke-Refresh } }
-            '8' { $next = Invoke-InteractiveFlow '校验整合包' { Invoke-Validate } }
-            '9' { $next = Invoke-InteractiveFlow '构建整合包' { Invoke-Build } }
+            '8' { $next = Invoke-InteractiveFlow '构建整合包' { Invoke-Build } }
+            '9' {
+                $next = Invoke-InteractiveFlow '指定/回退 Modrinth 版本' {
+                    $entry = Select-Entry (Get-ModrinthEntries) '可指定版本的 Modrinth 依赖' -ReturnEntry
+                    if (-not $entry) {
+                        # Select-Entry 已显示取消信息。
+                    } else {
+                        $versionUrl = Read-Host '粘贴 Modrinth 版本页面链接（直接回车取消）'
+                        if (-not $versionUrl) {
+                            Write-Color '⏭ 已取消' $Yellow
+                        } elseif (-not (Confirm-VersionReplacement $entry.Name $versionUrl)) {
+                            Write-Color '⏭ 已取消' $Yellow
+                        } else {
+                            Invoke-SetModrinthVersion -Entry $entry -VersionUrl $versionUrl
+                        }
+                    }
+                }
+            }
             '0' {
                 Write-Color '👋 再见!' $Cyan
                 return
