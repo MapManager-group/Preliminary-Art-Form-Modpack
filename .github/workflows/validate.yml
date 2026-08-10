@@ -35,6 +35,12 @@ jobs:
         version: ${{ fromJson(needs.discover.outputs.versions) }}
     runs-on: windows-latest
     steps:
+      - name: Preserve LF line endings for packwiz hashes
+        shell: pwsh
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-go@v5
