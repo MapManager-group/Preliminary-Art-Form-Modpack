@@ -7,6 +7,7 @@
       "command": "npm",
       "args": ["run", "commit"],
       "problemMatcher": [],
+      "group": "build",
       "presentation": {
         "focus": true,
         "panel": "dedicated"
@@ -23,6 +24,7 @@
         "${workspaceFolder}/scripts/pack.ps1"
       ],
       "problemMatcher": [],
+      "group": "build",
       "presentation": {
         "focus": true,
         "panel": "dedicated"
@@ -39,7 +41,8 @@
         "${workspaceFolder}/scripts/pack.ps1",
         "refresh"
       ],
-      "problemMatcher": []
+      "problemMatcher": [],
+      "group": "build"
     },
     {
       "label": "Pack: 校验",
@@ -53,7 +56,7 @@
         "validate"
       ],
       "problemMatcher": [],
-      "group": "test"
+      "group": "build"
     },
     {
       "label": "Pack: 构建 MRPack",
