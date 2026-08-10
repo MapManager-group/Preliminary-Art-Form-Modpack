@@ -1,0 +1,13 @@
+name = "Reese的钠视频界面汉化包(Reese's Sodium Options Chinese Localized Pack)"
+filename = "RSOTranslations.zip"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/mkaaIIAt/versions/2MYKY5Iq/RSOTranslations.zip"
+hash-format = "sha512"
+hash = "a59f0cfbf1758471e58e1e3ecc204a40015dd88a323d71c57b1195a4ee6105e412abc0acfaa5d0f751ec372369061a36fcacf623e5296d7523107ed2054675f4"
+
+[update]
+[update.modrinth]
+mod-id = "mkaaIIAt"
+version = "2MYKY5Iq"

@@ -1,9 +1,0 @@
-name = "Potassium"
-filename = "potassium-1.7.1+26.2.jar"
-side = "client"
-
-[download]
-url = "https://mediafilez.forgecdn.net/files/8386/729/potassium-1.7.1%2b26.2.jar"
-hash-format = "sha512"
-hash = "e6307e2bf9a3ad304e2bb2fcd81c503fc01247b5ed04f4c548f10b804f955e0801a6bf118c5acc8860ed5ceadfc3e22014bf5435d14e5675f5a4eb86bb732e92"
-

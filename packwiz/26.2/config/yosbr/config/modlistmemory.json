@@ -12,11 +12,11 @@
     "saveOnUpdate": true,
     "pinnedMods": [],
     "recentMods": [
-      "obe",
-      "helditemtooltips",
-      "held-item-info",
-      "jade",
-      "chattools"
+      "modmenu",
+      "picturemode",
+      "buildup_menu_button",
+      "debugify",
+      "bobby"
     ],
     "scrollAmount": 0.0
   }

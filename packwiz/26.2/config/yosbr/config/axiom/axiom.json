@@ -122,8 +122,8 @@
     "infiniteReach": true,
     "infiniteReachLimit": 24,
     "fastPlace": false,
-    "angelPlacement": false,
-    "noClip": false,
+    "angelPlacement": true,
+    "noClip": true,
     "phantom": false
   },
   "blockAttributes": {
@@ -174,11 +174,12 @@
   "internal": {
     "nextUpdateNag": 0,
     "shownIntroduction": true,
-    "showOpenConfigTip": true,
+    "showOpenConfigTip": false,
     "showOpenContextMenuTip": false,
     "showOpenEditorTip": false,
     "completedTutorials": [
-      "introduction"
+      "introduction",
+      "sculpt_draw_tool"
     ],
     "openEditorWindowTypes": [
       "tools",

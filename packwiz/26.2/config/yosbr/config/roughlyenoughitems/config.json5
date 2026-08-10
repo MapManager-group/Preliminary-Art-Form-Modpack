@@ -3,7 +3,7 @@
 		"favorites": [],
 		"hiddenFavorites": [],
 		"displayHistory": [],
-		"cheating": false,
+		"cheating": true,
 		"favoritesEnabled": true,
 		"reduceMotion": false,
 		"keyBindings": {
@@ -54,7 +54,7 @@
 		"cheatingStyle": "GRAB"
 	},
 	"appearance": {
-		"recipeScreenType": "UNSET",
+		"recipeScreenType": "ORIGINAL",
 		// Declares the appearance of REI windows.
 		"theme": "LIGHT",
 		"layout": {
@@ -84,7 +84,7 @@
 		"isFocusModeZoomed": false
 	},
 	"functionality": {
-		"inputMethod": "rei:pinyin",
+		"inputMethod": "rei:default",
 		// Declares whether REI should remove the recipe book.
 		"disableRecipeBook": false,
 		// Declares whether mob effects should be on the left side instead of the right side.
@@ -162,30 +162,7 @@
 			"forceLocalRecipes": "AUTO",
 			"categorySettings": {
 				"filteringQuickCraftCategories": { },
-				"categoryOrdering": [
-					"minecraft:plugins/crafting",
-					"minecraft:plugins/smelting",
-					"minecraft:plugins/smoking",
-					"minecraft:plugins/blasting",
-					"minecraft:plugins/campfire",
-					"minecraft:plugins/stone_cutting",
-					"minecraft:plugins/fuel",
-					"minecraft:plugins/brewing",
-					"minecraft:plugins/composting",
-					"minecraft:plugins/stripping",
-					"minecraft:plugins/smithing",
-					"minecraft:plugins/anvil",
-					"minecraft:plugins/beacon_base",
-					"minecraft:plugins/beacon_payment",
-					"minecraft:plugins/tilling",
-					"minecraft:plugins/pathing",
-					"minecraft:plugins/waxing",
-					"minecraft:plugins/wax_scraping",
-					"minecraft:plugins/oxidizing",
-					"minecraft:plugins/oxidation_scraping",
-					"roughlyenoughitems:plugins/information",
-					"minecraft:plugins/tag"
-				],
+				"categoryOrdering": [],
 				"hiddenCategories": []
 			}
 		},
@@ -194,7 +171,8 @@
 			"shouldFilterDisplays": true,
 			"filteringRules": [
 				"{id:\"roughlyenoughitems:manual\",rule:{}}",
-				"{id:\"roughlyenoughitems:basic\",rule:{}}"
+				"{id:\"roughlyenoughitems:basic\",rule:{}}",
+				"{id:\"roughlyenoughitems:hidden_from_recipe_viewers\",rule:{}}"
 			]
 		}
 	}

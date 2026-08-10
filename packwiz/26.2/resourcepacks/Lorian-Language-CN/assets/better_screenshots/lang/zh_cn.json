@@ -1,0 +1,191 @@
+{
+  "better_screenshots.chat.copy": "复制",
+  "better_screenshots.chat.copy_hint": "复制到剪贴板",
+  "better_screenshots.chat.default_filename": "screenshot.png",
+  "better_screenshots.chat.open_folder_hint": "单击打开截图文件夹",
+  "better_screenshots.chat.preview": "预览",
+  "better_screenshots.chat.preview_hint": "打开全屏预览",
+
+  "better_screenshots.config.animations": "动画",
+  "better_screenshots.config.animations.off": "禁用",
+  "better_screenshots.config.animations.on": "启用",
+  "better_screenshots.config.animations.reduced": "减少",
+
+  "better_screenshots.config.chat": "聊天消息",
+  "better_screenshots.config.chat.default": "默认",
+  "better_screenshots.config.chat.disabled": "禁用",
+  "better_screenshots.config.chat.modern": "现代",
+
+  "better_screenshots.config.corner": "位置",
+  "better_screenshots.config.corner.bottom_left": "左下",
+  "better_screenshots.config.corner.bottom_right": "右下",
+  "better_screenshots.config.corner.top_left": "左上",
+  "better_screenshots.config.corner.top_right": "右上",
+
+  "better_screenshots.config.done": "完成",
+
+  "better_screenshots.config.flash": "闪光模式",
+  "better_screenshots.config.flash.preview": "预览时",
+  "better_screenshots.config.flash.screen": "屏幕上",
+
+  "better_screenshots.config.menu_button": "菜单按钮",
+  "better_screenshots.config.menu_button.center": "居中",
+  "better_screenshots.config.menu_button.top_right": "右上",
+  "better_screenshots.config.menu_button.top_left": "左上",
+  "better_screenshots.config.menu_button.bottom_right": "右下",
+  "better_screenshots.config.menu_button.bottom_left": "左下",
+  "better_screenshots.config.menu_button.disabled": "禁用",
+
+  "better_screenshots.config.action_tooltips": "操作提示",
+  "better_screenshots.config.action_tooltips.off": "关",
+  "better_screenshots.config.action_tooltips.on": "开",
+
+  "better_screenshots.config.pixelated_previews": "像素化预览",
+  "better_screenshots.config.pixelated_previews.off": "关",
+  "better_screenshots.config.pixelated_previews.on": "开",
+
+  "better_screenshots.config.fullscreen_name_bar": "全屏名称栏",
+  "better_screenshots.config.fullscreen_name_bar.off": "关",
+  "better_screenshots.config.fullscreen_name_bar.on": "开",
+
+  "better_screenshots.config.uploader.configure": "配置上传器",
+  "better_screenshots.config.actions.configure": "配置按钮",
+
+  "better_screenshots.config.actions.title": "按钮布局",
+  "better_screenshots.config.actions.mini_preview": "迷你预览",
+  "better_screenshots.config.actions.gallery_thumbnail": "画廊",
+  "better_screenshots.config.actions.config_menu": "配置菜单",
+  "better_screenshots.config.actions.fullscreen_preview": "全屏",
+  "better_screenshots.config.actions.pause_menu": "暂停菜单",
+
+  "better_screenshots.config.actions.action.show": "打开预览",
+  "better_screenshots.config.actions.action.copy": "复制",
+  "better_screenshots.config.actions.action.upload": "上传",
+  "better_screenshots.config.actions.action.delete": "删除",
+  "better_screenshots.config.actions.action.close": "关闭",
+  "better_screenshots.config.actions.action.rename": "重命名",
+
+  "better_screenshots.config.actions.pause.share_to_lan": "对局域网开放",
+
+  "better_screenshots.config.actions.hint.drag": "拖动按钮以移动和重新排序",
+  "better_screenshots.config.actions.hint.remove": "将其拖到侧面板以隐藏",
+  "better_screenshots.config.actions.remove_hint": "将按钮拖到此处以移除",
+
+  "better_screenshots.config.uploader.title": "Better MC Screenshots",
+  "better_screenshots.config.uploader.chat_notify": "聊天通知",
+  "better_screenshots.config.uploader.auto_copy": "自动复制URL",
+  "better_screenshots.config.uploader.auto_upload": "自动上传",
+
+  "better_screenshots.config.uploader.provider": "上传服务商",
+  "better_screenshots.config.uploader.provider.disabled": "禁用",
+  "better_screenshots.config.uploader.provider.imgur": "Imgur",
+  "better_screenshots.config.uploader.provider.s3": "S3",
+  "better_screenshots.config.uploader.provider.custom": "自定义HTTP/HTTPS",
+  "better_screenshots.config.uploader.provider.catbox": "Catbox",
+
+  "better_screenshots.config.uploader.disabled.info": "上传器已禁用。",
+  "better_screenshots.config.uploader.catbox.info": "Catbox无需额外设置。",
+
+  "better_screenshots.config.uploader.warning": "注意：在线分享截图可能带来后果。请仔细检查您上传的内容。模组作者不对分享内容造成的后果负责。",
+
+  "better_screenshots.config.uploader.imgur.client_id": "Imgur客户端ID",
+  "better_screenshots.config.uploader.imgur.access_token": "Imgur访问令牌",
+
+  "better_screenshots.config.uploader.s3.endpoint": "S3端点URL",
+  "better_screenshots.config.uploader.s3.region": "S3区域",
+  "better_screenshots.config.uploader.s3.bucket": "S3存储桶",
+  "better_screenshots.config.uploader.s3.access_key": "S3访问密钥",
+  "better_screenshots.config.uploader.s3.secret_key": "S3秘密密钥",
+  "better_screenshots.config.uploader.s3.path_prefix": "S3路径前缀",
+
+  "better_screenshots.config.uploader.custom.url": "上传URL",
+  "better_screenshots.config.uploader.custom.method": "上传方法",
+  "better_screenshots.config.uploader.custom.cookie": "自定义Cookie",
+  "better_screenshots.config.uploader.custom.header": "自定义标头",
+  "better_screenshots.config.uploader.custom.post_field": "自定义POST字段",
+
+  "better_screenshots.config.uploader.method.post": "POST",
+  "better_screenshots.config.uploader.method.put": "PUT",
+
+  "better_screenshots.config.uploader.column.key": "键",
+  "better_screenshots.config.uploader.column.value": "值",
+
+  "better_screenshots.upload.success": "截图已上传：",
+  "better_screenshots.upload.copied": "（已复制到剪贴板）",
+  "better_screenshots.upload.error": "上传失败：%s",
+  "better_screenshots.upload.error.empty_url": "上传器返回空URL。",
+  "better_screenshots.upload.error.file_not_found": "文件未找到",
+  "better_screenshots.upload.error.screenshot_file_not_found": "截图文件未找到",
+  "better_screenshots.upload.error.imgur_missing_url": "Imgur响应不包含上传的URL。",
+  "better_screenshots.upload.error.http_failed": "%s上传失败（%s）：%s",
+
+  "better_screenshots.upload.toast.title": "上传完成",
+  "better_screenshots.upload.toast.desc": "URL已复制到剪贴板",
+  "better_screenshots.upload.toast.error_title": "上传失败",
+  "better_screenshots.upload.toast.error_desc": "请检查上传器设置后重试",
+
+  "better_screenshots.config.open_gallery": "打开画廊 →",
+  "better_screenshots.config.preview_duration": "预览时长：%s秒",
+
+  "better_screenshots.config.section.screenshots": "截图",
+  "better_screenshots.config.section.settings": "设置",
+
+  "better_screenshots.config.sound": "快门声",
+  "better_screenshots.config.sound.classic": "经典",
+  "better_screenshots.config.sound.none": "无",
+  "better_screenshots.config.sound.soft": "轻柔",
+
+  "better_screenshots.fullscreen.hint": "ESC — 关闭",
+
+  "better_screenshots.gallery.back": "← 返回",
+  "better_screenshots.gallery.count.many": "%s张截图",
+  "better_screenshots.gallery.count.one": "1张截图",
+  "better_screenshots.gallery.loading": "...",
+  "better_screenshots.gallery.name": "截图名称",
+  "better_screenshots.gallery.no_screenshots": "没有截图",
+  "better_screenshots.gallery.open_folder": "文件夹",
+  "better_screenshots.gallery.sort.az": "A到Z",
+  "better_screenshots.gallery.sort.newest": "从新到旧",
+  "better_screenshots.gallery.sort.oldest": "从旧到新",
+  "better_screenshots.gallery.sort.za": "Z到A",
+  "better_screenshots.gallery.time.today": "今天 %s",
+  "better_screenshots.gallery.time.yesterday": "昨天 %s",
+  "better_screenshots.gallery.tip": "点击照片以选择",
+  "better_screenshots.gallery.title": "截图",
+
+  "better_screenshots.title": "Better MC Screenshots",
+
+  "key.better_screenshots.open_config": "打开Better Screenshots配置",
+  "category.better_screenshots": "Better MC Screenshots",
+  "key.category.minecraft.category.better_screenshots": "Better MC Screenshots",
+  "key.category.better_screenshots.main": "Better MC Screenshots",
+  "key.categories.better_screenshots": "Better MC Screenshots",
+
+  "better_screenshots.fullscreen.loading": "加载中...",
+
+  "better_screenshots.menu.settings": "截图设置",
+  "better_screenshots.menu.gallery": "截图画廊",
+  "better_screenshots.menu.screenshot": "截取截图",
+
+  "better_screenshots.config.uploader.provider.immich": "Immich",
+  "better_screenshots.config.uploader.provider.external": "外部配置文件",
+  "better_screenshots.config.uploader.immich.url": "Immich服务器URL",
+  "better_screenshots.config.uploader.immich.api_key": "Immich API密钥",
+  "better_screenshots.config.uploader.immich.device_id": "Immich设备ID",
+  "better_screenshots.config.uploader.custom.body_type": "正文类型",
+  "better_screenshots.config.uploader.custom.file_field": "文件字段",
+  "better_screenshots.config.uploader.custom.response_json_path": "响应JSON路径",
+  "better_screenshots.config.uploader.custom.fallback_url": "备用URL",
+  "better_screenshots.config.uploader.custom.add_header": "+ 添加标头",
+  "better_screenshots.config.uploader.custom.add_field": "+ 添加表单字段",
+  "better_screenshots.config.uploader.method.patch": "PATCH",
+  "better_screenshots.config.uploader.body.multipart": "多部分",
+  "better_screenshots.config.uploader.body.raw_png": "原始PNG",
+  "better_screenshots.config.uploader.external.profile": "配置文件",
+  "better_screenshots.config.uploader.external.none": "未找到配置文件",
+  "better_screenshots.config.uploader.external.folder": "配置文件从 config/better_screenshots_uploaders/*.json 加载",
+  "better_screenshots.config.uploader.immich.album": "Immich相册",
+  "better_screenshots.config.uploader.immich.album.none": "无相册",
+  "better_screenshots.config.uploader.immich.refresh_albums": "刷新相册",
+  "better_screenshots.config.uploader.immich.albums_loading": "正在加载相册..."
+}

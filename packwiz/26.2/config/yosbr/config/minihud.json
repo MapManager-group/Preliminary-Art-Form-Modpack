@@ -268,7 +268,7 @@
     "infoTimeIRL": true,
     "infoTimeWorld": false,
     "infoWorldTimeFormatted": false,
-    "infoCoordinates": false,
+    "infoCoordinates": true,
     "infoCoordinatesScaled": false,
     "infoBlockPosition": false,
     "infoChunkPosition": false,

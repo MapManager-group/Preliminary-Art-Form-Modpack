@@ -1,0 +1,13 @@
+name = "Faster Iris Shadow Mapper"
+filename = "fism+26.2-1.0.4.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/nSRLvOHG/versions/4HgtdJ7f/fism%2B26.2-1.0.4.jar"
+hash-format = "sha512"
+hash = "6094675395a23ef151b3107d65c4e7576e2d9291ad919e4017c77a9e573a8e5f59df4fd64ae312220be6f92a471001595850991232c6eea23acb4466e3780e29"
+
+[update]
+[update.modrinth]
+mod-id = "nSRLvOHG"
+version = "4HgtdJ7f"

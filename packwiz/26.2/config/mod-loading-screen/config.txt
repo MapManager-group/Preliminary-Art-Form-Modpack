@@ -1,8 +1,0 @@
-#To use a custom background image, create an image named "background" in this folder. The recommended size is 960x540.
-#The supported background image formats are: gif, jpeg, png, xbm
-#
-#To use a custom icon image, create a file named icon.png in this folder. It should be square.
-#The supported icon image formats are: jpg, tif, tiff, bmp, gif, png, jpeg, wbmp
-#
-#Thu Jul 23 21:42:14 CST 2026
-enableMemoryDisplay=true

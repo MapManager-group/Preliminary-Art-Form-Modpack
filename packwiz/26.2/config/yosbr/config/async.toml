@@ -1,8 +1,9 @@
-#Enables parallel processing of entities.
+#Disables the mod. All entities are ticked on the main thread.
 disabled = false
-#Maximum worker threads. -1 = auto.
+#Worker threads for parallel ticking. -1 = auto.
 maxThreads = -1
-#List of entity IDs or namespaces (*):
+#Entities ticked on the main thread instead of in parallel.
+#Entity IDs or namespaces (*):
 #  - 'minecraft:zombie' = specific entity
 #  - 'minecraft:*'      = all entities in namespace
 synchronizedEntities = ["minecraft:tnt", "minecraft:experience_orb", "minecraft:item"]
