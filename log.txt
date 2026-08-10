@@ -1,0 +1,183 @@
+Run git diff --exit-code -- packwiz/26.2/pack.toml packwiz/26.2/index.toml
+  
+diff --git a/packwiz/26.2/index.toml b/packwiz/26.2/index.toml
+index bb4dda2..10c9247 100644
+--- a/packwiz/26.2/index.toml
++++ b/packwiz/26.2/index.toml
+@@ -30,7 +30,7 @@ hash = "226aa8ba6f4cb24461d4df5f552affc6f400bc467d63903c983b1bed721e4bbd"
+ 
+ [[files]]
+ file = "config/yosbr/config/async.toml"
+-hash = "381a7e6988d8b35e0375dc23c8a064e48cfe733248eb359b3a0d60d64572fe39"
++hash = "e9d23a1c53e73a14e105ae3442a81abaa1ac2b3826a18a73cf13d7a19558bb73"
+ 
+ [[files]]
+ file = "config/yosbr/config/autoreconnectrf.json"
+@@ -42,7 +42,7 @@ hash = "dffd55b6dab2ec5e6a37f90fcee71a2f96f516764a796c60728cab6269562288"
+ 
+ [[files]]
+ file = "config/yosbr/config/axiom/imgui.ini"
+-hash = "b49c96ad3f5f6a6c0be6bff672c73a173b1bcdfc958a119292062676bfa9977f"
++hash = "bfdeed853bbaff3f99d649152de0119409634bdbc5eb912411ef7b7378457a8a"
+ 
+ [[files]]
+ file = "config/yosbr/config/axiom/translations.zip"
+@@ -70,11 +70,11 @@ hash = "c4df08e91ae1ea040ee504dde4fcfb62bdcedc1df4ad8f954e17dccbf97b5000"
+ 
+ [[files]]
+ file = "config/yosbr/config/c2me.toml"
+-hash = "c33d48222797d0f18aebf920e8483e283ce848d9ccc0288be24d3899f328a3dd"
++hash = "e266a200acf3eb750bd8258687365599fc7a6a9d36cac406b32c8ed406de5b27"
+ 
+ [[files]]
+ file = "config/yosbr/config/capes.json5"
+-hash = "b9507c6698488cb8893d107023b06adcfefd68999eb6ba971cfbc2a7bea378cb"
++hash = "affbf096bc7768bd508039d381774676bc9bbf463c8332f34cb021b0641041e0"
+ 
+ [[files]]
+ file = "config/yosbr/config/chat_heads.json5"
+@@ -126,7 +126,7 @@ hash = "f78b8334bf9399cb6942bcb7c69b4638ac34d18bcea90df8f005760f3e2b5d47"
+ 
+ [[files]]
+ file = "config/yosbr/config/forgeconfigapiport.toml"
+-hash = "40dbe5b348f89b8ded62bcdfe32807ffc3e78fa8e0f81607a739580019fe5450"
++hash = "647ad92f7bdc5e0ccef37d6e7386b08f2a19715b77742202f2f9048fb14e0dec"
+ 
+ [[files]]
+ file = "config/yosbr/config/immediatelyfast.json"
+@@ -138,11 +138,11 @@ hash = "4d3264b58c502afaeca3f44e8d2db0843c54b8ba957afd21a2d450fe10dafefb"
+-hash = "c09fc729c13e68c5fc17aed117321908d7a57c686758d857e7157dbfcab411c2"
++hash = "0450e94a575dc1665c302942e519e21c58fa421d13352073773412e723405536"
+ 
+ [[files]]
+ file = "config/yosbr/config/packetfixer.properties"
+-hash = "561ad782d1b74c7621cfcc6db3cbab32221a19723ad20888ff63c8cc3578a9aa"
++hash = "cea756415616c8b145e8329a9248ad4c42e6c7e7d51cecbfc98bf806538795f3"
+ 
+ [[files]]
+ file = "config/yosbr/config/picturemode/picturemode_client.json"
+@@ -366,7 +274,7 @@ hash = "1053e42895195681390a4cd1a5a02c5173e54031fc5e2e4f4c93c6d3081f7630"
+ 
+ [[files]]
+ file = "config/yosbr/config/progresspeek.toml"
+-hash = "47d0dd977322772c1a3405299c25fd1d9c0963655e44b2e08ab330265c746166"
++hash = "d51a716f609620f6f728bb9a05b6c35f3c3258e369489d5f14aad37d62c8291f"
+ 
+ [[files]]
+ file = "config/yosbr/config/roughlyenoughitems/collapsible.json5"
+@@ -386,11 +294,11 @@ hash = "31de0d188630471e7299f49d43809f8e3aa87d5337603cc1c6cef8f4a1e7686b"
+ 
+ [[files]]
+ file = "config/yosbr/config/roughlyenoughitems/pinyin.properties"
+-hash = "fb568710986c84b0a646f0257dcf627cc0331f6e4bb8623fd096a1a7252823ef"
++hash = "696bbfa9fc8495aa5f8dd34b74b0d8457992f36bcc1e7b6be4ca1c82dec93ef1"
+ 
+ [[files]]
+ file = "config/yosbr/config/roughlyenoughitems/pinyin_double.properties"
+-hash = "bb04d72b39426d275f8bcc76eb2188b7e2cbb3bcc6035e88da9f54146f508e9e"
++hash = "6169e26ab559517a4550dfa32a5347f9071a082563cb91021433909bb259b113"
+ 
+ [[files]]
+ file = "config/yosbr/config/roughlyenoughitems/unihan.zip"
+@@ -398,7 +306,7 @@ hash = "24b154691fc97cb44267b925d62064297086b3f896b57a8181c7b6d42702a026"
+ 
+ [[files]]
+ file = "config/yosbr/config/scalablelux.properties"
+-hash = "b1556bcfe49e9f460a7d138f60fce793993b0786bca42601c88804954c10ccb8"
++hash = "83de2b970629c62c2be4f9b0e4c28f1637f7fe6c25cebc06cf6f3d209cb05596"
+ 
+ [[files]]
+ file = "config/yosbr/config/simple_datapacks.json"
+@@ -434,7 +342,7 @@ hash = "45162f45aa2db525a0edc483959f35b6d958ba2e54066a4f87e7f3c3f0f99166"
+ 
+ [[files]]
+ file = "config/yosbr/config/sodium-extra-options.json"
+-hash = "87a6fdf14a719254ad93c4d9a597ddaa400bdb92f4cdb0f20fed6038d32fc82d"
++hash = "89badd910f5ed1ec48b1a02eda44acbef208b2be3ebb3eef92843d171c60b5e7"
+ 
+ [[files]]
+ file = "config/yosbr/config/sodium-extra.properties"
+@@ -502,7 +410,7 @@ hash = "dbc7a8dcfa4dcfd612e2472c3fc9c8ad147e8d2a5a62cbc35c2487d28b3c38f9"
+ 
+ [[files]]
+ file = "config/yosbr/config/worldedit/worldedit.properties"
+-hash = "7db535129c926150c5829c44401477ee4936b8750511624c1149dd2ef269aaf7"
++hash = "0be61d3312ed7731d54da41c7c790ba049658997508d1d689c2ee94c2bda9fdd"
+ 
+ [[files]]
+ file = "config/yosbr/config/worldeditcui.config.json"
+@@ -574,7 +482,7 @@ hash = "d438aea41ca41e93697e059f523686935c0add482f6abe96b532bbf10c6ed80a"
+ 
+ [[files]]
+ file = "config/yosbr/config/xaerohud.txt"
+-hash = "6de57f88c55043cfafb952219205e2080da514284c822a277cd9f1ef804f0def"
++hash = "8d13c5f398016036aa4fdefb366ef3926d89f96ca104155bc9f6e5a7ec682ecd"
+ 
+ [[files]]
+ file = "config/yosbr/config/xaeropatreon.txt"
+@@ -586,7 +494,7 @@ hash = "121b93764159be6fb7dab523b29a844e2bb78400ce8c48f52135a097e9b0006e"
+ 
+ [[files]]
+ file = "config/yosbr/config/zfastnoise.mixin.toml"
+-hash = "869457ea7a5f78803c7003b694cba54a95c9176b3632f327f7a74a99a62ea454"
++hash = "9662f1b3b93e09c023de08253f7b13fbc76bdb71c45ebce196ce80dff7cec1ec"
+ 
+ [[files]]
+ file = "config/yosbr/config/zoomify.json"
+@@ -594,7 +502,7 @@ hash = "536b47361a7630806b205cf28e0370abc9707b6d1a3e14444d9326135ed759e0"
+ 
+ [[files]]
+ file = "config/yosbr/options.txt"
+-hash = "8fca95fdad4726c804a2343200e75ae74e793935f16fa6b581cd7ab6bd01d5ec"
++hash = "c5548acb3f6dbc9844eac539e39bba473b760527e1be5ff21d6ef0be9feb89dc"
+ 
+ [[files]]
+ file = "mods/3dskinlayers.pw.toml"
+@@ -1002,27 +910,27 @@ metafile = true
+ 
+ [[files]]
+ file = "options.txt"
+-hash = "8fca95fdad4726c804a2343200e75ae74e793935f16fa6b581cd7ab6bd01d5ec"
++hash = "c5548acb3f6dbc9844eac539e39bba473b760527e1be5ff21d6ef0be9feb89dc"
+ 
+ [[files]]
+ file = "resourcepacks/Lorian-Language-CN/assets/better_screenshots/lang/zh_cn.json"
+-hash = "bd26dd1bc50a78dde52f39de1dce72ae6e60010408d14df64481dc048187e381"
++hash = "83a538ef9c25546aa5c908fbe72d087287c0e09767ed4d81246e86b201240589"
+ 
+ [[files]]
+ file = "resourcepacks/Lorian-Language-CN/assets/obe/lang/zh_cn.json"
+-hash = "6e08e014bffe89b0adf7fa2eb481830489e6c6f3f822824660f8bb29365ca3dc"
++hash = "381fc3499d41338dd1dd5af73121253b00e8bea1db53771b51626aad8444ca18"
+ 
+ [[files]]
+ file = "resourcepacks/Lorian-Language-CN/assets/picturemode/lang/zh_cn.json"
+-hash = "6681a02bd1459b7403f03913d4ef99d4f11fad559059f60fa1d539aaa360c604"
++hash = "290a15e5414503d5ca39a657d68632fc000cb6ac1d0d279e38c55ccfc567f666"
+ 
+ [[files]]
+ file = "resourcepacks/Lorian-Language-CN/assets/simple_image_renderer/lang/zh_cn.json"
+-hash = "1f107f8cdf9aaf1cec190193b1ae67758a54bbc7c7593cd3716868c47bd68126"
++hash = "c7770067b0e8b64df51ea7436861ed10be26c6a5ec1360f41881071ecc9fa125"
+ 
+ [[files]]
+ file = "resourcepacks/Lorian-Language-CN/pack.mcmeta"
+-hash = "1cd53ff67b4befea93f8ab7345d5604af2f80625647d4d08a9407aeed1774754"
++hash = "5d3c252231e0f53f415378c20c44d880639cf6dd22687e1095c6c6d192f03268"
+ 
+ [[files]]
+ file = "resourcepacks/rso-chinese-localized-pack.pw.toml"
+diff --git a/packwiz/26.2/pack.toml b/packwiz/26.2/pack.toml
+index 1c86026..b4a9acb 100644
+--- a/packwiz/26.2/pack.toml
++++ b/packwiz/26.2/pack.toml
+@@ -6,7 +6,7 @@ pack-format = "packwiz:1.1.0"
+ [index]
+ file = "index.toml"
+ hash-format = "sha256"
+-hash = "0903c41e9842ee9fb0fd81b865c5ebb52d6120b4f75e8974586c9c207eb94909"
++hash = "cad3be826ac4d4fe35ef26f9d8c86ef06c8f6da1f867a1b7b8edeb8f164a66fa"
+ 
+ [versions]
+ fabric = "0.19.3"
+Error: Process completed with exit code 1.

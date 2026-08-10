@@ -50,6 +50,7 @@ if ($forbiddenDirectories -or $forbiddenFiles) {
 Write-Output "✓ 无敏感/运行时残留文件"
 
 # ── 2. refresh + list ──
+& (Join-Path $PSScriptRoot 'normalize-pack-line-endings.ps1') -PackDirectory $packDirectory
 Push-Location $packDirectory
 try {
     New-Item -ItemType Directory -Force -Path $cacheDirectory | Out-Null

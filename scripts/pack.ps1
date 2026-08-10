@@ -208,6 +208,7 @@ function Invoke-Packwiz([scriptblock]$Action) {
 }
 
 function Invoke-PackwizRefresh {
+    & (Join-Path $ScriptDir 'normalize-pack-line-endings.ps1') -PackDirectory $PackDir
     Write-Color '↻ 正在刷新 index.toml ...' $Cyan
     Invoke-Packwiz {
         $pArgs = @('--cache', $CacheDir, 'refresh')
