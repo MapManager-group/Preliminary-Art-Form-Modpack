@@ -22,14 +22,16 @@
 
 ## 快速开始
 
-将 `packwiz.exe` 放在根目录下并运行如下命令：
+将 `packwiz.exe` 放在根目录下；日常操作统一通过 `pack.ps1` 完成：
 
 ```powershell
-.\scripts\validate.ps1 -MinecraftVersion 26.2
-.\scripts\build.ps1 -MinecraftVersion 26.2
+.\scripts\pack.ps1                              # 交互式管理；多版本时先选择版本
+.\scripts\pack.ps1 validate                     # 校验默认版本
+.\scripts\pack.ps1 build                        # 构建默认版本的 .mrpack
+.\scripts\pack.ps1 -Version 26.2 build          # 构建指定版本
 ```
 
-构建产物位于 `dist/` 目录，详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
+本地构建产物位于 `dist/` 目录。GitHub Actions 会自动发现 `packwiz/` 下的全部版本，分别校验、构建并上传以 Minecraft 版本命名的 ZIP artifact。详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
 
 ## 项目文档
 

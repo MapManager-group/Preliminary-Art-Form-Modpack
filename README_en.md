@@ -22,14 +22,16 @@ This repository contains the development sources for **Preliminary Art Form**. I
 
 ## Quick start
 
-Place `packwiz.exe` in the repository root and run:
+Place `packwiz.exe` in the repository root. Use `pack.ps1` as the single entry point for day-to-day work:
 
 ```powershell
-.\scripts\validate.ps1 -MinecraftVersion 26.2
-.\scripts\build.ps1 -MinecraftVersion 26.2
+.\scripts\pack.ps1                              # Interactive management; choose a version when multiple exist
+.\scripts\pack.ps1 validate                     # Validate the default version
+.\scripts\pack.ps1 build                        # Build the default version's .mrpack
+.\scripts\pack.ps1 -Version 26.2 build          # Build a specific version
 ```
 
-Build artifacts are written to `dist/`. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
+Local build artifacts are written to `dist/`. GitHub Actions automatically discovers every version under `packwiz/`, validates and builds each one, then uploads a version-named ZIP artifact. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
 
 ## Project documentation
 
