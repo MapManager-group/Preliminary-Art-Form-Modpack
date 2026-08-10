@@ -1,32 +1,75 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Git Commit CZ",
-            "type": "shell",
-            "command": "npm run commit",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build"
-            }
-        },
-        {
-            "label": "Packwiz Update",
-            "type": "shell",
-            "command": "packwiz refresh",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build"
-            }
-        },
-        {
-            "label": "Build MRPack",
-            "type": "shell",
-            "command": "packwiz modpack export",
-            "problemMatcher": [],
-            "group": {
-                "kind": "build"
-            }
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Git Commit CZ",
+      "type": "process",
+      "command": "npm",
+      "args": ["run", "commit"],
+      "problemMatcher": [],
+      "presentation": {
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Pack: 交互式管理",
+      "detail": "启动 pack CLI；存在多个版本时先选择目标版本。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/scripts/pack.ps1"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "focus": true,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Pack: 刷新索引",
+      "detail": "执行 pack.ps1 refresh；使用 versions.json 的默认版本或通过命令行 -Version 指定。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/scripts/pack.ps1",
+        "refresh"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Pack: 校验",
+      "detail": "执行 pack.ps1 validate。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/scripts/pack.ps1",
+        "validate"
+      ],
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "Pack: 构建 MRPack",
+      "detail": "执行 pack.ps1 build，导出 Modrinth .mrpack 至 dist/。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/scripts/pack.ps1",
+        "build"
+      ],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build"
+      }
+    }
+  ]
 }

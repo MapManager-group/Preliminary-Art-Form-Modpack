@@ -1,5 +1,6 @@
 # Local tools and migration input
 /packwiz.exe
+/PW-GUI-v1.3.0.exe
 
 # Build output and caches
 /dist/

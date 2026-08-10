@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$MinecraftVersion = "26.2"
 )
 
@@ -15,6 +15,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $packDirectory "pack.toml") -PathTyp
     throw "Unknown Minecraft version: $MinecraftVersion"
 }
 
+# ── 1. 敏感文件 / 运行时残留检查 ──
 $forbiddenDirectories = Get-ChildItem -LiteralPath $packDirectory -Recurse -Directory | Where-Object {
     $_.Name -in @("blueprints", "blob_cache", "hotbars")
 }
@@ -27,6 +28,9 @@ if ($forbiddenDirectories -or $forbiddenFiles) {
     throw "Forbidden runtime or deferred content found:`n$($paths -join "`n")"
 }
 
+Write-Output "✓ 无敏感/运行时残留文件"
+
+# ── 2. refresh + list ──
 Push-Location $packDirectory
 try {
     New-Item -ItemType Directory -Force -Path $cacheDirectory | Out-Null
@@ -43,9 +47,44 @@ finally {
     Pop-Location
 }
 
-$metadataCount = (Get-ChildItem -LiteralPath $packDirectory -Recurse -File -Filter "*.pw.toml").Count
-if ($metadataCount -ne 90) {
-    throw "Expected 90 external metadata files, found $metadataCount."
+Write-Output "✓ packwiz refresh & list 通过"
+
+# ── 3. 元数据完整性校验（替代硬编码 90）──
+$pwTomlFiles = Get-ChildItem -LiteralPath $packDirectory -Recurse -File -Filter "*.pw.toml"
+$diskCount   = $pwTomlFiles.Count
+
+# 磁盘上的相对路径（统一为斜杠以匹配 index.toml 格式）
+$diskSlugs = $pwTomlFiles | ForEach-Object {
+    $_.FullName.Substring($packDirectory.Length + 1) -replace '\\', '/'
 }
 
-Write-Output "Validated Minecraft ${MinecraftVersion}: $metadataCount external files; no deferred or sensitive paths found."
+# 从 index.toml 提取所有 .pw.toml 条目（外部依赖元数据）
+# 格式示例:
+#   [[files]]
+#   file = "mods/sodium.pw.toml"
+#   hash = "..."
+#   metafile = true
+$indexPath = Join-Path $packDirectory "index.toml"
+$indexContent = Get-Content $indexPath -Raw
+$indexMetafiles = @(
+    [regex]::Matches($indexContent, '(?m)^file\s*=\s*"([^"]+\.pw\.toml)"') |
+        ForEach-Object { $_.Groups[1].Value }
+)
+$indexCount = $indexMetafiles.Count
+
+# 双向校验
+$missingInIndex = @($diskSlugs | Where-Object { $_ -notin $indexMetafiles })
+$missingOnDisk  = @($indexMetafiles | Where-Object { $_ -notin $diskSlugs })
+
+if ($missingInIndex.Count -gt 0) {
+    throw "Metadata files on disk but missing from index.toml:`n$($missingInIndex -join "`n")"
+}
+if ($missingOnDisk.Count -gt 0) {
+    throw "Metadata files in index.toml but missing from disk:`n$($missingOnDisk -join "`n")"
+}
+if ($diskCount -ne $indexCount) {
+    throw "Mismatch: $diskCount .pw.toml on disk vs $indexCount in index.toml"
+}
+
+Write-Output "✓ 元数据完整性: $diskCount 个 .pw.toml 文件与 index.toml 一致"
+Write-Output "✓ Validated Minecraft ${MinecraftVersion}: $diskCount external files; no deferred or sensitive paths found."
