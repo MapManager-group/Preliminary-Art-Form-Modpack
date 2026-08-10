@@ -13,7 +13,26 @@ on:
       - ".github/workflows/validate.yml"
 
 jobs:
+  discover:
+    runs-on: windows-latest
+    outputs:
+      versions: ${{ steps.discover.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: discover
+        name: Discover packwiz versions
+        shell: pwsh
+        run: |
+          $versions = ./scripts/discover-versions.ps1
+          "versions=$versions" >> $Env:GITHUB_OUTPUT
+
   validate:
+    needs: discover
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ${{ fromJson(needs.discover.outputs.versions) }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,19 +47,19 @@ jobs:
           go install github.com/packwiz/packwiz@latest
           Copy-Item (Join-Path (go env GOPATH) 'bin/packwiz.exe') ./packwiz.exe
 
-      - name: Validate
+      - name: Validate (${{ matrix.version }})
         shell: pwsh
-        run: ./scripts/validate.ps1 -MinecraftVersion 26.2
+        run: ./scripts/validate.ps1 -MinecraftVersion ${{ matrix.version }}
 
-      - name: Verify generated index is committed
+      - name: Verify generated index is committed (${{ matrix.version }})
         shell: pwsh
-        run: git diff --exit-code -- packwiz/26.2/pack.toml packwiz/26.2/index.toml
+        run: git diff --exit-code -- packwiz/${{ matrix.version }}/pack.toml packwiz/${{ matrix.version }}/index.toml
 
-      - name: Build Modrinth package
+      - name: Build Modrinth package (${{ matrix.version }})
         shell: pwsh
-        run: ./scripts/build.ps1 -MinecraftVersion 26.2
+        run: ./scripts/pack.ps1 build -Version ${{ matrix.version }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Preliminary-Art-Form-26.2
+          name: Preliminary-Art-Form-${{ matrix.version }}
           path: dist/*.mrpack
