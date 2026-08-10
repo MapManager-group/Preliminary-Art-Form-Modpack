@@ -1,4 +1,4 @@
-name: Validate modpack
+name: Validate and build modpack
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           $versions = ./scripts/discover-versions.ps1
           "versions=$versions" >> $Env:GITHUB_OUTPUT
 
-  validate:
+  validate-and-build:
     needs: discover
     strategy:
       fail-fast: false
@@ -59,7 +59,22 @@ jobs:
         shell: pwsh
         run: ./scripts/pack.ps1 build -Version ${{ matrix.version }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Archive Modrinth package (${{ matrix.version }})
+        shell: pwsh
+        run: |
+          $mrpacks = @(Get-ChildItem ./dist -File -Filter '*.mrpack')
+          if ($mrpacks.Count -ne 1) {
+            throw "Expected one .mrpack for Minecraft ${{ matrix.version }}, found $($mrpacks.Count)."
+          }
+
+          $archiveDirectory = Join-Path 'artifacts' '${{ matrix.version }}'
+          $archivePath = Join-Path $archiveDirectory "Preliminary-Art-Form-${{ matrix.version }}.zip"
+          New-Item -ItemType Directory -Force -Path $archiveDirectory | Out-Null
+          Compress-Archive -LiteralPath $mrpacks[0].FullName -DestinationPath $archivePath -Force
+
+      - name: Upload package (${{ matrix.version }})
+        uses: actions/upload-artifact@v4
         with:
           name: Preliminary-Art-Form-${{ matrix.version }}
-          path: dist/*.mrpack
+          path: artifacts/${{ matrix.version }}/Preliminary-Art-Form-${{ matrix.version }}.zip
+          if-no-files-found: error
