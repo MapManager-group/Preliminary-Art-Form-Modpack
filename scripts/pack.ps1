@@ -43,6 +43,10 @@ param(
     [ValidateSet('mods', 'resourcepacks', 'shaderpacks')]
     [string]$Folder = 'mods',
 
+    [Parameter()]
+    [ValidateSet('modrinth', 'curseforge')]
+    [string]$Source = 'modrinth',
+
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Rest
 )
@@ -221,26 +225,34 @@ function Invoke-PackwizRefresh {
 # ── 子命令实现 ────────────────────────────────────────────
 
 function Invoke-Add {
-    param([string]$TargetFolder = $Folder)
+    param(
+        [string]$TargetFolder = $Folder,
+        [ValidateSet('modrinth', 'curseforge')]
+        [string]$TargetSource = $Source
+    )
 
     # CLI: $Rest 来自命令行参数；菜单: $global:Rest 由交互流程写入
     $targets = if ($Rest) { @($Rest) } else { @($global:Rest) }
     $slug = $targets -join ' '
-    if (-not $slug) { throw 'add 需要指定 Modrinth slug 或 URL' }
+    if (-not $slug) { throw "add 需要指定 $TargetSource slug 或 URL" }
 
-    Write-Color "🔍 从 Modrinth 搜索: $slug" $Cyan
+    $sourceLabel = if ($TargetSource -eq 'curseforge') { 'CurseForge' } else { 'Modrinth' }
+    Write-Color "🔍 从 $sourceLabel 搜索: $slug" $Cyan
     Write-Color "   meta-folder: $TargetFolder" $Gray
+    if ($TargetSource -eq 'curseforge') {
+        Write-Color '⚠ CurseForge 依赖导出为 .mrpack 时会内嵌 JAR，请确认再分发许可。' $Yellow
+    }
 
     Invoke-Packwiz {
         $pArgs = @(
             '--cache', $CacheDir,
-            'modrinth', 'add',
+            $TargetSource, 'add',
             '--meta-folder', $TargetFolder,
             '--meta-folder-base', '.'
         ) + $targets
 
         & $PackwizBin @pArgs
-        if ($LASTEXITCODE -ne 0) { throw "packwiz modrinth add failed (exit $LASTEXITCODE)" }
+        if ($LASTEXITCODE -ne 0) { throw "packwiz $TargetSource add failed (exit $LASTEXITCODE)" }
     }
 
     Write-Color "✅ $slug 已添加至 $TargetFolder/" $Green
@@ -250,10 +262,15 @@ function Invoke-Add {
     # 建议提交信息使用 packwiz 写入的项目显示名，而不是用户输入的 URL。
     $commitTarget = $slug
     if ($targets.Count -eq 1) {
-        $entrySlug = if ($targets[0] -match 'modrinth\.com/(?:mod|resourcepack|shader)/([^/?#]+)') {
-            $Matches[1]
-        } else {
-            $targets[0]
+        $entrySlug = switch ($TargetSource) {
+            'curseforge' {
+                if ($targets[0] -match 'curseforge\.com/minecraft/[^/]+/([^/?#]+)') { $Matches[1] }
+                else { $targets[0] }
+            }
+            default {
+                if ($targets[0] -match 'modrinth\.com/(?:mod|resourcepack|shader)/([^/?#]+)') { $Matches[1] }
+                else { $targets[0] }
+            }
         }
         $entry = Get-PackEntries | Where-Object {
             $_.Folder -eq $TargetFolder -and $_.Slug -eq $entrySlug
@@ -262,7 +279,7 @@ function Invoke-Add {
     }
 
     $scope = if ($TargetFolder -eq 'mods') { 'mod' } else { 'resource' }
-    Write-Color "💡 建议提交: ✨ feat($scope): 添加 $commitTarget" $Magenta
+    Write-Color "💡 建议提交: ✨ feat($scope): 从 $sourceLabel 添加 $commitTarget" $Magenta
 }
 
 function Invoke-Remove {
@@ -430,7 +447,7 @@ function Invoke-Help {
     Write-Color "  .\scripts\pack.ps1 <命令> [选项] [参数]" $Gray
     Write-Color ''
     Write-Color '命令:' $White
-    Write-Color '  add <slug|url>    从 Modrinth 添加依赖' $Gray
+    Write-Color '  add <slug|url>    从 Modrinth 添加依赖（-Source curseforge 可切换来源）' $Gray
     Write-Color '  remove <slug>      移除依赖（.pw.toml 文件名）' $Gray
     Write-Color '  update [slug]      更新依赖（无参数 = 全部更新）' $Gray
     Write-Color '  pin / unpin        固定 / 解除固定版本（交互式）' $Gray
@@ -442,6 +459,7 @@ function Invoke-Help {
     Write-Color '选项:' $White
     Write-Color '  -Version <ver>     指定 Minecraft 版本（默认自动探测）' $Gray
     Write-Color "  -Folder <name>     meta-folder: mods|resourcepacks|shaderpacks (默认 mods)" $Gray
+    Write-Color '  -Source <name>     依赖来源: modrinth|curseforge（默认 modrinth）' $Gray
     Write-Color ''
     Write-Color '  -- <任意参数>      透传给 packwiz.exe（使用公共 -cache -pack-file）' $Gray
     Write-Color ''
@@ -464,7 +482,7 @@ function Show-Banner {
 
 function Show-Menu {
     $items = @(
-        @{Key='1'; Label='add      '; Desc='从 Modrinth 添加依赖'}
+        @{Key='1'; Label='add      '; Desc='从 Modrinth 或 CurseForge 添加依赖'}
         @{Key='2'; Label='remove   '; Desc='移除依赖'}
         @{Key='3'; Label='update   '; Desc='更新依赖'}
         @{Key='4'; Label='pin      '; Desc='固定依赖版本'}
@@ -575,18 +593,21 @@ function Show-InteractiveMenu {
         switch ($choice) {
             '1' {
                 $next = Invoke-InteractiveFlow '添加依赖' {
+                    $sourceChoice = Read-Host '来源 [m=Modrinth(默认) / c=CurseForge]'
+                    $targetSource = if ($sourceChoice.Trim().ToLowerInvariant() -eq 'c') { 'curseforge' } else { 'modrinth' }
                     $type = Read-Host '类型 [m=mods(默认) / r=resourcepacks / s=shaderpacks]'
                     $targetFolder = switch ($type.Trim().ToLowerInvariant()) {
                         'r' { 'resourcepacks' }
                         's' { 'shaderpacks' }
                         default { 'mods' }
                     }
-                    $slug = Read-Host "输入 Modrinth slug 或 URL (目标: $targetFolder；直接回车取消)"
+                    $sourceLabel = if ($targetSource -eq 'curseforge') { 'CurseForge' } else { 'Modrinth' }
+                    $slug = Read-Host "输入 $sourceLabel slug 或 URL (目标: $targetFolder；直接回车取消)"
                     if (-not $slug) {
                         Write-Color '⏭ 已取消' $Yellow
                     } else {
                         $global:Rest = @($slug)
-                        Invoke-Add -TargetFolder $targetFolder
+                        Invoke-Add -TargetFolder $targetFolder -TargetSource $targetSource
                     }
                 }
             }
