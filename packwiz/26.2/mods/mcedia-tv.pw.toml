@@ -1,0 +1,13 @@
+name = "McediaTV"
+filename = "mcedia-mtv-1.4.2+26.2+build20260813114853.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/wmRzFDdN/versions/xlAIDOqu/mcedia-mtv-1.4.2%2B26.2%2Bbuild20260813114853.jar"
+hash-format = "sha512"
+hash = "8ef6f9d93545597594ce66de2a0927f495be3ded0c0afe5b7d3fb36ee0fabd22633867d2252b0926d3f4d64679ebcb5278dfcafa17f8cd942c4b4b3cfa1ad31e"
+
+[update]
+[update.modrinth]
+mod-id = "wmRzFDdN"
+version = "xlAIDOqu"

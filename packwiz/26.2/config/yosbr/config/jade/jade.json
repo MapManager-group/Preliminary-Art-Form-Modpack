@@ -20,10 +20,10 @@
   "overlay": {
     "activeTheme": "jade:top",
     "overlayPosX": 0.5,
-    "overlayPosY": 0.09037334,
+    "overlayPosY": 1.0,
     "overlayScale": 1.0,
     "overlayAnchorX": 0.5,
-    "overlayAnchorY": 1.0,
+    "overlayAnchorY": 0.0,
     "autoScaleThreshold": 0.4,
     "alpha": 0.0,
     "iconMode": "INLINE",
@@ -133,7 +133,8 @@
     "themesHash": -825076755,
     "usersHash": [
       1704467582,
-      -1748874203
+      -1748874203,
+      1864483285
     ]
   }
 }

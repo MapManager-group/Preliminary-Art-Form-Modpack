@@ -1,0 +1,13 @@
+name = "Mcedia Core"
+filename = "mcedia-mtv-allinone-versionpack-1.4.7.jar"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/jvE0ZHV2/versions/5S1O8pu5/mcedia-mtv-allinone-versionpack-1.4.7.jar"
+hash-format = "sha512"
+hash = "54472bfe65858172204e797e0896f3503f4ae14f36b5025bc2ea0f914653811f2fe64563bb4571448c983a92c305c9e4dd8493c4e174491f05f24bf5b0c7f234"
+
+[update]
+[update.modrinth]
+mod-id = "jvE0ZHV2"
+version = "5S1O8pu5"

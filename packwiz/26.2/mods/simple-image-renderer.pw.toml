@@ -1,13 +1,13 @@
 name = "Simple Image Renderer"
-filename = "simple-image-renderer-1.2.0+26.2.jar"
+filename = "simple-image-renderer-1.2.1+26.2.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/kp31625Q/versions/ueXzlNVB/simple-image-renderer-1.2.0%2B26.2.jar"
+url = "https://cdn.modrinth.com/data/kp31625Q/versions/2me45g41/simple-image-renderer-1.2.1%2B26.2.jar"
 hash-format = "sha512"
-hash = "cb8f5cfc42e51fa0de101374960709ffc98de45278ad7c3fff626245301bbd3ba0d10d9bcc887673270793161c97b9fef73478ace316c2e088d92701fde9a613"
+hash = "88ed5d8eea6358cc529d31ad666f0ee36842136d7fe4b0f6f1bc46bc447a1353264c0de2c3d1f0865ca56e49b110b4ed3eca499268c9499fbc543d6b078a3fc6"
 
 [update]
 [update.modrinth]
 mod-id = "kp31625Q"
-version = "ueXzlNVB"
+version = "2me45g41"

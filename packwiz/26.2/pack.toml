@@ -1,12 +1,12 @@
 name = "Preliminary Art Form"
 author = "LorianStudio"
-version = "26.2-A1.2"
+version = "26.2-A1.3"
 pack-format = "packwiz:1.1.0"
 
 [index]
 file = "index.toml"
 hash-format = "sha256"
-hash = "cad3be826ac4d4fe35ef26f9d8c86ef06c8f6da1f867a1b7b8edeb8f164a66fa"
+hash = "bab00961d2472696a63e8668caa7745c4d8dd0514b21e898af7707f93b01e81e"
 
 [versions]
 fabric = "0.19.3"

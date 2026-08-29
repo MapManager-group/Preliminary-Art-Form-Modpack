@@ -3,11 +3,11 @@ filename = "architectury-fabric-21.0.7.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/1yQC4VvP/architectury-fabric-21.0.7.jar"
-hash-format = "sha512"
-hash = "deffcad73b8f73d611d8e43ddad3b380e7896ba53e4b4f3660ab877b9c4ba20561e498888b17456b2b8819fb902e2070760613ce6fec9e1f1082990014e92dd4"
+hash-format = "sha1"
+hash = "7c00161fc93303ba504f02f6bf3e3f42b99e1d84"
+mode = "metadata:curseforge"
 
 [update]
-[update.modrinth]
-mod-id = "lhGA9TYQ"
-version = "1yQC4VvP"
+[update.curseforge]
+file-id = 8562967
+project-id = 419699

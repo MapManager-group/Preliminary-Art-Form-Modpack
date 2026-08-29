@@ -8,7 +8,10 @@
 - 🔧 chore(mod): 移除 *Lottweaks*
 - 🔧 chore(mod): 移除 *Visual Barrier*
 - ✨ feat(mod): 新增 *Lorian‘s Arch Orbit* 并调整了配置文件
-- 
+- 🔧 chore(config): 调整 *Minihud* *Jade* *Xaero's Minimap* 的信息显示配置
+- ✨ feat(mod): 新增 *Mcedia Core*
+- ✨ feat(mod): 新增 *McediaTV*
+- 🐛 fix(mod): 禁用 *XaeroPlus* 中传送失败的假消息
 
 ### (repo)
 - 👷 ci(packwiz): `pack.ps1` 新增更新渠道保护

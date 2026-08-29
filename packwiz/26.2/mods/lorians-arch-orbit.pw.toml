@@ -1,0 +1,13 @@
+name = "Lorian’s Arch Orbit"
+filename = "lorian-arch-orbit-fabric-1.0.0+26.2.jar"
+side = "both"
+
+[download]
+hash-format = "sha1"
+hash = "9859656964becf1a573a965c8afcdd89b230d6e2"
+mode = "metadata:curseforge"
+
+[update]
+[update.curseforge]
+file-id = 8653547
+project-id = 1653526

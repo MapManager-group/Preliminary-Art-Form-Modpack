@@ -179,6 +179,7 @@
     "structuresRenderThrough": false,
     "structuresRenderOutlines": false,
     "structuresRenderOutlinesWhite": false,
+    "displayFileOpsFeedback": false,
     "translationLanguage": "zh_cn",
     "translationMode": "vanilla",
     "useCustomizedCoordinateFormat": true,
@@ -223,7 +224,7 @@
     "dateFormatMinecraft": "MC time: (day {DAY}) {HOUR}:{MIN}:xx",
     "durationFormatType": "pretty",
     "durationFormatString": "HH:mm:ss.SSS",
-    "fontScale": 0.8,
+    "fontScale": 0.9,
     "hudStatusEffectsShift": {
       "enabled": true,
       "hotkey": {
@@ -264,8 +265,8 @@
   },
   "InfoTypeToggles": {
     "infoFPS": true,
-    "infoMemoryUsage": true,
-    "infoTimeIRL": true,
+    "infoMemoryUsage": false,
+    "infoTimeIRL": false,
     "infoTimeWorld": false,
     "infoWorldTimeFormatted": false,
     "infoCoordinates": true,
@@ -284,7 +285,7 @@
     "infoSpeedHV": false,
     "infoSprinting": false,
     "infoSculkWarningLevel": false,
-    "infoServerTPS": true,
+    "infoServerTPS": false,
     "infoServux": false,
     "infoPing": true,
     "infoWeather": false,
