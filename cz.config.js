@@ -23,8 +23,8 @@ module.exports = {
       name: "♻️ refactor: 重构代码"
     },
     {
-      value: "⚡ perf",
-      name: "⚡ perf: 性能优化"
+      value: "⚡️ perf",
+      name: "⚡️ perf: 性能优化"
     },
     {
       value: "✅ test",
@@ -41,6 +41,10 @@ module.exports = {
     {
       value: "🔧 chore",
       name: "🔧 chore: 其他修改"
+    },
+    {
+      value: "🎉 release",
+      name: "🎉 release: 发布新版本"
     }
   ],
 
