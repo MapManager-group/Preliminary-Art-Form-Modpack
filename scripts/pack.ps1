@@ -214,13 +214,15 @@ function Get-UpdateCompatibility {
         catch { throw 'pack.toml 中的 acceptable-game-versions 格式无效' }
     }
 
-    $loaders = @('canvas', 'iris', 'optifine', 'vanilla', 'minecraft')
+    $packLoaders = @()
     foreach ($loader in @('fabric', 'quilt', 'forge', 'neoforge')) {
-        if ($packToml -match "(?m)^$loader\s*=\s*`"[^`"]+`"\s*$") { $loaders += $loader }
+        if ($packToml -match "(?m)^$loader\s*=\s*`"[^`"]+`"\s*$") { $packLoaders += $loader }
     }
+    $loaders = @($packLoaders) + @('canvas', 'iris', 'optifine', 'vanilla', 'minecraft')
 
     return @{
         MinecraftVersions = @($minecraftVersions | Select-Object -Unique)
+        PackLoaders = @($packLoaders | Select-Object -Unique)
         Loaders = @($loaders | Select-Object -Unique)
     }
 }
@@ -260,6 +262,64 @@ function Get-LatestModrinthRelease {
         VersionId = $latest.id
         VersionNumber = $latest.version_number
     }
+}
+
+function Get-CurseForgeMetadata {
+    param([hashtable]$Entry)
+
+    $metadata = Get-Content $Entry.Path -Raw -Encoding utf8
+    $projectMatch = [regex]::Match($metadata, '(?m)^project-id\s*=\s*(\d+)\s*$')
+    $fileMatch = [regex]::Match($metadata, '(?m)^file-id\s*=\s*(\d+)\s*$')
+    if (-not $projectMatch.Success -or -not $fileMatch.Success) {
+        throw "CurseForge 更新元数据不完整: $($Entry.Path)"
+    }
+
+    return @{
+        ProjectId = [uint64]$projectMatch.Groups[1].Value
+        FileId = [uint64]$fileMatch.Groups[1].Value
+    }
+}
+
+function Get-LatestCurseForgeRelease {
+    param(
+        [hashtable]$Entry,
+        [hashtable]$Compatibility
+    )
+
+    $current = Get-CurseForgeMetadata $Entry
+    $headers = @{ 'User-Agent' = 'LorianDesign-pack-script/1.0 (Preliminary Art Form)' }
+    $project = Invoke-RestMethod -Uri "https://api.cfwidget.com/$($current.ProjectId)" -Headers $headers
+    $candidates = @(foreach ($file in @($project.files)) {
+        $versionTags = @($file.versions | ForEach-Object { "$_".ToLowerInvariant() })
+        $minecraftMatches = "$($file.version)" -in $Compatibility.MinecraftVersions
+        $loaderMatches = $Entry.Folder -ne 'mods' -or @(
+            $Compatibility.PackLoaders | Where-Object { $_.ToLowerInvariant() -in $versionTags }
+        ).Count -gt 0
+
+        if ($file.type -eq 'release' -and $minecraftMatches -and $loaderMatches) {
+            $file
+        }
+    })
+
+    $latest = $candidates | Sort-Object { [datetimeoffset]$_.uploaded_at } -Descending | Select-Object -First 1
+    if (-not $latest) { return $null }
+
+    return @{
+        ProjectId = $current.ProjectId
+        CurrentFileId = $current.FileId
+        FileId = [uint64]$latest.id
+        DisplayName = $latest.display
+        FileName = $latest.name
+    }
+}
+
+function Get-CurseForgeFileId {
+    param([string]$MetadataPath)
+
+    $metadata = Get-Content $MetadataPath -Raw -Encoding utf8
+    $fileMatch = [regex]::Match($metadata, '(?m)^file-id\s*=\s*(\d+)\s*$')
+    if (-not $fileMatch.Success) { throw "CurseForge file-id 缺失: $MetadataPath" }
+    return [uint64]$fileMatch.Groups[1].Value
 }
 
 # ── packwiz 调用 ──────────────────────────────────────────
@@ -401,46 +461,117 @@ function Invoke-ReleaseUpdate {
     $updated = 0
     $unchanged = 0
     $skipped = 0
-    foreach ($entry in $selectedEntries) {
-        $metadata = Get-Content $entry.Path -Raw -Encoding utf8
-        if ($metadata -match '(?m)^pin\s*=\s*true\s*$') {
-            Write-Color "  ⏭ $($entry.Name): 已固定版本" $Gray
-            $skipped++
-            continue
-        }
-        if ($metadata -notmatch '(?m)^\[update\.modrinth\]\s*$') {
-            Write-Color "  ⏭ $($entry.Name): 非 Modrinth 依赖，正式版模式下安全跳过" $Yellow
-            $skipped++
-            continue
-        }
+    $previewRoot = $null
+    $previewPackDir = $null
+    try {
+        foreach ($entry in $selectedEntries) {
+            $metadata = Get-Content $entry.Path -Raw -Encoding utf8
+            if ($metadata -match '(?m)^pin\s*=\s*true\s*$') {
+                Write-Color "  ⏭ $($entry.Name): 已固定版本" $Gray
+                $skipped++
+                continue
+            }
 
-        Write-Color "  • 检查 $($entry.Name)" $Gray
-        $release = Get-LatestModrinthRelease -Entry $entry -Compatibility $compatibility
-        if (-not $release) {
-            Write-Color '    ⏭ 没有兼容的正式版' $Yellow
-            $skipped++
-            continue
-        }
-        if ($release.VersionId -eq $release.CurrentVersionId) {
-            $unchanged++
-            continue
-        }
+            Write-Color "  • 检查 $($entry.Name)" $Gray
+            if ($metadata -match '(?m)^\[update\.modrinth\]\s*$') {
+                $release = Get-LatestModrinthRelease -Entry $entry -Compatibility $compatibility
+                if (-not $release) {
+                    Write-Color '    ⏭ 没有兼容的正式版' $Yellow
+                    $skipped++
+                    continue
+                }
+                if ($release.VersionId -eq $release.CurrentVersionId) {
+                    $unchanged++
+                    continue
+                }
 
-        Invoke-Packwiz {
-            $pArgs = @(
-                '--cache', $CacheDir,
-                '--yes',
-                'modrinth', 'add',
-                '--meta-folder', $entry.Folder,
-                '--meta-folder-base', '.',
-                '--project-id', $release.ProjectId,
-                '--version-id', $release.VersionId
-            )
-            & $PackwizBin @pArgs
-            if ($LASTEXITCODE -ne 0) { throw "packwiz modrinth add failed (exit $LASTEXITCODE)" }
+                Invoke-Packwiz {
+                    $pArgs = @(
+                        '--cache', $CacheDir,
+                        '--yes',
+                        'modrinth', 'add',
+                        '--meta-folder', $entry.Folder,
+                        '--meta-folder-base', '.',
+                        '--project-id', $release.ProjectId,
+                        '--version-id', $release.VersionId
+                    )
+                    & $PackwizBin @pArgs
+                    if ($LASTEXITCODE -ne 0) { throw "packwiz modrinth add failed (exit $LASTEXITCODE)" }
+                }
+                Write-Color "    ↑ 已更新到 release $($release.VersionNumber)" $Green
+                $updated++
+                continue
+            }
+
+            if ($metadata -match '(?m)^\[update\.curseforge\]\s*$') {
+                try {
+                    $release = Get-LatestCurseForgeRelease -Entry $entry -Compatibility $compatibility
+                    if (-not $release) {
+                        Write-Color '    ⏭ 没有兼容的 CurseForge 正式版' $Yellow
+                        $skipped++
+                        continue
+                    }
+                    if ($release.FileId -eq $release.CurrentFileId) {
+                        $unchanged++
+                        continue
+                    }
+
+                    if (-not $previewPackDir) {
+                        $tempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
+                        $previewRoot = Join-Path $tempBase "lorian-packwiz-preview-$([guid]::NewGuid().ToString('N'))"
+                        $previewPackDir = Join-Path $previewRoot 'pack'
+                        New-Item -ItemType Directory -Path $previewRoot | Out-Null
+                        Copy-Item -LiteralPath $PackDir -Destination $previewPackDir -Recurse
+                    }
+
+                    $relativeMetadataPath = [System.IO.Path]::GetRelativePath($PackDir, $entry.Path)
+                    $previewMetadataPath = Join-Path $previewPackDir $relativeMetadataPath
+                    Push-Location $previewPackDir
+                    try {
+                        & $PackwizBin --cache $CacheDir update $entry.Slug | Out-Host
+                        if ($LASTEXITCODE -ne 0) { throw "packwiz update preview failed (exit $LASTEXITCODE)" }
+                    }
+                    finally {
+                        Pop-Location
+                    }
+
+                    $previewFileId = Get-CurseForgeFileId $previewMetadataPath
+                    if ($previewFileId -ne $release.FileId) {
+                        Write-Color "    ⏭ packwiz 候选文件 $previewFileId 不是最新 release $($release.FileId)，已安全跳过" $Yellow
+                        $skipped++
+                        continue
+                    }
+
+                    Invoke-Packwiz {
+                        & $PackwizBin --cache $CacheDir update $entry.Slug
+                        if ($LASTEXITCODE -ne 0) { throw "packwiz update failed (exit $LASTEXITCODE)" }
+                    }
+                    Write-Color "    ↑ 已更新到 CurseForge release $($release.DisplayName) (file $($release.FileId))" $Green
+                    $updated++
+                }
+                catch {
+                    Write-Color "    ⏭ CurseForge 正式版检查失败，已安全跳过: $($_.Exception.Message)" $Yellow
+                    $skipped++
+                }
+                continue
+            }
+
+            Write-Color '    ⏭ 不支持的更新来源' $Yellow
+            $skipped++
         }
-        Write-Color "    ↑ 已更新到 release $($release.VersionNumber)" $Green
-        $updated++
+    }
+    finally {
+        if ($previewRoot -and (Test-Path -LiteralPath $previewRoot)) {
+            $resolvedPreview = (Resolve-Path -LiteralPath $previewRoot).Path
+            $resolvedTempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
+            if (
+                (Split-Path -Parent $resolvedPreview) -ne $resolvedTempBase -or
+                (Split-Path -Leaf $resolvedPreview) -notlike 'lorian-packwiz-preview-*'
+            ) {
+                throw "拒绝清理未验证的预览目录: $resolvedPreview"
+            }
+            Remove-Item -LiteralPath $resolvedPreview -Recurse -Force
+        }
     }
 
     Write-Color "  正式版检查结果: 更新 $updated，已是最新 $unchanged，跳过 $skipped" $Gray
@@ -458,7 +589,7 @@ function Invoke-Update {
     Invoke-PackwizRefresh
     Invoke-Validate
 
-    $scope = if ($targets) { $targets[0] } else { '--all' }
+    $scope = if ($targets) { @($targets)[0] } else { '--all' }
     Write-Color "💡 建议提交: ⬆️ chore(mod): update $scope" $Magenta
 }
 
