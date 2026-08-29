@@ -738,6 +738,11 @@ hash = "56bd8b39137e041148b39c6e6a4606ee913767135776b61cc1c8bb9744250d4e"
 metafile = true
 
 [[files]]
+file = "mods/mcedia-cn-platforms.pw.toml"
+hash = "87764509d87da463c0a192ee425bc7c312d32ae1e14102e0a1cc9486f06907f5"
+metafile = true
+
+[[files]]
 file = "mods/mcedia-tv.pw.toml"
 hash = "9ebcad608c47294c6a3dbfb8736929c22b74901fa6f063a9fcb85d0b257707d5"
 metafile = true
