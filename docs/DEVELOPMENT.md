@@ -28,6 +28,7 @@ git status --short
 .\scripts\pack.ps1 remove sodium                            # 移除依赖
 .\scripts\pack.ps1 update                                   # 更新全部依赖
 .\scripts\pack.ps1 update sodium                            # 更新单个依赖
+.\scripts\pack.ps1 update -UpdateChannel prerelease --all   # 更新到最新版（包含 alpha/beta）
 .\scripts\pack.ps1 pin                                      # 固定版本（交互式）
 .\scripts\pack.ps1 unpin                                    # 解除固定（交互式）
 .\scripts\pack.ps1 list                                     # 列出当前依赖
@@ -39,6 +40,8 @@ git status --short
 ```
 
 `add / remove / update / pin / unpin / refresh / build` 完成时会自动校验整合包，并提示建议的 commit 信息。`add` 默认使用 Modrinth，也可用 `-Source curseforge` 或在交互菜单选择 CurseForge；CurseForge 依赖导出 `.mrpack` 时会内嵌 JAR，提交前需确认再分发许可。交互菜单中的每项操作完成后可输入 `r` 继续同类操作、直接按 Enter 返回主菜单，或输入 `0` 退出；移除依赖前还会要求确认，便于连续清理依赖时避免误删。若校验发现运行时或敏感文件，本地 CLI 会列出路径并要求确认后才清理；CI 和直接运行校验脚本会严格失败，不会自动删除。菜单中的“指定/回退 Modrinth 版本”可替换已有依赖为粘贴的 Modrinth 版本页面链接；替换失败时会恢复原始元数据。
+
+`update` 默认使用 `release` 渠道：只更新到与当前 Minecraft 版本和加载器兼容的最新 Modrinth 正式版，并尊重已固定的依赖。交互菜单会在选择更新范围前询问渠道；命令行可使用 `-UpdateChannel prerelease` 显式允许 alpha/beta。由于当前 packwiz 无法按发布类型筛选 CurseForge 更新，`release` 模式会安全跳过 CurseForge 依赖并显示提示；只有选择 `prerelease` 时才会交给 packwiz 原生更新。
 
 ### 版本指定
 
@@ -72,7 +75,7 @@ npm run commit
 
 常用 scope：`packwiz`、`mod`、`resource`、`config`、`mrpack`、`fabric`、`ci`、`github`、`docs`。
 
-提交信息和 `docs/CHANGELOG.md` 使用英文，并遵循 Gitmoji + Conventional Commits，例如：
+提交信息和 `docs/CHANGELOG.md` 遵循 Gitmoji + Conventional Commits，例如：
 
 ```text
 ✨ feat(packwiz): add a building utility mod

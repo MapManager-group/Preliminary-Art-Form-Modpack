@@ -16,12 +16,16 @@
 .PARAMETER Folder
     目标 meta-folder: mods (默认), resourcepacks, shaderpacks
 
+.PARAMETER UpdateChannel
+    更新渠道: release (仅正式版，默认), prerelease (包含 alpha/beta)
+
 .EXAMPLE
     .\scripts\pack.ps1 add sodium
     .\scripts\pack.ps1 add -Folder shaderpacks complementary-reimagined
     .\scripts\pack.ps1 remove sodium
     .\scripts\pack.ps1 update --all
     .\scripts\pack.ps1 update sodium
+    .\scripts\pack.ps1 update -UpdateChannel prerelease --all
     .\scripts\pack.ps1 list
     .\scripts\pack.ps1 refresh
     .\scripts\pack.ps1 validate
@@ -46,6 +50,10 @@ param(
     [Parameter()]
     [ValidateSet('modrinth', 'curseforge')]
     [string]$Source = 'modrinth',
+
+    [Parameter()]
+    [ValidateSet('release', 'prerelease')]
+    [string]$UpdateChannel = 'release',
 
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Rest
@@ -194,6 +202,66 @@ function Get-ModrinthEntries {
     })
 }
 
+function Get-UpdateCompatibility {
+    $packToml = Get-Content (Join-Path $PackDir 'pack.toml') -Raw
+    $minecraftVersions = @()
+    $minecraftMatch = [regex]::Match($packToml, '(?m)^minecraft\s*=\s*"([^"]+)"\s*$')
+    if ($minecraftMatch.Success) { $minecraftVersions += $minecraftMatch.Groups[1].Value }
+
+    $acceptableMatch = [regex]::Match($packToml, '(?m)^acceptable-game-versions\s*=\s*(\[[^\r\n]*\])\s*$')
+    if ($acceptableMatch.Success) {
+        try { $minecraftVersions += @($acceptableMatch.Groups[1].Value | ConvertFrom-Json) }
+        catch { throw 'pack.toml 中的 acceptable-game-versions 格式无效' }
+    }
+
+    $loaders = @('canvas', 'iris', 'optifine', 'vanilla', 'minecraft')
+    foreach ($loader in @('fabric', 'quilt', 'forge', 'neoforge')) {
+        if ($packToml -match "(?m)^$loader\s*=\s*`"[^`"]+`"\s*$") { $loaders += $loader }
+    }
+
+    return @{
+        MinecraftVersions = @($minecraftVersions | Select-Object -Unique)
+        Loaders = @($loaders | Select-Object -Unique)
+    }
+}
+
+function Get-LatestModrinthRelease {
+    param(
+        [hashtable]$Entry,
+        [hashtable]$Compatibility
+    )
+
+    $metadata = Get-Content $Entry.Path -Raw -Encoding utf8
+    $projectMatch = [regex]::Match($metadata, '(?m)^mod-id\s*=\s*"([^"]+)"\s*$')
+    $versionMatch = [regex]::Match($metadata, '(?m)^version\s*=\s*"([^"]+)"\s*$')
+    if (-not $projectMatch.Success -or -not $versionMatch.Success) {
+        throw "Modrinth 更新元数据不完整: $($Entry.Path)"
+    }
+
+    $projectId = $projectMatch.Groups[1].Value
+    $headers = @{ 'User-Agent' = 'LorianDesign-pack-script/1.0 (Preliminary Art Form)' }
+    $versionsResponse = Invoke-RestMethod -Uri "https://api.modrinth.com/v2/project/$projectId/version" -Headers $headers
+    $compatibleReleases = @(foreach ($version in $versionsResponse) {
+        if (
+            $version.version_type -eq 'release' -and
+            @($version.game_versions | Where-Object { $_ -in $Compatibility.MinecraftVersions }).Count -gt 0 -and
+            @($version.loaders | Where-Object { $_ -in $Compatibility.Loaders }).Count -gt 0
+        ) {
+            $version
+        }
+    })
+
+    $latest = $compatibleReleases | Sort-Object { [datetimeoffset]$_.date_published } -Descending | Select-Object -First 1
+    if (-not $latest) { return $null }
+
+    return @{
+        ProjectId = $projectId
+        CurrentVersionId = $versionMatch.Groups[1].Value
+        VersionId = $latest.id
+        VersionNumber = $latest.version_number
+    }
+}
+
 # ── packwiz 调用 ──────────────────────────────────────────
 
 function Assert-Packwiz {
@@ -302,17 +370,89 @@ function Invoke-Remove {
     Write-Color "💡 建议提交: 🐛 fix(packwiz): remove $slug" $Magenta
 }
 
-function Invoke-Update {
-    $targets = if ($Rest) { @($Rest) } else { @($global:Rest) }
-    Write-Color '🔍 检查更新 ...' $Cyan
+function Invoke-PrereleaseUpdate {
+    param([string[]]$Targets)
 
     Invoke-Packwiz {
         $pArgs = @('--cache', $CacheDir, 'update')
-        if ($targets) { $pArgs += $targets }
+        if ($Targets -and $Targets -notcontains '--all') { $pArgs += $Targets }
         else { $pArgs += '--all' }
         & $PackwizBin @pArgs
         if ($LASTEXITCODE -ne 0) { throw "packwiz update failed (exit $LASTEXITCODE)" }
     }
+}
+
+function Invoke-ReleaseUpdate {
+    param([string[]]$Targets)
+
+    $allEntries = @(Get-PackEntries)
+    $selectedEntries = if (-not $Targets -or $Targets -contains '--all') {
+        $allEntries
+    } else {
+        @($Targets | ForEach-Object {
+            $target = $_
+            $entry = $allEntries | Where-Object { $_.Slug -eq $target } | Select-Object -First 1
+            if (-not $entry) { throw "找不到依赖: $target" }
+            $entry
+        })
+    }
+
+    $compatibility = Get-UpdateCompatibility
+    $updated = 0
+    $unchanged = 0
+    $skipped = 0
+    foreach ($entry in $selectedEntries) {
+        $metadata = Get-Content $entry.Path -Raw -Encoding utf8
+        if ($metadata -match '(?m)^pin\s*=\s*true\s*$') {
+            Write-Color "  ⏭ $($entry.Name): 已固定版本" $Gray
+            $skipped++
+            continue
+        }
+        if ($metadata -notmatch '(?m)^\[update\.modrinth\]\s*$') {
+            Write-Color "  ⏭ $($entry.Name): 非 Modrinth 依赖，正式版模式下安全跳过" $Yellow
+            $skipped++
+            continue
+        }
+
+        Write-Color "  • 检查 $($entry.Name)" $Gray
+        $release = Get-LatestModrinthRelease -Entry $entry -Compatibility $compatibility
+        if (-not $release) {
+            Write-Color '    ⏭ 没有兼容的正式版' $Yellow
+            $skipped++
+            continue
+        }
+        if ($release.VersionId -eq $release.CurrentVersionId) {
+            $unchanged++
+            continue
+        }
+
+        Invoke-Packwiz {
+            $pArgs = @(
+                '--cache', $CacheDir,
+                '--yes',
+                'modrinth', 'add',
+                '--meta-folder', $entry.Folder,
+                '--meta-folder-base', '.',
+                '--project-id', $release.ProjectId,
+                '--version-id', $release.VersionId
+            )
+            & $PackwizBin @pArgs
+            if ($LASTEXITCODE -ne 0) { throw "packwiz modrinth add failed (exit $LASTEXITCODE)" }
+        }
+        Write-Color "    ↑ 已更新到 release $($release.VersionNumber)" $Green
+        $updated++
+    }
+
+    Write-Color "  正式版检查结果: 更新 $updated，已是最新 $unchanged，跳过 $skipped" $Gray
+}
+
+function Invoke-Update {
+    $targets = if ($Rest) { @($Rest) } else { @($global:Rest) }
+    $channelLabel = if ($UpdateChannel -eq 'release') { '仅正式版 (release)' } else { '包含测试版 (alpha/beta)' }
+    Write-Color "🔍 检查更新: $channelLabel ..." $Cyan
+
+    if ($UpdateChannel -eq 'release') { Invoke-ReleaseUpdate -Targets $targets }
+    else { Invoke-PrereleaseUpdate -Targets $targets }
 
     Write-Color '✅ 更新完成' $Green
     Invoke-PackwizRefresh
@@ -460,6 +600,8 @@ function Invoke-Help {
     Write-Color '  -Version <ver>     指定 Minecraft 版本（默认自动探测）' $Gray
     Write-Color "  -Folder <name>     meta-folder: mods|resourcepacks|shaderpacks (默认 mods)" $Gray
     Write-Color '  -Source <name>     依赖来源: modrinth|curseforge（默认 modrinth）' $Gray
+    Write-Color '  -UpdateChannel <release|prerelease>' $Gray
+    Write-Color '                       更新渠道（默认 release；prerelease 包含 alpha/beta）' $Gray
     Write-Color ''
     Write-Color '  -- <任意参数>      透传给 packwiz.exe（使用公共 -cache -pack-file）' $Gray
     Write-Color ''
@@ -554,6 +696,20 @@ function Confirm-VersionReplacement([string]$Name, [string]$VersionUrl) {
     }
 }
 
+function Select-UpdateChannel {
+    while ($true) {
+        $answer = Read-Host '更新渠道 [r=仅正式版 release(默认) / p=包含 alpha/beta]'
+        switch ($answer.Trim().ToLowerInvariant()) {
+            '' { return 'release' }
+            'r' { return 'release' }
+            'release' { return 'release' }
+            'p' { return 'prerelease' }
+            'prerelease' { return 'prerelease' }
+            default { Write-Color '请输入 r 或 p。' $Yellow }
+        }
+    }
+}
+
 function Select-NextAction([string]$Operation) {
     while ($true) {
         Write-Color ''
@@ -626,6 +782,7 @@ function Show-InteractiveMenu {
             }
             '3' {
                 $next = Invoke-InteractiveFlow '更新依赖' {
+                    $script:UpdateChannel = Select-UpdateChannel
                     $scope = Read-Host '更新范围 [a=全部(默认) / s=单个]'
                     if ($scope.Trim().ToLowerInvariant() -eq 's') {
                         $sel = Select-Entry (Get-PackEntries) '可更新的依赖'

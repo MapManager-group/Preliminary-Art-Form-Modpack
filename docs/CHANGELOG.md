@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-08-29
+
+### (Modpack)26.2-A1.3
+
+- 🔧 chore(mod): 将所有mod更新到最新版本
+- 🔧 chore(mod): 移除 *Lottweaks*
+- 🔧 chore(mod): 移除 *Visual Barrier*
+- ✨ feat(mod): 新增 *Lorian‘s Arch Orbit* 并调整了配置文件
+- 
+
+### (repo)
+- 👷 ci(packwiz): `pack.ps1` 新增更新渠道保护
+
 ## 2026-08-10
 
 ### (Modpack)26.2-A1.2
