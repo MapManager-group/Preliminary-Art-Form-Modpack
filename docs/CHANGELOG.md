@@ -11,10 +11,12 @@
 - 🔧 chore(config): 调整 *Minihud* *Jade* *Xaero's Minimap* 的信息显示配置
 - ✨ feat(mod): 新增 *Mcedia Core*
 - ✨ feat(mod): 新增 *McediaTV*
+- ✨ feat(mod): 新增 *Mcedia China Media Platforms Resolver*
 - 🐛 fix(mod): 禁用 *XaeroPlus* 中传送失败的假消息
 
 ### (repo)
 - 👷 ci(packwiz): `pack.ps1` 新增更新渠道保护
+- 👷 ci(packwiz): 修复 CurseForge 源正式版更新流程
 
 ## 2026-08-10
 
