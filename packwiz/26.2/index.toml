@@ -724,7 +724,7 @@ metafile = true
 
 [[files]]
 file = "mods/lorians-arch-orbit.pw.toml"
-hash = "5b17835d8c48b7ffcacdf3bd11b342881d497f3c00511338b82ebd2feae33a56"
+hash = "57f0c17971a0035bf2a390cee2c707d09f99057f40894fe0e104062fa149add7"
 metafile = true
 
 [[files]]
