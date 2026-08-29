@@ -210,19 +210,19 @@ hash = "e1926f1476da771ef32c4b02379a96d3ba5ca0f4b1dd5cfe449fb8ea0ce4c7c4"
 
 [[files]]
 file = "config/yosbr/config/lorian_arch_orbit/client.json"
-hash = "f627c9e458828c684addb7ce1665b1cb9e81f1fc7cc043ffcd075291100f50a8"
+hash = "9f28184f92092083475209a297c9e58cfcd1bdbba6f703287099be97acf6e6db"
 
 [[files]]
 file = "config/yosbr/config/lorian_arch_orbit/lorian_arch_orbit-wheel-primary.json"
-hash = "ba8d0c1937040bef70f30cd55af98b1682dfb8e96f3556336455f2105cba56e4"
+hash = "5aa9cc26ca4f402de1581597ebfd5c069c06fd7bc643160ff838165a9ac917e1"
 
 [[files]]
 file = "config/yosbr/config/lorian_arch_orbit/lorian_arch_orbit-wheel-secondary.json"
-hash = "ba8d0c1937040bef70f30cd55af98b1682dfb8e96f3556336455f2105cba56e4"
+hash = "5aa9cc26ca4f402de1581597ebfd5c069c06fd7bc643160ff838165a9ac917e1"
 
 [[files]]
 file = "config/yosbr/config/lorian_arch_orbit/server.json"
-hash = "8f2be1b6e7a45c30ac63ea979b3c141ae2af6cc0848ecfbb5d5ae8c5c61e5b75"
+hash = "0b0c3fefe57c89369d8a0cc678b0f6edcec1f2bcbf8e32b079fc74ed80ec0810"
 
 [[files]]
 file = "config/yosbr/config/malilib.json"
@@ -230,11 +230,11 @@ hash = "936805eb40dc582b5cf0e7f4935c1eacd9291f478c5132e0610c5bf03ac38d09"
 
 [[files]]
 file = "config/yosbr/config/mcedia_core.properties"
-hash = "20af62662493f5a74660ad4b6899863c7f9674bb7284d1cc87c35aa31ba027fc"
+hash = "0db41dc3059af08d594c5325f11aeb5f4e3e694b3b1733505e9bfc109af30564"
 
 [[files]]
 file = "config/yosbr/config/mcedia_platforms.properties"
-hash = "a824fcac229608abfd1524ec019eca805328e474bcabc09595384a568d5f0091"
+hash = "9a797ec548e7f5d6970c9c295e47a99a73783db88a37f60182672201f38ed047"
 
 [[files]]
 file = "config/yosbr/config/minihud.json"
@@ -502,7 +502,7 @@ hash = "d438aea41ca41e93697e059f523686935c0add482f6abe96b532bbf10c6ed80a"
 
 [[files]]
 file = "config/yosbr/config/xaerohud.txt"
-hash = "6de57f88c55043cfafb952219205e2080da514284c822a277cd9f1ef804f0def"
+hash = "8d13c5f398016036aa4fdefb366ef3926d89f96ca104155bc9f6e5a7ec682ecd"
 
 [[files]]
 file = "config/yosbr/config/xaeropatreon.txt"
@@ -510,7 +510,7 @@ hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
 [[files]]
 file = "config/yosbr/config/xaeroplus.txt"
-hash = "1605caf15979b14559da0afe14c0311c32bbd4781fd2596c418f90084d88dc55"
+hash = "2b08a3d97d41932b3c059126f40c94f1957f178835af6963aa89887f61cb703a"
 
 [[files]]
 file = "config/yosbr/config/yacl.json5"
@@ -526,7 +526,7 @@ hash = "536b47361a7630806b205cf28e0370abc9707b6d1a3e14444d9326135ed759e0"
 
 [[files]]
 file = "config/yosbr/options.txt"
-hash = "0ed038b1b072051f610da21dd58606de721abb539cf14215a9d8e8ce6efedee5"
+hash = "99c7707c701de2455aa27475baa6bdfdb4ea02e8dc8ea4ed03d70fbac6066003"
 
 [[files]]
 file = "mods/3dskinlayers.pw.toml"

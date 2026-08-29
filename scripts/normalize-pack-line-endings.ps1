@@ -35,7 +35,7 @@ Get-ChildItem -LiteralPath $resolvedPackDirectory -Recurse -File | ForEach-Objec
     $relativePath = [System.IO.Path]::GetRelativePath($repoRoot, $file.FullName).Replace('\', '/')
     $attributes = & git -C $repoRoot check-attr text eol -- $relativePath
     if ($LASTEXITCODE -ne 0) { throw "git check-attr failed for $relativePath" }
-    if ($attributes -match ': text: unset$' -or $attributes -notmatch ': eol: lf$') { return }
+    if ($attributes -match ': text: unset$' -or -not ($attributes -match ': eol: lf$')) { return }
 
     $normalizedBytes = [byte[]]::new($bytes.Length - $crlfCount)
     $sourceIndex = 0
