@@ -39,7 +39,9 @@ Only the client instance currently exists. `packwiz/server/` is an empty reserve
 │  ├─ discover-packs.ps1             # Validate the manifest and emit the GitHub Actions matrix
 │  ├─ validate.ps1                   # Validate sensitive files, local hashes, and the packwiz index
 │  └─ normalize-pack-line-endings.ps1 # Normalize line endings in packwiz text files
-└─ .github/workflows/validate.yml    # Commit lint and multi-instance validation/build workflow
+└─ .github/workflows/
+   ├─ commitlint.yml                 # Gitmoji + Conventional Commits checks for every change
+   └─ validate.yml                   # Path-filtered multi-instance validation/build workflow
 ```
 
 Script responsibilities:
@@ -64,7 +66,7 @@ Place `packwiz.exe` in the repository root. Use `pack.ps1` as the single entry p
 .\scripts\pack.ps1 build -Instance client -Version 26.2 # Build a specific target
 ```
 
-Local build artifacts are written to `dist/`. GitHub Actions always checks commit messages, but only discovers, validates, and builds the targets in `packwiz/instances.json` when `packwiz/**`, `scripts/**`, `.github/workflows/validate.yml`, or `.gitattributes` changes. Manual runs always build all targets. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
+Local build artifacts are written to `dist/`. `commitlint.yml` checks every push and pull request, while `validate.yml` only discovers, validates, and builds the targets in `packwiz/instances.json` when `packwiz/**`, `scripts/**`, `.github/workflows/validate.yml`, or `.gitattributes` changes. Manual runs always build all targets. Project documentation is maintained in Chinese; see the [development guide](docs/DEVELOPMENT.md).
 
 ## Project documentation
 

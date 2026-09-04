@@ -39,7 +39,9 @@
 │  ├─ discover-packs.ps1             # 校验实例清单并输出 GitHub Actions matrix
 │  ├─ validate.ps1                   # 校验敏感文件、本地文件哈希及 packwiz 索引
 │  └─ normalize-pack-line-endings.ps1 # 规范 packwiz 文本文件换行
-└─ .github/workflows/validate.yml    # 提交规范检查及多实例校验/构建工作流
+└─ .github/workflows/
+   ├─ commitlint.yml                 # 所有提交的 Gitmoji + Conventional Commits 检查
+   └─ validate.yml                   # 仅关键路径触发的多实例校验/构建工作流
 ```
 
 脚本职责：
@@ -64,7 +66,7 @@
 .\scripts\pack.ps1 build -Instance client -Version 26.2 # 构建指定目标
 ```
 
-本地构建产物位于 `dist/` 目录。GitHub Actions 会检查提交规范；仅当 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 或 `.gitattributes` 发生变化时，才根据 `packwiz/instances.json` 自动发现全部实例/版本，分别校验、构建并上传独立 artifact。手动触发始终执行打包。详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
+本地构建产物位于 `dist/` 目录。`commitlint.yml` 对所有 push、Pull Request 检查提交规范；`validate.yml` 仅在 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 或 `.gitattributes` 发生变化时运行，并根据 `packwiz/instances.json` 校验、构建全部实例/版本。手动触发始终执行打包。详细信息请参阅 [开发指南](docs/DEVELOPMENT.md)。
 
 ## 项目文档
 

@@ -9,7 +9,7 @@
 3. 运行 `.\scripts\pack.ps1 validate` 和 `.\scripts\pack.ps1 build`，确认校验通过并成功导出 `.mrpack`。
 4. 在 `docs/CHANGELOG.md` 中记录影响用户的变更。
 
-推送或创建 Pull Request 后，GitHub Actions 会先检查提交规范。仅当 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 或 `.gitattributes` 变化时，才读取 `packwiz/instances.json`，独立校验、构建每个登记目标并上传 artifact；手动运行工作流时始终打包。
+推送或创建 Pull Request 后，独立的 commitlint 工作流会检查提交规范。只有 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 或 `.gitattributes` 变化时，打包工作流才会读取 `packwiz/instances.json`，独立校验、构建每个登记目标并上传 artifact；手动运行打包工作流时不受路径限制。
 
 禁止提交启动器配置、账号数据、缓存、日志、存档和生成的 `.mrpack` 文件。
 

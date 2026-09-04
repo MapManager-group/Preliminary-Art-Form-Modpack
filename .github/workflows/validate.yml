@@ -1,8 +1,18 @@
-name: Validate commits and build packs
+name: Validate and build packs
 
 "on":
   push:
+    paths:
+      - "packwiz/**"
+      - "scripts/**"
+      - ".gitattributes"
+      - ".github/workflows/validate.yml"
   pull_request:
+    paths:
+      - "packwiz/**"
+      - "scripts/**"
+      - ".gitattributes"
+      - ".github/workflows/validate.yml"
   workflow_dispatch:
 
 permissions:
@@ -12,87 +22,8 @@ env:
   PACKWIZ_COMMIT: 9066bf845f7e2f424814d13fe6ea4bc7905b67be
 
 jobs:
-  commitlint:
-    name: Validate commit messages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - run: npm ci
-
-      - name: Run commitlint
-        shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          BEFORE_SHA: ${{ github.event.before }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: |
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            from="$BASE_SHA"
-          elif [[ -n "$BEFORE_SHA" && ! "$BEFORE_SHA" =~ ^0+$ ]]; then
-            from="$BEFORE_SHA"
-          elif git rev-parse HEAD^ >/dev/null 2>&1; then
-            from="HEAD^"
-          else
-            echo "Repository has only one commit; nothing to compare."
-            exit 0
-          fi
-          npx commitlint --from "$from" --to HEAD --verbose
-
-  pack-changes:
-    name: Detect pack-related changes
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.filter.outputs.changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - id: filter
-        name: Check changed paths
-        shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          BEFORE_SHA: ${{ github.event.before }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: |
-          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Manual run: pack validation and build enabled."
-            exit 0
-          fi
-
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            changed_files="$(git diff --name-only "$BASE_SHA...$GITHUB_SHA")"
-          elif [[ -n "$BEFORE_SHA" && ! "$BEFORE_SHA" =~ ^0+$ ]]; then
-            changed_files="$(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")"
-          elif git rev-parse "$GITHUB_SHA^" >/dev/null 2>&1; then
-            changed_files="$(git diff --name-only "$GITHUB_SHA^" "$GITHUB_SHA")"
-          else
-            changed_files="$(git ls-tree -r --name-only "$GITHUB_SHA")"
-          fi
-
-          printf '%s\n' "$changed_files"
-          if grep -Eq '^(packwiz/|scripts/|\.github/workflows/validate\.yml$|\.gitattributes$)' <<< "$changed_files"; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Pack-related changes detected."
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No pack-related changes; pack jobs will be skipped."
-          fi
-
   discover:
     name: Discover pack targets
-    needs: pack-changes
-    if: needs.pack-changes.outputs.changed == 'true'
     runs-on: windows-latest
     outputs:
       packs: ${{ steps.discover.outputs.packs }}

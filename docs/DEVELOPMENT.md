@@ -87,13 +87,13 @@ npm run commit
 
 ### CI 说明
 
-GitHub Actions（`.github/workflows/validate.yml`）在 push、Pull Request 或手动触发时运行：
+GitHub Actions 按职责拆分为两个工作流：
 
-1. **commitlint**：检查 Gitmoji + Conventional Commits 提交格式
-2. **pack-changes**：检测 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 与 `.gitattributes` 是否发生变化
-3. **discover**：仅在关键路径变化或手动触发时校验 `packwiz/instances.json` 并生成动态 matrix
-4. **validate-and-build（matrix × 实例/版本）**：使用固定提交和上游指定的 Go 版本构建 packwiz，再逐个目标执行校验 → 索引一致性检查 → 构建 `.mrpack` → 上传独立 artifact
+1. **`.github/workflows/commitlint.yml`**：每次 push、Pull Request 或手动触发时检查 Gitmoji + Conventional Commits 提交格式。
+2. **`.github/workflows/validate.yml`**：仅在 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 或 `.gitattributes` 变化时自动运行；手动触发不受路径限制。
 
-仅修改文档或其他非关键路径时，commitlint 仍会运行，但打包作业会跳过；`workflow_dispatch` 始终构建全部目标。
+打包工作流先校验 `packwiz/instances.json` 并生成动态 matrix，再使用固定提交和上游指定的 Go 版本构建 packwiz，逐个目标执行校验 → 索引一致性检查 → 构建 `.mrpack` → 上传独立 artifact。
+
+因此仅修改文档或其他非关键路径时，只会出现 commitlint 工作流，不会创建 packwiz 发现或构建任务。
 
 **新增目标只需更新 `instances.json`，无需修改 CI。**
