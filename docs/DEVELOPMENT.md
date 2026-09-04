@@ -13,11 +13,11 @@ npm install
 git status --short
 ```
 
-不要提交 JAR、构建产物、缓存、日志、存档、账号或启动器私有配置。
+外部依赖应提交 `.pw.toml`。无公共下载源的自有 JAR 只有在 `packwiz/local-files.json` 中记录精确 SHA-256、原因和许可证后才允许提交；不要提交其他 JAR、构建产物、缓存、日志、存档、账号或启动器私有配置。
 
 ## 日常操作
 
-**所有操作都通过 `pack.ps1` 完成。** 它自动处理版本探测、缓存路径、索引刷新和提交建议。
+**所有日常操作都通过 `pack.ps1` 完成。** 它自动处理实例/版本探测、缓存路径、索引刷新和提交建议。
 
 ```powershell
 .\scripts\pack.ps1                                          # 交互菜单（推荐）
@@ -43,13 +43,15 @@ git status --short
 
 `update` 默认使用 `release` 渠道：只更新到与当前 Minecraft 版本和加载器兼容的最新正式版，并尊重已固定的依赖。Modrinth 通过官方 API 精确选择版本；CurseForge 通过 CFWidget 的公开 JSON 数据选择 release 文件，再在临时整合包副本中预跑 packwiz，只有 packwiz 候选文件 ID 与该 release 一致时才更新真实元数据。若数据源不可用或 packwiz 候选是 alpha/beta，则安全跳过并显示提示。交互菜单会在选择更新范围前询问渠道；命令行可使用 `-UpdateChannel prerelease` 显式允许 alpha/beta。
 
-### 版本指定
+### 实例与版本指定
 
-单个版本目录时自动探测。无参数打开交互菜单且存在多个版本目录时，脚本会先显示版本列表供选择，`packwiz/versions.json` 的 `default` 字段会标为默认选项。命令行调用可通过 `-Version` 参数明确指定；未指定时使用有效的 `default` 值：
+`packwiz/instances.json` 是实例、Minecraft 版本、工程路径和 artifact 名称的唯一数据源。无参数打开交互菜单时会显示所有登记目标；命令行调用使用 `-Instance` 与 `-Version` 明确指定。当前只有 `client/26.2`，`server/` 只是空预留目录：
 
 ```powershell
-.\scripts\pack.ps1 -Version 1.21 add sodium
+.\scripts\pack.ps1 add sodium -Instance client -Version 26.2
 ```
+
+创建新实例/版本使用 `scripts/new-pack.ps1`；也可通过 `-ImportMrpack` 导入现有 Modrinth 包。导入后必须检查 `import-reports/`，不得忽略未解析的嵌入依赖。
 
 ## 校验与构建
 
@@ -85,9 +87,13 @@ npm run commit
 
 ### CI 说明
 
-GitHub Actions（`.github/workflows/validate.yml`）在 `packwiz/**` 或 `scripts/**` 变动时自动运行：
+GitHub Actions（`.github/workflows/validate.yml`）在 push、Pull Request 或手动触发时运行：
 
-1. **discover**：扫描 `packwiz/` 下所有含 `pack.toml` 的版本目录
-2. **validate-and-build（matrix × 版本）**：逐个版本执行校验 → 索引一致性检查 → 构建 `.mrpack` → 按 Minecraft 版本上传独立 artifact
+1. **commitlint**：检查 Gitmoji + Conventional Commits 提交格式
+2. **pack-changes**：检测 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 与 `.gitattributes` 是否发生变化
+3. **discover**：仅在关键路径变化或手动触发时校验 `packwiz/instances.json` 并生成动态 matrix
+4. **validate-and-build（matrix × 实例/版本）**：使用固定提交和上游指定的 Go 版本构建 packwiz，再逐个目标执行校验 → 索引一致性检查 → 构建 `.mrpack` → 上传独立 artifact
 
-**新增版本目录无需修改 CI。**
+仅修改文档或其他非关键路径时，commitlint 仍会运行，但打包作业会跳过；`workflow_dispatch` 始终构建全部目标。
+
+**新增目标只需更新 `instances.json`，无需修改 CI。**

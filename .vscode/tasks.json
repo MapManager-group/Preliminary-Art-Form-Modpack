@@ -16,7 +16,7 @@
     },
     {
       "label": "Pack: 交互式管理",
-      "detail": "启动 pack CLI；存在多个版本时先选择目标版本。",
+      "detail": "启动 pack CLI；先选择目标实例与 Minecraft 版本。",
       "type": "process",
       "command": "pwsh",
       "args": [
@@ -33,7 +33,7 @@
     },
     {
       "label": "Pack: 刷新索引",
-      "detail": "执行 pack.ps1 refresh；使用 versions.json 的默认版本或通过命令行 -Version 指定。",
+      "detail": "执行 pack.ps1 refresh；使用 instances.json 中的默认目标。",
       "type": "process",
       "command": "pwsh",
       "args": [

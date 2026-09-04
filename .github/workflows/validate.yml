@@ -1,38 +1,117 @@
-name: Validate and build modpack
+name: Validate commits and build packs
 
-on:
+"on":
   push:
-    paths:
-      - "packwiz/**"
-      - "scripts/**"
-      - ".github/workflows/validate.yml"
   pull_request:
-    paths:
-      - "packwiz/**"
-      - "scripts/**"
-      - ".github/workflows/validate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PACKWIZ_COMMIT: 9066bf845f7e2f424814d13fe6ea4bc7905b67be
 
 jobs:
+  commitlint:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run commitlint
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            from="$BASE_SHA"
+          elif [[ -n "$BEFORE_SHA" && ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+            from="$BEFORE_SHA"
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            from="HEAD^"
+          else
+            echo "Repository has only one commit; nothing to compare."
+            exit 0
+          fi
+          npx commitlint --from "$from" --to HEAD --verbose
+
+  pack-changes:
+    name: Detect pack-related changes
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: filter
+        name: Check changed paths
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Manual run: pack validation and build enabled."
+            exit 0
+          fi
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            changed_files="$(git diff --name-only "$BASE_SHA...$GITHUB_SHA")"
+          elif [[ -n "$BEFORE_SHA" && ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+            changed_files="$(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA")"
+          elif git rev-parse "$GITHUB_SHA^" >/dev/null 2>&1; then
+            changed_files="$(git diff --name-only "$GITHUB_SHA^" "$GITHUB_SHA")"
+          else
+            changed_files="$(git ls-tree -r --name-only "$GITHUB_SHA")"
+          fi
+
+          printf '%s\n' "$changed_files"
+          if grep -Eq '^(packwiz/|scripts/|\.github/workflows/validate\.yml$|\.gitattributes$)' <<< "$changed_files"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Pack-related changes detected."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No pack-related changes; pack jobs will be skipped."
+          fi
+
   discover:
+    name: Discover pack targets
+    needs: pack-changes
+    if: needs.pack-changes.outputs.changed == 'true'
     runs-on: windows-latest
     outputs:
-      versions: ${{ steps.discover.outputs.versions }}
+      packs: ${{ steps.discover.outputs.packs }}
     steps:
       - uses: actions/checkout@v4
 
       - id: discover
-        name: Discover packwiz versions
         shell: pwsh
         run: |
-          $versions = ./scripts/discover-versions.ps1
-          "versions=$versions" >> $Env:GITHUB_OUTPUT
+          $packs = ./scripts/discover-packs.ps1
+          "packs=$packs" >> $Env:GITHUB_OUTPUT
 
   validate-and-build:
+    name: ${{ matrix.instance }} / ${{ matrix.version }}
     needs: discover
     strategy:
       fail-fast: false
       matrix:
-        version: ${{ fromJson(needs.discover.outputs.versions) }}
+        include: ${{ fromJson(needs.discover.outputs.packs) }}
     runs-on: windows-latest
     steps:
       - name: Preserve LF line endings for packwiz hashes
@@ -45,29 +124,51 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version: 1.24.6
+          cache: false
 
-      - name: Install packwiz
+      - name: Build pinned packwiz
         shell: pwsh
         run: |
-          go install github.com/packwiz/packwiz@latest
-          Copy-Item (Join-Path (go env GOPATH) 'bin/packwiz.exe') ./packwiz.exe
+          $source = Join-Path $Env:RUNNER_TEMP "packwiz-$Env:GITHUB_RUN_ID-$Env:GITHUB_RUN_ATTEMPT"
+          New-Item -ItemType Directory -Path $source | Out-Null
 
-      - name: Validate (${{ matrix.version }})
+          git -C $source init
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to initialize the packwiz source repository.' }
+          git -C $source remote add origin https://github.com/packwiz/packwiz.git
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to configure the packwiz source repository.' }
+          git -C $source fetch --depth 1 origin $Env:PACKWIZ_COMMIT
+          if ($LASTEXITCODE -ne 0) { throw "Failed to fetch packwiz commit $Env:PACKWIZ_COMMIT." }
+          git -C $source checkout --detach FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to check out the pinned packwiz commit.' }
+
+          Push-Location $source
+          try {
+            go build -trimpath -o (Join-Path $Env:GITHUB_WORKSPACE 'packwiz.exe') .
+            $buildExitCode = $LASTEXITCODE
+          }
+          finally {
+            Pop-Location
+          }
+          if ($buildExitCode -ne 0 -or -not (Test-Path ./packwiz.exe -PathType Leaf)) {
+            throw 'Failed to build packwiz.exe.'
+          }
+
+      - name: Validate
         shell: pwsh
-        run: ./scripts/validate.ps1 -MinecraftVersion ${{ matrix.version }}
+        run: ./scripts/pack.ps1 validate -Instance '${{ matrix.instance }}' -Version '${{ matrix.version }}'
 
-      - name: Verify generated index is committed (${{ matrix.version }})
+      - name: Verify generated index is committed
         shell: pwsh
-        run: git diff --exit-code -- packwiz/${{ matrix.version }}/pack.toml packwiz/${{ matrix.version }}/index.toml
+        run: git diff --exit-code -- '${{ matrix.path }}/pack.toml' '${{ matrix.path }}/index.toml'
 
-      - name: Build Modrinth package (${{ matrix.version }})
+      - name: Build Modrinth package
         shell: pwsh
-        run: ./scripts/pack.ps1 build -Version ${{ matrix.version }}
+        run: ./scripts/pack.ps1 build -Instance '${{ matrix.instance }}' -Version '${{ matrix.version }}'
 
-      - name: Upload package (${{ matrix.version }})
+      - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: Preliminary-Art-Form-${{ matrix.version }}
-          path: dist/*.mrpack
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}-*.mrpack
           if-no-files-found: error

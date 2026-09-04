@@ -1,15 +1,15 @@
 # 贡献指南
 
-修改应尽量限定在 `packwiz/` 下的单个 Minecraft 版本目录中。日常操作使用 `scripts/pack.ps1`；无参数进入交互菜单，存在多个版本时会先选择目标版本。命令行操作可用 `-Version` 明确指定，例如 `.\scripts\pack.ps1 -Version 26.3 add sodium`。
+修改应尽量限定在 `packwiz/<instance>/<version>/` 下的单个目标中。日常操作使用 `scripts/pack.ps1`；无参数进入实例/版本选择菜单。命令行操作使用 `-Instance` 与 `-Version` 明确指定，例如 `.\scripts\pack.ps1 add sodium -Instance client -Version 26.2`。
 
 提交修改前：
 
-1. 使用 packwiz 添加或更新依赖，不要提交下载后的 JAR 文件。
-2. 修改配置等内部文件后运行 `.\scripts\pack.ps1 refresh`；操作指定版本时附加 `-Version <版本目录名>`。
+1. 使用 packwiz 添加或更新依赖，不要提交下载后的 JAR；无公共源的自有 JAR 必须登记到 `packwiz/local-files.json` 并锁定 SHA-256。
+2. 修改配置等内部文件后运行 `.\scripts\pack.ps1 refresh`；操作指定目标时附加 `-Instance <实例> -Version <版本>`。
 3. 运行 `.\scripts\pack.ps1 validate` 和 `.\scripts\pack.ps1 build`，确认校验通过并成功导出 `.mrpack`。
 4. 在 `docs/CHANGELOG.md` 中记录影响用户的变更。
 
-推送或创建 Pull Request 后，GitHub Actions 会自动扫描所有包含 `pack.toml` 的版本目录。每个版本会独立校验、构建，并上传一个以 Minecraft 版本命名的 artifact；下载后解压即可获得 `.mrpack`。
+推送或创建 Pull Request 后，GitHub Actions 会先检查提交规范。仅当 `packwiz/**`、`scripts/**`、`.github/workflows/validate.yml` 或 `.gitattributes` 变化时，才读取 `packwiz/instances.json`，独立校验、构建每个登记目标并上传 artifact；手动运行工作流时始终打包。
 
 禁止提交启动器配置、账号数据、缓存、日志、存档和生成的 `.mrpack` 文件。
 

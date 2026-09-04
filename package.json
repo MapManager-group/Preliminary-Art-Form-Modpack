@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "[中文](README.md)",
   "scripts": {
-    "commit": "cz"
+    "commit": "cz",
+    "lint:commits": "commitlint --from HEAD~1 --to HEAD --verbose",
+    "discover": "pwsh -NoProfile -File ./scripts/discover-packs.ps1",
+    "validate": "pwsh -NoProfile -File ./scripts/pack.ps1 validate",
+    "build": "pwsh -NoProfile -File ./scripts/pack.ps1 build"
   },
   "repository": {
     "type": "git",

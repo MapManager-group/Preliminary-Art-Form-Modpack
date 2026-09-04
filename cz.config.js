@@ -55,6 +55,12 @@ module.exports = {
       name: "packwiz"
     },
     {
+      name: "instance"
+    },
+    {
+      name: "script"
+    },
+    {
       name: "mod"
     },
     {

@@ -2,16 +2,20 @@
 
 <#
 .SYNOPSIS
-    Preliminary Art Form 整合包开发 CLI
+    Packwiz 多实例、多版本整合包开发 CLI
 
 .DESCRIPTION
-    统一的 packwiz 包装器，自动烘焙公共参数，支持交互菜单和智能版本探测。
+    统一的 packwiz 包装器，自动烘焙公共参数，并从 packwiz/instances.json
+    解析实例与 Minecraft 版本。
 
 .PARAMETER Command
     子命令: add, remove, update, pin, unpin, list, refresh, validate, build
 
 .PARAMETER Version
-    Minecraft 版本目录名（如 26.2）。省略时自动探测。
+    Minecraft 版本标识（如 1.21.1）。
+
+.PARAMETER Instance
+    整合包实例标识（如 client 或 server）。
 
 .PARAMETER Folder
     目标 meta-folder: mods (默认), resourcepacks, shaderpacks
@@ -20,7 +24,7 @@
     更新渠道: release (仅正式版，默认), prerelease (包含 alpha/beta)
 
 .EXAMPLE
-    .\scripts\pack.ps1 add sodium
+    .\scripts\pack.ps1 add sodium -Instance client -Version 1.21.1
     .\scripts\pack.ps1 add -Folder shaderpacks complementary-reimagined
     .\scripts\pack.ps1 remove sodium
     .\scripts\pack.ps1 update --all
@@ -42,6 +46,9 @@ param(
 
     [Parameter()]
     [string]$Version,
+
+    [Parameter()]
+    [string]$Instance,
 
     [Parameter()]
     [ValidateSet('mods', 'resourcepacks', 'shaderpacks')]
@@ -93,78 +100,109 @@ function Write-Color($Text, $Color = $White, [switch]$NoNewline) {
     else            { Write-Host $Text -ForegroundColor $Color }
 }
 
-# ── 版本探测 ──────────────────────────────────────────────
+# ── 实例与版本探测 ────────────────────────────────────────
 
-function Get-PackVersions {
-    Get-ChildItem (Join-Path $RepoRoot 'packwiz') -Directory -ErrorAction SilentlyContinue |
-        Where-Object { Test-Path (Join-Path $_.FullName 'pack.toml') -PathType Leaf } |
-        ForEach-Object { $_.Name }
-}
-
-function Get-DefaultPackVersion($Versions) {
-    $manifestPath = Join-Path $RepoRoot 'packwiz' 'versions.json'
-    if (-not (Test-Path $manifestPath -PathType Leaf)) { return $null }
-
-    $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
-    if ($manifest.default -and $manifest.default -in $Versions) {
-        return $manifest.default
+function Get-PackTargets {
+    $manifestPath = Join-Path $RepoRoot 'packwiz' 'instances.json'
+    if (-not (Test-Path $manifestPath -PathType Leaf)) {
+        throw 'Missing packwiz/instances.json'
     }
-    return $null
+
+    $manifest = Get-Content $manifestPath -Raw -Encoding utf8 | ConvertFrom-Json
+    $targets = @($manifest.packs)
+    if (-not $targets) { throw 'packwiz/instances.json must contain a non-empty packs array' }
+
+    $seenKeys = @{}
+    $seenPaths = @{}
+    foreach ($target in $targets) {
+        foreach ($field in @('instance', 'version', 'path', 'artifact')) {
+            if (-not $target.$field) { throw "Missing '$field' in packwiz/instances.json" }
+        }
+
+        $key = "$($target.instance)/$($target.version)"
+        if ($seenKeys.ContainsKey($key)) { throw "Duplicate pack target: $key" }
+        $seenKeys[$key] = $true
+
+        $fullPath = [System.IO.Path]::GetFullPath((Join-Path $RepoRoot $target.path))
+        $repoPrefix = $RepoRoot.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+        if (-not $fullPath.StartsWith($repoPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Pack path must be inside the repository: $($target.path)"
+        }
+        if ($seenPaths.ContainsKey($fullPath)) { throw "Duplicate pack path: $($target.path)" }
+        $seenPaths[$fullPath] = $true
+        if (-not (Test-Path (Join-Path $fullPath 'pack.toml') -PathType Leaf)) {
+            throw "pack.toml not found for $key at $($target.path)"
+        }
+
+        $target | Add-Member -NotePropertyName FullPath -NotePropertyValue $fullPath -Force
+        $target | Add-Member -NotePropertyName Key -NotePropertyValue $key -Force
+    }
+
+    $default = $null
+    if ($manifest.default) {
+        $default = $targets | Where-Object {
+            $_.instance -eq $manifest.default.instance -and $_.version -eq $manifest.default.version
+        } | Select-Object -First 1
+        if (-not $default) { throw 'The default target in packwiz/instances.json does not exist in packs' }
+    }
+
+    return @{ Targets = @($targets); Default = $default }
 }
 
-function Select-PackVersion($Versions, [string]$DefaultVersion) {
+function Select-PackTarget($Targets, $DefaultTarget) {
     while ($true) {
         try { Clear-Host } catch { }
-        Write-Color '  🦐 Preliminary Art Form CLI' $Cyan
+        Write-Color '  📦 Packwiz Workspace CLI' $Cyan
         Write-Color '  ═══════════════════════════════════════════════' $Gray
-        Write-Color '  请选择要管理的 Minecraft 版本：' $Cyan
+        Write-Color '  请选择要管理的实例与 Minecraft 版本：' $Cyan
         Write-Color ''
 
-        for ($i = 0; $i -lt $Versions.Count; $i++) {
-            $version = $Versions[$i]
-            $marker = if ($version -eq $DefaultVersion) { '（默认）' } else { '' }
-            Write-Color "  [$($i + 1)] $version $marker" $White
+        for ($i = 0; $i -lt $Targets.Count; $i++) {
+            $target = $Targets[$i]
+            $marker = if ($DefaultTarget -and $target.Key -eq $DefaultTarget.Key) { '（默认）' } else { '' }
+            Write-Color "  [$($i + 1)] $($target.Key) $marker" $White -NoNewline
+            Write-Color "  ← $($target.path)" $Gray
         }
         Write-Color ''
 
-        $hint = if ($DefaultVersion) {
-            "输入编号或版本目录名（直接回车使用默认：$DefaultVersion；0=退出）"
+        $hint = if ($DefaultTarget) {
+            "输入编号或 instance/version（直接回车使用默认：$($DefaultTarget.Key)；0=退出）"
         } else {
-            '输入编号或版本目录名（0=退出）'
+            '输入编号或 instance/version（0=退出）'
         }
         $selection = Read-Host $hint
         if ($selection -eq '0') { return $null }
-        if (-not $selection -and $DefaultVersion) { return $DefaultVersion }
+        if (-not $selection -and $DefaultTarget) { return $DefaultTarget }
         if ($selection -match '^\d+$') {
             $index = [int]$selection - 1
-            if ($index -ge 0 -and $index -lt $Versions.Count) { return $Versions[$index] }
+            if ($index -ge 0 -and $index -lt $Targets.Count) { return $Targets[$index] }
         }
-        if ($selection -in $Versions) { return $selection }
-        Write-Color '❓ 无效版本，请重新选择。' $Red
+        $match = $Targets | Where-Object { $_.Key -eq $selection } | Select-Object -First 1
+        if ($match) { return $match }
+        Write-Color '❓ 无效目标，请重新选择。' $Red
     }
 }
 
-function Resolve-Version([string]$Requested, [switch]$PromptForSelection) {
-    $all = @(Get-PackVersions)
-    if (-not $all) { throw 'No packwiz version directories found under packwiz/' }
+function Resolve-PackTarget([string]$RequestedInstance, [string]$RequestedVersion, [switch]$PromptForSelection) {
+    $catalog = Get-PackTargets
+    $all = @($catalog.Targets)
+    $matches = @($all | Where-Object {
+        (-not $RequestedInstance -or $_.instance -eq $RequestedInstance) -and
+        (-not $RequestedVersion -or $_.version -eq $RequestedVersion)
+    })
 
-    if ($Requested) {
-        $match = $all | Where-Object { $_ -eq $Requested }
-        if (-not $match) { throw "Unknown version '$Requested'. Available: $($all -join ', ')" }
-        return $Requested
+    if (($RequestedInstance -or $RequestedVersion) -and -not $matches) {
+        throw "Unknown pack target. Requested instance='$RequestedInstance', version='$RequestedVersion'. Available: $($all.Key -join ', ')"
     }
+    if ($matches.Count -eq 1) { return $matches[0] }
 
-    if ($all.Count -eq 1) { return $all[0] }
-
-    $defaultVersion = Get-DefaultPackVersion $all
+    $defaultMatch = if ($catalog.Default -and $catalog.Default.Key -in $matches.Key) { $catalog.Default } else { $null }
     if ($PromptForSelection) {
-        $selected = Select-PackVersion $all $defaultVersion
-        if (-not $selected) { return $null }
-        return $selected
+        return Select-PackTarget $matches $defaultMatch
     }
 
-    if ($defaultVersion) { return $defaultVersion }
-    throw "Multiple versions found ($($all -join ', ')). Use -Version or set 'default' in packwiz/versions.json"
+    if ($defaultMatch) { return $defaultMatch }
+    throw "Multiple pack targets matched ($($matches.Key -join ', ')). Use -Instance and -Version or configure default in packwiz/instances.json"
 }
 
 function Get-PackInfo($VersionDir) {
@@ -241,7 +279,7 @@ function Get-LatestModrinthRelease {
     }
 
     $projectId = $projectMatch.Groups[1].Value
-    $headers = @{ 'User-Agent' = 'LorianDesign-pack-script/1.0 (Preliminary Art Form)' }
+    $headers = @{ 'User-Agent' = 'DB-Packwiz-Example-Pack/1.0' }
     $versionsResponse = Invoke-RestMethod -Uri "https://api.modrinth.com/v2/project/$projectId/version" -Headers $headers
     $compatibleReleases = @(foreach ($version in $versionsResponse) {
         if (
@@ -287,7 +325,7 @@ function Get-LatestCurseForgeRelease {
     )
 
     $current = Get-CurseForgeMetadata $Entry
-    $headers = @{ 'User-Agent' = 'LorianDesign-pack-script/1.0 (Preliminary Art Form)' }
+    $headers = @{ 'User-Agent' = 'DB-Packwiz-Example-Pack/1.0' }
     $project = Invoke-RestMethod -Uri "https://api.cfwidget.com/$($current.ProjectId)" -Headers $headers
     $candidates = @(foreach ($file in @($project.files)) {
         $versionTags = @($file.versions | ForEach-Object { "$_".ToLowerInvariant() })
@@ -518,7 +556,7 @@ function Invoke-ReleaseUpdate {
 
                     if (-not $previewPackDir) {
                         $tempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
-                        $previewRoot = Join-Path $tempBase "lorian-packwiz-preview-$([guid]::NewGuid().ToString('N'))"
+                        $previewRoot = Join-Path $tempBase "db-packwiz-preview-$([guid]::NewGuid().ToString('N'))"
                         $previewPackDir = Join-Path $previewRoot 'pack'
                         New-Item -ItemType Directory -Path $previewRoot | Out-Null
                         Copy-Item -LiteralPath $PackDir -Destination $previewPackDir -Recurse
@@ -566,7 +604,7 @@ function Invoke-ReleaseUpdate {
             $resolvedTempBase = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
             if (
                 (Split-Path -Parent $resolvedPreview) -ne $resolvedTempBase -or
-                (Split-Path -Leaf $resolvedPreview) -notlike 'lorian-packwiz-preview-*'
+                (Split-Path -Leaf $resolvedPreview) -notlike 'db-packwiz-preview-*'
             ) {
                 throw "拒绝清理未验证的预览目录: $resolvedPreview"
             }
@@ -616,7 +654,7 @@ function Invoke-Unpin {
 }
 
 function Invoke-List {
-    Write-Color "📋 当前依赖列表 ($ResolvedVersion):" $Cyan
+    Write-Color "📋 当前依赖列表 ($($ResolvedTarget.Key)):" $Cyan
     Invoke-Packwiz {
         & $PackwizBin --cache $CacheDir list
         if ($LASTEXITCODE -ne 0) { throw "packwiz list failed (exit $LASTEXITCODE)" }
@@ -628,14 +666,14 @@ function Invoke-Refresh {
 }
 
 function Invoke-Validate {
-    Write-Color "🔍 校验整合包 ($ResolvedVersion) ..." $Cyan
+    Write-Color "🔍 校验整合包 ($($ResolvedTarget.Key)) ..." $Cyan
     $valScript = Join-Path $ScriptDir 'validate.ps1'
-    & $valScript -MinecraftVersion $ResolvedVersion -PromptCleanForbidden:$script:PromptForbiddenCleanup
+    & $valScript -PackPath $ResolvedTarget.path -Instance $ResolvedInstance -Version $ResolvedVersion -PromptCleanForbidden:$script:PromptForbiddenCleanup
     Write-Color "✅ 校验通过" $Green
 }
 
 function Invoke-Build {
-    Write-Color "📦 导出 Modrinth .mrpack ($ResolvedVersion) ..." $Cyan
+    Write-Color "📦 导出 Modrinth .mrpack ($($ResolvedTarget.Key)) ..." $Cyan
     Invoke-Validate
 
     # 读取 pack 版本号
@@ -645,7 +683,7 @@ function Invoke-Build {
         throw "The pack version is missing from $packFile"
     }
     $packVersion = $versionLine.Matches[0].Groups[1].Value
-    $outputName = "Preliminary Art Form_{0}.mrpack" -f $packVersion
+    $outputName = "{0}-{1}.mrpack" -f $ResolvedTarget.artifact, $packVersion
 
     $distDir = Join-Path $RepoRoot 'dist'
     New-Item -ItemType Directory -Force -Path $distDir | Out-Null
@@ -711,7 +749,7 @@ function Invoke-SetModrinthVersion {
 }
 
 function Invoke-Help {
-    Write-Color "🦐 Preliminary Art Form CLI" $Cyan
+    Write-Color "📦 Packwiz Workspace CLI" $Cyan
     Write-Color "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" $Gray
     Write-Color ''
     Write-Color '用法:' $White
@@ -728,17 +766,18 @@ function Invoke-Help {
     Write-Color '  build              导出 Modrinth .mrpack' $Gray
     Write-Color ''
     Write-Color '选项:' $White
-    Write-Color '  -Version <ver>     指定 Minecraft 版本（默认自动探测）' $Gray
+    Write-Color '  -Instance <id>     指定整合包实例（如 client、server）' $Gray
+    Write-Color '  -Version <ver>     指定 Minecraft 版本（如 1.21.1）' $Gray
     Write-Color "  -Folder <name>     meta-folder: mods|resourcepacks|shaderpacks (默认 mods)" $Gray
     Write-Color '  -Source <name>     依赖来源: modrinth|curseforge（默认 modrinth）' $Gray
     Write-Color '  -UpdateChannel <release|prerelease>' $Gray
     Write-Color '                       更新渠道（默认 release；prerelease 包含 alpha/beta）' $Gray
     Write-Color ''
-    Write-Color '  -- <任意参数>      透传给 packwiz.exe（使用公共 -cache -pack-file）' $Gray
+    Write-Color '  -- <任意参数>      在目标项目目录中透传给 packwiz.exe（自动使用公共 cache）' $Gray
     Write-Color ''
-    Write-Color "  无参数运行 = 交互菜单（多版本时先选择版本）" $Gray
+    Write-Color "  无参数运行 = 交互菜单（先选择实例与 Minecraft 版本）" $Gray
     Write-Color ''
-    Write-Color "当前版本: $ResolvedVersion" $Yellow
+    Write-Color "当前目标: $($ResolvedTarget.Key)  |  路径: $($ResolvedTarget.path)" $Yellow
 }
 
 # ── 交互菜单 ──────────────────────────────────────────────
@@ -747,9 +786,9 @@ function Show-Banner {
     # 重定向输入或在某些终端宿主中没有可定位的光标，清屏失败不应中断菜单。
     try { Clear-Host } catch { }
     $info = Get-PackInfo $PackDir
-    Write-Color "  🦐 Preliminary Art Form CLI" $Cyan
+    Write-Color "  📦 Packwiz Workspace CLI" $Cyan
     Write-Color "  ═══════════════════════════════════════════════" $Gray
-    Write-Color "  版本: $($info.Version)  |  Minecraft $($info.Minecraft)  |  Fabric $($info.Fabric)" $Yellow
+    Write-Color "  目标: $($ResolvedTarget.Key)  |  包版本: $($info.Version)  |  Minecraft $($info.Minecraft)  |  Fabric $($info.Fabric)" $Yellow
     Write-Color ''
 }
 
@@ -970,8 +1009,8 @@ if ($Command -eq '--' -or ($Command -and $Command -notin 'add','remove','update'
     Write-Color "🔧 透传 packwiz: $($allArgs -join ' ')" $Gray
     New-Item -ItemType Directory -Force -Path $CacheDir | Out-Null
 
-    $passthruVersion = Resolve-Version $Version
-    Push-Location (Join-Path $RepoRoot "packwiz/$passthruVersion")
+    $passthruTarget = Resolve-PackTarget $Instance $Version
+    Push-Location $passthruTarget.FullPath
     try {
         $pArgs = @('--cache', $CacheDir) + $allArgs
         & $PackwizBin @pArgs
@@ -980,13 +1019,15 @@ if ($Command -eq '--' -or ($Command -and $Command -notin 'add','remove','update'
     return
 }
 
-# 解析版本
-$ResolvedVersion = Resolve-Version $Version -PromptForSelection:(-not $Command)
-if (-not $ResolvedVersion) {
+# 解析实例与版本
+$ResolvedTarget = Resolve-PackTarget $Instance $Version -PromptForSelection:(-not $Command)
+if (-not $ResolvedTarget) {
     Write-Color '👋 再见!' $Cyan
     return
 }
-$PackDir = Join-Path $RepoRoot "packwiz" $ResolvedVersion
+$ResolvedInstance = $ResolvedTarget.instance
+$ResolvedVersion = $ResolvedTarget.version
+$PackDir = $ResolvedTarget.FullPath
 
 # 交互菜单（无命令）
 if (-not $Command) {
@@ -1001,7 +1042,7 @@ if ($Command -eq 'help') {
 }
 
 # 分发子命令
-Write-Color "🦐 pack  |  版本: $ResolvedVersion  |  Folder: $Folder" $Cyan
+Write-Color "📦 pack  |  目标: $($ResolvedTarget.Key)  |  Folder: $Folder" $Cyan
 
 switch ($Command) {
     'add'      { Invoke-Add }

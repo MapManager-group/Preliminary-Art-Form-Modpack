@@ -1,0 +1,14 @@
+{
+  "default": {
+    "instance": "client",
+    "version": "26.2"
+  },
+  "packs": [
+    {
+      "instance": "client",
+      "version": "26.2",
+      "path": "packwiz/client/26.2",
+      "artifact": "Preliminary-Art-Form-26.2"
+    }
+  ]
+}
