@@ -1,0 +1,10 @@
+{
+  "files": [
+    {
+      "path": "packwiz/client/26.2/mods/buildup_menu_button-fabric-1.0.0.jar",
+      "sha256": "89a9d1477c8e31865d1d9be82fb7b02987a7cd3fb26a745249a83da6660b8c87",
+      "reason": "Project-owned client mod without a public packwiz download source.",
+      "license": "MIT"
+    }
+  ]
+}
