@@ -1,13 +1,13 @@
 name = "Chat Tools"
-filename = "chattools-v2.4.3.1+26.2-fabric.jar"
+filename = "chattools-v2.4.4+26.2-fabric.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/pbnlOdwp/versions/jgGb7aZz/chattools-v2.4.3.1%2B26.2-fabric.jar"
+url = "https://cdn.modrinth.com/data/pbnlOdwp/versions/8Emkmj3A/chattools-v2.4.4%2B26.2-fabric.jar"
 hash-format = "sha512"
-hash = "128b1a8fdba23719db56d312b1b33dc382238e766bc6d793da0ff3f83ad65cc1f0eaa91ec36eaa8a1a795c41afb47056f5043bcd6076154c41069919dcb44237"
+hash = "f3c196843e48f0b3cdc5a1fc30e84ffdc728efe3c70f795fad2b1704f4b9e154720ba43104e2e61700281a51efc2d4d64e0435eaac06021327b46bdc0969de48"
 
 [update]
 [update.modrinth]
 mod-id = "pbnlOdwp"
-version = "jgGb7aZz"
+version = "8Emkmj3A"

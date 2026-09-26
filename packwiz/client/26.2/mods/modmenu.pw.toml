@@ -1,13 +1,13 @@
 name = "Mod Menu"
-filename = "modmenu-20.0.1.jar"
-side = "both"
+filename = "modmenu-20.0.3.jar"
+side = "client"
 
 [download]
-hash-format = "sha1"
-hash = "8562dee49eae1a6bdd14b026be1b300aedb5ce0f"
-mode = "metadata:curseforge"
+url = "https://cdn.modrinth.com/data/mOgUt4GM/versions/iRo7AZXf/modmenu-20.0.3.jar"
+hash-format = "sha512"
+hash = "c8224aa7a460d0c56ccb9978a112e4ad0d3eb17e2796e0c468a2392d220749f4f602838a11b3666145462c26078a879ab8a2fc177aa440f58e189c92a0088d6e"
 
 [update]
-[update.curseforge]
-file-id = 8402669
-project-id = 308702
+[update.modrinth]
+mod-id = "mOgUt4GM"
+version = "iRo7AZXf"

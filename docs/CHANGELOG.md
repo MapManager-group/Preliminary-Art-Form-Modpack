@@ -1,6 +1,12 @@
 # Changelog
 
-## 2026-08-29
+## 2026-09-26
+
+### (Modpack)26.2-A1.3.1
+
+- 🔧 chore(mod): 将所有mod更新到最新版本
+- 🔧 chore(shader): 将所有shaderpacks更新到最新版本
+- 🔧 chore(deps): 将fabric依赖更新到0.19.5
 
 ### (Modpack)26.2-A1.3
 

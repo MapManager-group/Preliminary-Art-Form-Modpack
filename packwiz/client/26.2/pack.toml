@@ -1,13 +1,13 @@
 name = "Preliminary Art Form"
 author = "LorianStudio"
-version = "26.2-A1.3"
+version = "A1.3.1"
 pack-format = "packwiz:1.1.0"
 
 [index]
 file = "index.toml"
 hash-format = "sha256"
-hash = "737748f03db9ebae797966164cfeb1a04fc2a17b3885d4193cec2af59c0c605a"
+hash = "45338efd9f6b8ecf3b758956ffb17aa75978b398162aeac18bf946b8103fb909"
 
 [versions]
-fabric = "0.19.3"
+fabric = "0.19.5"
 minecraft = "26.2"
