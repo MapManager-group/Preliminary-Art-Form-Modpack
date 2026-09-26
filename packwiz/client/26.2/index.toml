@@ -334,7 +334,7 @@ hash = "e76e4b3c058b4a23660a0ba5ccf2f59f58c662f25977e85547868087f1ccea13"
 
 [[files]]
 file = "config/yosbr/config/simplemenu.json5"
-hash = "ae2a064364aef230a106df66bfd01f8a62f2afd227ee30d2da3cb404065bec53"
+hash = "520a2cebadf94f3e1e4e24a72bc697d53e40624771ca351af7cecc0a6dd97ca9"
 
 [[files]]
 file = "config/yosbr/config/simplemenu/background/background.png"
