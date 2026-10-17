@@ -1,0 +1,68 @@
+{
+  "version": "2.0.0",
+  "options": {
+    "cwd": "${workspaceFolder}"
+  },
+  "presentation": {
+    "reveal": "always",
+    "focus": true,
+    "panel": "dedicated",
+    "clear": true
+  },
+  "tasks": [
+    {
+      "label": "🎮 开发菜单",
+      "detail": "打开 ci.ps1，管理目标、依赖、测试实例与构建。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/ci.ps1"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "🔍 检查全部目标",
+      "detail": "只读检查全部 Pakku 源工程。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/ci.ps1",
+        "check",
+        "-All"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "🧪 运行自动测试",
+      "detail": "运行 pnpm test，使用临时目录和模拟实例。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "pnpm test; exit $LASTEXITCODE"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "label": "📝 规范提交",
+      "detail": "运行 cz-git；请先在源代码管理面板暂存要提交的文件。",
+      "type": "process",
+      "command": "pwsh",
+      "args": [
+        "-NoProfile",
+        "-Command",
+        "pnpm run commit; exit $LASTEXITCODE"
+      ],
+      "problemMatcher": [],
+      "group": "build"
+    }
+  ]
+}

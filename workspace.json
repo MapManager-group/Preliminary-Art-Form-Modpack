@@ -1,0 +1,12 @@
+{
+  "defaultTarget": "client-26.2",
+  "targets": [
+    {
+      "id": "client-26.2",
+      "path": "packs/client-26.2",
+      "artifacts": [
+        "modrinth"
+      ]
+    }
+  ]
+}

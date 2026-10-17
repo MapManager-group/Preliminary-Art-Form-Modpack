@@ -1,0 +1,123 @@
+{
+  "configVersion": -1,
+  "keybinds": {
+    "pause": "p",
+    "copy": "ctrl+c",
+    "paste": "ctrl+v",
+    "undo": "ctrl+z",
+    "redo": "ctrl+y",
+    "mark_in": "i",
+    "mark_out": "o",
+    "clear_in": "ctrl+i",
+    "clear_out": "ctrl+o",
+    "zoom_in": "equal",
+    "zoom_out": "minus",
+    "add_camera": "none",
+    "timeline_zoom_scroll": "scroll",
+    "timeline_move_scroll": "ctrl+scroll",
+    "roll_cw": "none",
+    "roll_ccw": "none"
+  },
+  "recordingControls": {
+    "controlsLocation": "RIGHT",
+    "automaticallyStart": false,
+    "automaticallyFinish": true,
+    "showRecordingToasts": true,
+    "quicksave": false
+  },
+  "recording": {
+    "markDimensionChanges": true,
+    "recordHotbar": false,
+    "localPlayerUpdatesPerSecond": 20,
+    "recordVoiceChat": false,
+    "recordBobbyIntoReplay": false
+  },
+  "exporting": {
+    "defaultExportFilename": "%date%T%time%",
+    "exportRenderDummyFrames": 0
+  },
+  "keyframes": {
+    "defaultInterpolationType": "SMOOTH",
+    "useRealtimeInterpolation": true
+  },
+  "editorMovement": {
+    "flightDirection": "HORIZONTAL",
+    "flightMomentum": 1.0,
+    "flightLockX": false,
+    "flightLockY": false,
+    "flightLockZ": false,
+    "flightLockYaw": false,
+    "flightLockPitch": false
+  },
+  "marker": {
+    "markerOptions1": {
+      "color": "RED",
+      "customRGB": "#FF0000",
+      "savePosition": true,
+      "description": ""
+    },
+    "markerOptions2": {
+      "color": "RED",
+      "customRGB": "#FF0000",
+      "savePosition": true,
+      "description": ""
+    },
+    "markerOptions3": {
+      "color": "RED",
+      "customRGB": "#FF0000",
+      "savePosition": true,
+      "description": ""
+    },
+    "markerOptions4": {
+      "color": "RED",
+      "customRGB": "#FF0000",
+      "savePosition": true,
+      "description": ""
+    }
+  },
+  "advanced": {
+    "disableIncreasedFirstPersonUpdates": false,
+    "disableThirdPersonCancel": false,
+    "synchronizeTicking": false,
+    "ignoredCustomPayloads": ""
+  },
+  "internal": {
+    "recentReplays": [],
+    "openedWindows": [],
+    "nextUnsupportedModLoaderWarning": 0,
+    "filterUnnecessaryPackets": true,
+    "signedRenderFilter": false,
+    "viewedTipsOfTheDay": 0,
+    "showTipOfTheDay": true,
+    "nextTipOfTheDay": 0,
+    "replaySorting": "CREATED_DATE",
+    "sortDescending": true,
+    "defaultOverrideFov": 70.0,
+    "enableOverrideFovByDefault": false
+  },
+  "internalExport": {
+    "resolution": [
+      1920,
+      1080
+    ],
+    "framerate": [
+      60.0
+    ],
+    "projection": "PERSPECTIVE",
+    "orthographicZoom": [
+      1.0
+    ],
+    "resetRng": false,
+    "ssaa": false,
+    "noGui": false,
+    "selectedVideoEncoder": [
+      0
+    ],
+    "useMaximumBitrate": false,
+    "recordAudio": false,
+    "transparentBackground": false,
+    "audioCodec": "AAC",
+    "stereoAudio": false
+  },
+  "forceDefaultExportSettings": {}
+}

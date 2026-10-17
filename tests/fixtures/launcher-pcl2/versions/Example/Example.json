@@ -1,0 +1,5 @@
+{
+  "id": "Example",
+  "clientVersion": "1.21.1",
+  "libraries": [{"name":"net.fabricmc:fabric-loader:0.16.14"}]
+}

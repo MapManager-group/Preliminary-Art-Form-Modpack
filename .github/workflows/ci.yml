@@ -1,0 +1,127 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # A same-repository PR and its branch push share a group; newer runs replace older ones.
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      has_targets: ${{ steps.plan.outputs.has_targets }}
+      run_tests: ${{ steps.plan.outputs.run_tests }}
+      base: ${{ steps.plan.outputs.base }}
+      head: ${{ steps.plan.outputs.head }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 10.28.2
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - id: plan
+        run: node tools/ci.mjs plan
+      - name: Commitlint
+        env:
+          COMMIT_BASE: ${{ steps.plan.outputs.base }}
+          COMMIT_HEAD: ${{ steps.plan.outputs.head }}
+        run: node tools/ci.mjs lint
+  test:
+    needs: plan
+    if: needs.plan.outputs.run_tests == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 10.28.2
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          distribution: temurin
+          java-version: '21.0.10+7.0.LTS'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm run mp -- bootstrap
+      - run: pnpm run mp -- check --all
+      - name: Ensure source unchanged
+        run: node tools/ci.mjs clean
+  build:
+    needs: plan
+    if: needs.plan.outputs.has_targets == 'true'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 10.28.2
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 24.21.0
+          cache: pnpm
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
+        with:
+          distribution: temurin
+          java-version: '21.0.10+7.0.LTS'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run mp -- bootstrap
+      - name: Build in isolated copy (no update/sync)
+        id: build
+        env:
+          TARGET_ID: ${{ matrix.target }}
+        run: node tools/ci.mjs build
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: preview-${{ matrix.target }}
+          path: ${{ steps.build.outputs.output }}/*
+          if-no-files-found: error
+          retention-days: 14
+  required:
+    name: Required checks
+    if: always()
+    needs: [plan, test, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Aggregate every required result
+        env:
+          PLAN: ${{ needs.plan.result }}
+          TEST: ${{ needs.test.result }}
+          BUILD: ${{ needs.build.result }}
+          HAS_TARGETS: ${{ needs.plan.outputs.has_targets }}
+          RUN_TESTS: ${{ needs.plan.outputs.run_tests }}
+        run: |
+          test "$PLAN" = success
+          case "$RUN_TESTS" in true|false) ;; *) exit 1 ;; esac
+          case "$HAS_TARGETS" in true|false) ;; *) exit 1 ;; esac
+          if [ "$RUN_TESTS" = true ]; then test "$TEST" = success; else test "$TEST" = skipped; fi
+          if [ "$HAS_TARGETS" = true ]; then test "$BUILD" = success; else test "$BUILD" = skipped; fi

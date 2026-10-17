@@ -1,0 +1,204 @@
+{
+	"general": {
+		/* Shows the rarity of an item in its tooltip.
+		   (default: true)
+		*/
+		"rarityTooltip": true,
+		/* Shows the category of an item in a badge on its tooltip.
+		   (default: true)
+		*/
+		"itemBadges": true,
+		/* Removes all spacing between lines.
+		   (default: false)
+		*/
+		"removeAllSpacing": false
+	},
+	"popUpAnimation": {
+		/* Toggles the tooltip pop-up animation.
+		   (default: true)
+		*/
+		"enabled": true,
+		/* Duration of the pop-up animation in seconds.
+		   (default: 1.5)
+		*/
+		"time": 1.5,
+		/* Magnitude of the pop-up animation.
+		   (default: 1.0)
+		*/
+		"magnitude": 1.0
+	},
+	"itemPreviewAnimation": {
+		/* Toggles the item preview bouncing animation.
+		   (default: true)
+		*/
+		"enabled": false,
+		/* Duration of the item preview animation in seconds.
+		   (default: 1.0)
+		*/
+		"time": 1.0,
+		/* Magnitude of the item preview animation.
+		   (default: 2.0)
+		*/
+		"magnitude": 2.0
+	},
+	"border": {
+		/* Determines how the border color of tooltips is set.
+		   RARITY/ITEM_NAME/CUSTOM (default: RARITY)
+		*/
+		"borderColor": "RARITY",
+		// Custom border colors when borderColor is set to CUSTOM.
+		"customBorderColors": {
+			/* 'Common' rarity border color.
+			   (default: #5000FF50)
+			*/
+			"common": "#5000FF50",
+			/* 'Uncommon' rarity border color.
+			   (default: #FFFF55FF)
+			*/
+			"uncommon": "#FFFF55FF",
+			/* 'Rare' rarity border color.
+			   (default: #55FFFFFF)
+			*/
+			"rare": "#55FFFFFF",
+			/* 'Epic' rarity border color.
+			   (default: #FF00FFFF)
+			*/
+			"epic": "#FF00FFFF",
+			/* Gradient end color for the border.
+			   (default: #5000FF50)
+			*/
+			"endColor": "#5000FF50"
+		}
+	},
+	"background": {
+		/* Determines how the background of tooltips is set.
+		   DEFAULT/CUSTOM (default: DEFAULT)
+		*/
+		"backgroundMode": "DEFAULT",
+		/* Background color of the tooltip.
+		   (default: #100010F0)
+		*/
+		"backgroundColor": "#100010F0"
+	},
+	"foodAndDrinks": {
+		/* Shows the maximum hunger which can be gained from an item in its tooltip.
+		   (default: true)
+		*/
+		"hungerTooltip": false,
+		/* Shows the maximum saturation which can be gained from an item in its tooltip.
+		   (default: true)
+		*/
+		"saturationTooltip": false,
+		/* Shows a list of effects applied on consuming an item in its tooltip.
+		   WITH_ICONS/WITHOUT_ICONS/OFF (default: WITH_ICONS)
+		*/
+		"effectsTooltip": "OFF"
+	},
+	"mobs": {
+		/* The rotation speed of the model.
+		   (default: 0.2)
+		*/
+		"rotationSpeed": 0.20000000298023224,
+		/* Shows a preview of the armor piece on an armor stand or the player.
+		   PLAYER/ARMOR_STAND/OFF (default: PLAYER)
+		*/
+		"armorTooltip": "OFF",
+		/* Shows a preview of the horse armor on a horse.
+		   (default: true)
+		*/
+		"horseArmorTooltip": false,
+		/* Shows a preview of the nautilus armor on a nautilus.
+		   (default: true)
+		*/
+		"nautilusArmorTooltip": false,
+		/* Shows a preview of the wolf armor on a wolf.
+		   (default: true)
+		*/
+		"wolfArmorTooltip": false,
+		/* Shows a preview of the bucket entity in a bucket.
+		   (default: true)
+		*/
+		"bucketTooltip": false,
+		/* Shows a preview of the spawn egg entity.
+		   (default: true)
+		*/
+		"spawnEggTooltip": false,
+		/* Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.
+		   (default: false)
+		*/
+		"disableEmfModels": false
+	},
+	"mapTooltip": {
+		/* Shows a preview of the filled map in its tooltip.
+		   (default: true)
+		*/
+		"enabled": true
+	},
+	"paintingTooltip": {
+		/* Shows a preview of the painting in its tooltip.
+		   (default: true)
+		*/
+		"enabled": true
+	},
+	"bannerPatternTooltip": {
+		/* Shows a preview of the banner pattern in its tooltip.
+		   (default: true)
+		*/
+		"enabled": true
+	},
+	"armorIconTooltip": {
+		/* Shows the armor attribute in the form of icons.
+		   (default: true)
+		*/
+		"enabled": true
+	},
+	"durability": {
+		/* Shows the durability of an item in its tooltip.
+		   VALUE/PERCENTAGE/OFF (default: VALUE)
+		*/
+		"durabilityTooltip": "VALUE",
+		/* Shows the durability of an item, represented by a bar, in its tooltip.
+		   (default: false)
+		*/
+		"durabilityBar": false
+	},
+	"heldItemTooltip": {
+		/* Toggles the improved held items tooltips feature.
+		   ON/MINIMAL/OFF (default: ON)
+		*/
+		"mode": "OFF",
+		/* Shows a neat background behind the held item tooltip text.
+		   (default: true)
+		*/
+		"showBackground": true,
+		/* Defines the line limit for the held item tooltip.
+		   (default: 5)
+		*/
+		"maxLines": 5,
+		/* Adjusts the size of the held item tooltips.
+		   A scale of 100% displays the tooltip at its default size.
+		   (default: 1.0)
+		*/
+		"scaleFactor": 1.0,
+		/* Hides the item's name from its held item toolip.
+		   (default: false)
+		*/
+		"hideItemName": false,
+		/* Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.
+		   (default: true)
+		*/
+		"tiltAnimation": true,
+		/* Duration of the tilt animation in ms.
+		   (default: 300)
+		*/
+		"tiltDuration": 300,
+		/* Magnitude of the tilt animation.
+		   (default: 10.0)
+		*/
+		"tiltMagnitude": 10.0,
+		/* Smoothness of the tilt animation.
+		   (default: 2.0)
+		*/
+		"tiltEasing": 2.0
+	}
+}

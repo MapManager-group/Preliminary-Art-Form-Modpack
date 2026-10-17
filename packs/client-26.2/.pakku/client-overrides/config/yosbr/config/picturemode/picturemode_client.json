@@ -1,0 +1,10 @@
+{
+  "button_in_pause_menu": false,
+  "format": "png",
+  "format_settings": {
+    "jpg": {}
+  },
+  "screenshot_settings": {
+    "res_multiplier": 1.0
+  }
+}

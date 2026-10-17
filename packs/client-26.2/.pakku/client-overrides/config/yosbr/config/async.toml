@@ -1,0 +1,13 @@
+#Disables the mod. All entities are ticked on the main thread.
+disabled = false
+#Worker threads for parallel ticking. -1 = auto.
+maxThreads = -1
+#Entities ticked on the main thread instead of in parallel.
+#Entity IDs or namespaces (*):
+#  - 'minecraft:zombie' = specific entity
+#  - 'minecraft:*'      = all entities in namespace
+synchronizedEntities = ["minecraft:tnt", "minecraft:experience_orb", "minecraft:item"]
+#Enables async entity spawning. WARNING: incompatible with Carpet's lagFreeSpawning.
+enableAsyncSpawn = false
+#Experimental! Enables async random ticks.
+enableAsyncRandomTicks = false

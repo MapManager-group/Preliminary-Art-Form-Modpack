@@ -1,0 +1,10 @@
+{
+  "node": "24.21.0",
+  "pnpm": "10.28.2",
+  "java": { "major": 21, "tested": "Temurin 21.0.10+7" },
+  "pakku": {
+    "version": "1.5.0",
+    "url": "https://github.com/juraj-hrivnak/Pakku/releases/download/v1.5.0/pakku.jar",
+    "sha256": "4fdbd8423698b59d19d71195dcde1b65da6432b6d67ea38fc74aefd9062aa201"
+  }
+}
