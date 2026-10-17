@@ -8,6 +8,7 @@
 - Share independent test fixtures and verify server-only MRPACK imports with native Pakku.
 - Cover empty histories, root commits and initial pushes in commit checks.
 - Diagnose PowerShell aliases and executable paths; require menu tests to run in CI.
+- Exclude the unselected native ServerPack ZIP from delivery without removing SERVER records from the MRPACK; unexpected outputs still block CI and releases.
 - Keep production dependency versions, resources, YoSBR defaults and the MIT license unchanged.
 
 ## 2026-10-17

@@ -14,3 +14,5 @@ pnpm run mp -- build --target client-26.2
 构建检查包内路径、下载记录及覆盖资源哈希。YoSBR 默认设置保留，不打包旧根目录 `options.txt`。完整迁移对照见[迁移记录](MIGRATION-V2.md)。
 
 预览构建、发布标签和 Apply 使用方式见[构建与发布](RELEASE.md)。构建通过不等于已完成游戏启动和功能体验测试。
+
+Pakku 默认同时生成服务端 ZIP。正式 Target 只选择 MRPACK，构建报告将唯一的服务端 ZIP 记为 `excluded`，它留在隔离构建目录，不进入 dist 或 CI/Release 上传。未知产物或多份服务端 ZIP 仍记为 `uncollected` 并阻止发布。不使用 `--no-server`，以保留 MRPACK 中 SERVER 依赖的原始侧别。

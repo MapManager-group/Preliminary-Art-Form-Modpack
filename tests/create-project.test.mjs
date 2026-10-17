@@ -49,6 +49,10 @@ function native(behavior={}) {
         for(const name of names){const bytes=await fs.readFile(path.join(base,name));overrides[folder+'/'+name]=bytes;if(folder!=='client-overrides')server[name]=bytes;if(folder!=='server-overrides')client['overrides/'+name]=bytes;}
       }
       await save(path.join(cwd,'build/.cache/modrinth/client-overrides/resourcepacks/local.zip'),zipSync({}));
+      if(behavior.extraArtifacts) {
+        await save(path.join(cwd,'build/serverpack/extra.zip'),zipSync({}));
+        await save(path.join(cwd,'build/unexpected/unknown.zip'),zipSync({}));
+      }
       const name=config.name+'-'+config.version;
       if(lock.target!=='curseforge')await save(path.join(cwd,'build/modrinth',name+'.mrpack'),zipSync({'modrinth.index.json':Buffer.from(JSON.stringify(manifest)),...overrides}));
       if(lock.target!=='modrinth')await save(path.join(cwd,'build/curseforge',name+'.zip'),zipSync({'manifest.json':Buffer.from(JSON.stringify({manifestVersion:1,minecraft:{version:lock.mc_versions[0]},files:[]})),...client}));
@@ -164,4 +168,30 @@ test('MRPACK 内嵌本地 Mod、资源包、光影及解包资源按原侧别保
   const server=inspectArchive(built.artifacts.find(a=>a.kind==='serverpack').bytes,'serverpack');
   assert.ok(server['mods/local.jar']);assert.ok(server['mods/server.jar']);assert.ok(!server['resourcepacks/local.zip']);
   assert.deepEqual(await fs.readFile(file),original);
+});
+
+
+test('仅选择 MRPACK 时明确排除原生服务端 ZIP，保留 SERVER 索引且不发布额外包',async t=>{
+  const f=await setup(t),mock=native(),manifest=index();
+  manifest.files=[dep('server',{client:'unsupported',server:'required'})];
+  const file=await pack(f,manifest),preview=await createProject(f.root,'only-mrpack',{name:'Only-MRPACK',platform:'modrinth',file,execute:mock.execute});
+  await createProject(f.root,'only-mrpack',{candidate:preview.candidate,acceptHash:preview.acceptHash,confirm:true,execute:mock.execute});
+  const target={...(await loadWorkspace(f.root)).targets.at(-1),artifacts:['modrinth']};
+  const built=await build(f.root,target,{execute:mock.execute});
+  assert.deepEqual(built.report.uncollected,[]);assert.equal(built.report.excluded.length,1);
+  assert.equal(built.report.excluded[0].path,'build/serverpack/Only-MRPACK-1.0.0.zip');
+  assert.deepEqual(built.report.artifacts.map(a=>a.kind),['modrinth']);
+  assert.ok(!(await fs.readdir(built.out)).some(name=>name.endsWith('.zip')));
+  const entries=inspectArchive(built.artifacts[0].bytes,'modrinth');
+  assert.deepEqual(JSON.parse(Buffer.from(entries['modrinth.index.json']).toString()).files[0].env,{client:'unsupported',server:'required'});
+  assert.ok(mock.calls.every(call=>!call.args.includes('--no-server')));
+});
+test('未知产物和多份服务端 ZIP 仍属于未收集错误，不可当成有意排除',async t=>{
+  const f=await setup(t),mock=native({extraArtifacts:true}),preview=await createProject(f.root,'unexpected',defaults);
+  await createProject(f.root,'unexpected',{...defaults,acceptHash:preview.acceptHash,confirm:true,execute:mock.execute});
+  const target={...(await loadWorkspace(f.root)).targets.at(-1),artifacts:['modrinth']};
+  const built=await build(f.root,target,{execute:mock.execute});
+  assert.deepEqual(built.report.excluded,[]);
+  assert.equal(built.report.uncollected.length,3);
+  assert.ok(built.report.uncollected.includes('build/unexpected/unknown.zip'));
 });

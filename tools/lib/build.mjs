@@ -53,6 +53,12 @@ export async function build(root, target, options = {}) {
     const name=artifacts.some(a=>a.name===originalName)?`${kind}-${originalName}`:originalName;
     artifacts.push({ kind, name, source:matches[0], bytes });
   }
+  const unselected=found.filter(f=>!artifacts.some(a=>a.source===f));
+  // Pakku exports a ServerPack by default. Not selecting this delivery format must not
+  // use --no-server, which would also remove SERVER records from the MRPACK itself.
+  const serverPacks=unselected.filter(f=>/^build\/serverpack\/[^/]+\.zip$/.test(f));
+  const excluded=!target.artifacts.includes('serverpack')&&serverPacks.length===1
+    ? [{path:serverPacks[0],reason:'Target 未选择 serverpack，仅保留在隔离构建目录'}] : [];
   if((await sourceSnapshot(root,target)).fingerprint!==snapshot.fingerprint)throw new Error('构建期间源改变，拒绝发布');
   // Unique run directory avoids stale products being mistaken for this build.
   progress('build.save','正在保存构建产物与报告');
@@ -64,7 +70,7 @@ export async function build(root, target, options = {}) {
   const git=revision.code===0?revision.stdout.trim():null;
   const state=await run('git',['status','--porcelain','--untracked-files=normal'],{cwd:root,capture:true});
   const tool=await verifiedTool(root);
-  const report={schema:1,targetId:target.id,version:info.config.version,git,dirty:state.code!==0||Boolean(state.stdout.trim()),sourceFingerprint:snapshot.fingerprint,lockHash:snapshot.hashes['pakku-lock.json'],configHash:snapshot.hashes['pakku.json'],toolchain:tool.chain,dependencies:{minecraft:info.lock.mc_versions[0],...Object.fromEntries(Object.entries(info.lock.loaders).map(([k,v])=>[{'fabric':'fabric-loader','quilt':'quilt-loader'}[k]??k,v]))},artifacts:artifacts.map(({kind,name,bytes})=>({kind,name,sha256:sha256(bytes),size:bytes.length})),missing:[],uncollected:found.filter(f=>!artifacts.some(a=>a.source===f)),mapping:info.mapping};
+  const report={schema:1,targetId:target.id,version:info.config.version,git,dirty:state.code!==0||Boolean(state.stdout.trim()),sourceFingerprint:snapshot.fingerprint,lockHash:snapshot.hashes['pakku-lock.json'],configHash:snapshot.hashes['pakku.json'],toolchain:tool.chain,dependencies:{minecraft:info.lock.mc_versions[0],...Object.fromEntries(Object.entries(info.lock.loaders).map(([k,v])=>[{'fabric':'fabric-loader','quilt':'quilt-loader'}[k]??k,v]))},artifacts:artifacts.map(({kind,name,bytes})=>({kind,name,sha256:sha256(bytes),size:bytes.length})),missing:[],uncollected:unselected.filter(f=>!excluded.some(e=>e.path===f)),excluded,mapping:info.mapping};
   await fs.writeFile(path.join(out,'build-report.json'),JSON.stringify(report,null,2)+'\n');
   const hashes=[...report.artifacts.map(a=>`${a.sha256}  ${a.name}`),`${sha256(await fs.readFile(path.join(out,'build-report.json')))}  build-report.json`];
   await fs.writeFile(path.join(out,'SHA256SUMS'),hashes.join('\n')+'\n');
