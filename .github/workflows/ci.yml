@@ -41,6 +41,8 @@ jobs:
           COMMIT_HEAD: ${{ steps.plan.outputs.head }}
         run: node tools/ci.mjs lint
   test:
+    env:
+      MP_REQUIRE_MENU_TESTS: '1'
     needs: plan
     if: needs.plan.outputs.run_tests == 'true'
     strategy:

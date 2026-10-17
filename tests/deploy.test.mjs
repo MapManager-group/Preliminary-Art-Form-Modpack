@@ -178,7 +178,7 @@ test('Windows 实际 FileShare.Read 锁定文件导致部署失败并可恢复',
   const f=await setup(t);await f.stage();await deploy(f.root,f.runtime,f.target,stopped);await f.change('new');await f.stage();
   const script=path.join(f.base,'hold.ps1');
   await fs.writeFile(script,'param([string]$Target)\n$f=[IO.File]::Open($Target,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)\nWrite-Output "LOCKED"\n[Console]::ReadLine() | Out-Null\n$f.Dispose()\n');
-  const child=spawn('pwsh',['-NoProfile','-File',script,'-Target',path.join(f.gameDir,'config/db-example.json')],{stdio:['pipe','pipe','pipe'],windowsHide:true});
+  const child=spawn(process.env.MP_PWSH??'pwsh',['-NoProfile','-File',script,'-Target',path.join(f.gameDir,'config/db-example.json')],{stdio:['pipe','pipe','pipe'],windowsHide:true});
   t.after(()=>child.kill());
   await new Promise((resolve,reject)=>{child.stdout.on('data',d=>{if(d.toString().includes('LOCKED'))resolve();});child.on('error',reject);child.on('exit',code=>reject(Error(`lock helper exited ${code}`)));});
   await assert.rejects(deploy(f.root,f.runtime,f.target,stopped));

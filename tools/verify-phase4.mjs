@@ -1,4 +1,4 @@
-import {createVerificationFixture} from './verification-fixture.mjs';
+import {nativeWorkspace} from '../tests/pakku-fixture.mjs';
 // Local end-to-end verification; never contacts a release write endpoint or real game directory.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -17,12 +17,12 @@ const execute=async(exe,args,cwd=root)=>requireSuccess(await run(exe,args,{cwd,c
 const cli=async(...args)=>execute(process.execPath,[path.join(root,'tools/mp.mjs'),...args]);
 const git=async(...args)=>execute('git',args);
 const snap=async dir=>Object.fromEntries(await Promise.all((await filesUnder(dir)).map(async n=>[n,sha256(await fs.readFile(path.join(dir,n)))])));
-const original=await snap(path.join(repo,'packs'));
+const original=await snap(path.join(repo,'tests/fixtures'));
 try {
   for(const file of ['tools','tests','package.json','pnpm-lock.yaml','toolchain.json','.gitignore','.gitattributes','cz.config.cjs','commitlint.config.cjs'])await fs.cp(path.join(repo,file),path.join(root,file),{recursive:true});
   await fs.cp(await fs.realpath(path.join(repo,'node_modules/fflate')),path.join(root,'node_modules/fflate'),{recursive:true});
   await fs.mkdir(path.join(root,'.cache'));await fs.copyFile(path.join(repo,'.cache/pakku-1.5.0.jar'),path.join(root,'.cache/pakku-1.5.0.jar'));
-await createVerificationFixture(root);
+  await nativeWorkspace(root);
   // New Target/name, native Pakku cfg, no handwritten lock and no source project migration.
   await fs.rename(path.join(root,'packs/fabric-1.21.1'),path.join(root,'packs/copied'));
   await atomicJson(path.join(root,'workspace.json'),{targets:[{id:'copied',path:'packs/copied',artifacts:['modrinth','serverpack']}]});
@@ -55,7 +55,7 @@ await createVerificationFixture(root);
   // Deliberately break one Target: CI entry point must fail, never emit a successful artifact.
   await fs.writeFile(path.join(root,'packs/copied/pakku.json'),'{');
   const failed=await run(process.execPath,[path.join(root,'tools/ci.mjs'),'build','copied'],{cwd:root,capture:true});assert.notEqual(failed.code,0);
-  assert.deepEqual(await snap(path.join(repo,'packs')),original);
+  assert.deepEqual(await snap(path.join(repo,'tests/fixtures')),original);
   console.log('PASS: 真实 Pakku + 复制/改名/单目标 doctor/check/干净 CI build，构建报告与 SHA；双假实例 Apply 与本地 Deploy 等价；模拟 Tag 草稿计划；真实 Git 文档/目标选择；故意损坏 Target 非零失败。未推送/未发布/未执行游戏。');
   console.log(`证据保留: ${base}`);
 }catch(e){console.error(`失败证据保留: ${base}`);throw e;}

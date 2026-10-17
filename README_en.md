@@ -45,6 +45,8 @@ YoSBR supplies default settings; the obsolete root `options.txt` is excluded. Lo
 
 Use **Gitmoji + Conventional Commits**, for example `✨ feat(mod): add a building utility`. Stage relevant files, run `pnpm run commit`, then `pnpm run lint:commits`. Chinese subjects and custom scopes are supported; the maximum title length is 72 characters.
 
+By default, commitlint checks the latest commit, including a root commit. An empty history is reported explicitly. To check a range, use `pnpm run lint:commits -- --from <base> --to HEAD`.
+
 Project guides are maintained in Chinese:
 
 - [Development](docs/DEVELOPMENT.md)

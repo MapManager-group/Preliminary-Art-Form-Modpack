@@ -1,3 +1,4 @@
+import {lintCommits} from './lint-commits.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -48,6 +49,13 @@ export async function assertClean(root) {
   const result=requireSuccess(await run('git',['status','--porcelain','--untracked-files=all'],{cwd:root,capture:true}));
   if(result.stdout.trim())throw new Error(`检查产生了源文件改动或未跟踪文件：\n${result.stdout}`);
 }
+export async function lintCiCommits(root,{base,head='HEAD',capture=false}={}) {
+  // With no base, --to reads all reachable commits, including the root commit.
+  // Do not use the root as --from: Git ranges exclude their lower endpoint.
+  const args=['--to',head,'--verbose'];
+  if(base)args.push('--from',base);
+  return lintCommits(root,args,{capture});
+}
 async function main() {
   const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),command=process.argv[2];
   const emit=async values=>{console.log(JSON.stringify(values,null,2));if(process.env.GITHUB_OUTPUT)await fs.appendFile(process.env.GITHUB_OUTPUT,Object.entries(values).map(([k,v])=>`${k}=${typeof v==='string'?v:JSON.stringify(v)}\n`).join(''));};
@@ -69,10 +77,7 @@ async function main() {
   }else if(command==='clean') {
     await assertClean(root);
   }else if(command==='lint') {
-    const args=['tools/lint-commits.mjs','--to',process.env.COMMIT_HEAD??'HEAD'];
-    if(process.env.COMMIT_BASE)args.push('--from',process.env.COMMIT_BASE);
-    else args.push('--from',requireSuccess(await run('git',['rev-list','--max-parents=0','HEAD'],{cwd:root,capture:true})).stdout.trim().split('\n')[0]);
-    requireSuccess(await run(process.execPath,args,{cwd:root}));
+    await lintCiCommits(root,{base:process.env.COMMIT_BASE,head:process.env.COMMIT_HEAD??'HEAD'});
   }else throw new Error('ci.mjs plan|tag|build|lint|clean');
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(e=>{console.error(e.message);process.exitCode=1;});

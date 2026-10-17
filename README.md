@@ -66,6 +66,8 @@ pnpm run commit
 pnpm run lint:commits
 ```
 
+默认校验最新一条提交，支持首次提交；尚无提交时会明确提示未执行。检查指定区间可用 `pnpm run lint:commits -- --from <base> --to HEAD`。
+
 ## 项目文档
 
 - [开发指南](docs/DEVELOPMENT.md)

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-18
+
+### Workflow maintenance
+
+- Sync DB-Modpack-Dev-Workflow v2 commits `3fb65ae`, `94f8d8c`, `f767ff0` and `c1db6df`.
+- Share independent test fixtures and verify server-only MRPACK imports with native Pakku.
+- Cover empty histories, root commits and initial pushes in commit checks.
+- Diagnose PowerShell aliases and executable paths; require menu tests to run in CI.
+- Keep production dependency versions, resources, YoSBR defaults and the MIT license unchanged.
+
 ## 2026-10-17
 
 ### Repository v2 migration

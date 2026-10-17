@@ -116,3 +116,19 @@ test('Git 默认收录三侧正式 overrides 资源，同时忽略工具缓存�
     const result=await run('git',['check-ignore','--no-index',name],{cwd:root,capture:true});assert.equal(result.code,0,name);
   }
 });
+
+
+test('复用模板删除全部示例 packs 后，共享夹具仍可创建并检查 Target',async t=>{
+  const root=await fs.mkdtemp(path.join(os.tmpdir(),'DB 无示例模板-'));
+  t.after(()=>fs.rm(root,{recursive:true,force:true}));
+  const repo=new URL('../',import.meta.url);
+  for(const name of ['tools','tests/fixtures','tests/sync-fixture.mjs','tests/pakku-fixture.mjs']) {
+    const destination=path.join(root,name);await fs.mkdir(path.dirname(destination),{recursive:true});
+    await fs.cp(new URL(name,repo),destination,{recursive:true});
+  }
+  await fs.cp(await fs.realpath(new URL('node_modules/fflate',repo)),path.join(root,'node_modules/fflate'),{recursive:true});
+  assert.equal(await fs.stat(path.join(root,'packs')).catch(()=>null),null);
+  const {pathToFileURL}=await import('node:url');
+  const {setup}=await import(pathToFileURL(path.join(root,'tests/sync-fixture.mjs')).href);
+  const f=await setup(t);await inspectTarget(f.root,f.target);
+});

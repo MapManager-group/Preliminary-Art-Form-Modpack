@@ -1,3 +1,4 @@
+import {probePowerShell} from './lib/powershell.mjs';
 import fs from 'node:fs/promises';
 import {createProject,inspectPack,packSummary} from './lib/create-project.mjs';
 import path from 'node:path';
@@ -24,7 +25,7 @@ const help = `Preliminary Art Form v2
 pnpm run mp -- <命令>
   help                         中文帮助
   bootstrap                    显式下载并校验固定 Pakku（可重复）
-  doctor                       只读检查 Node/pnpm/Git/Java/Pakku
+  doctor                       只读检查 Node/pnpm/Git/Java/Pakku/PowerShell
   inspect-pack --file <包.mrpack>  只读验证包与转换范围，不绑定 Runtime
   create-target <id> --name <工程名> --platform modrinth|curseforge|multiplatform
        --mc <版本> --loader fabric|forge|neoforge|quilt --loader-version <版本>
@@ -151,7 +152,8 @@ try {
       if (!version.stdout.includes(t.version)) throw new Error('Pakku 版本不匹配');
       const agent = process.env.npm_config_user_agent ?? '';
       if (!agent.startsWith(`pnpm/${t.chain.pnpm} `)) throw new Error(`请使用 pnpm ${t.chain.pnpm} run mp -- doctor`);
-      console.log(JSON.stringify({node:process.version,pnpm:agent.split(' ')[0],java:(java.stderr+java.stdout).trim(),git:git.stdout.trim(),pakku:version.stdout.trim(),sha256:t.sha256},null,2));
+      const powershell=probePowerShell();
+      console.log(JSON.stringify({powershell,node:process.version,pnpm:agent.split(' ')[0],java:(java.stderr+java.stdout).trim(),git:git.stdout.trim(),pakku:version.stdout.trim(),sha256:t.sha256},null,2));
     } else if (command === 'use') {
       const target = await selectTarget(root, w, positional[0]);
       const file = await safePath(root, '.local/selection.json');

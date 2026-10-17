@@ -17,7 +17,7 @@ export async function probeProcesses(gameDir) {
     if(process.platform==='win32') {
       // Keep command lines in memory only; do not log tokens or accounts from JVM arguments.
       const script = "[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new(); @(Get-CimInstance Win32_Process -ErrorAction Stop | Where-Object { $_.Name -match 'java|minecraft' } | ForEach-Object { @{name=$_.Name;command=$_.CommandLine} }) | ConvertTo-Json -Compress";
-      const r=await run('pwsh',['-NoProfile','-NonInteractive','-Command',script],{capture:true});
+      const r=await run(process.env.MP_PWSH??'pwsh',['-NoProfile','-NonInteractive','-Command',script],{capture:true});
       if(r.code!==0)throw new Error('进程查询失败');
       const rows=JSON.parse(r.stdout || '[]');return classifyProcesses(Array.isArray(rows)?rows:[rows],gameDir);
     }

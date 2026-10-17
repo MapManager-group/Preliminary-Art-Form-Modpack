@@ -1,3 +1,4 @@
+import {probePowerShell,menuTestOptions} from '../tools/lib/powershell.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -7,8 +8,8 @@ import {fileURLToPath} from 'node:url';
 import {spawn,spawnSync} from 'node:child_process';
 
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const probe=spawnSync('pwsh',['-NoProfile','-Command',"if ($PSVersionTable.PSVersion -lt [version]'7.3') { exit 1 }; (Get-Process -Id $PID).Path"],{encoding:'utf8'});
-const pwsh=probe.status===0?probe.stdout.trim():null;
+const probe=probePowerShell();
+const pwsh=probe.status==='ready'?probe.path:null;
 const psQuote=value=>`'${value.replaceAll("'","''")}'`;
 const mock=String.raw`
 import fs from 'node:fs';
@@ -78,7 +79,7 @@ async function fixture(t,override={}) {
   const commands=async()=> (await calls()).filter(a=>a[0]==='--silent').map(a=>a.slice(4));
   return {root,bin,execute,calls,commands};
 }
-const options={skip:pwsh?false:'未安装 PowerShell 7.3+，菜单测试未执行'};
+const options=menuTestOptions(probe);
 
 test('纯菜单导航不重复查询状态，手动刷新和失败操作后重新读取',options,async t=>{
   const f=await fixture(t,{fail:'doctor'});

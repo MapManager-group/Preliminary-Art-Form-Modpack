@@ -1,4 +1,4 @@
-import {createVerificationFixture} from './verification-fixture.mjs';
+import {nativeWorkspace} from '../tests/pakku-fixture.mjs';
 // Real Pakku integration. All writes are in our own temporary template/launcher fixtures.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -14,11 +14,11 @@ await fs.mkdir(root);
 for(const file of ['tools','toolchain.json','package.json'])await fs.cp(path.join(repo,file),path.join(root,file),{recursive:true});
 await fs.cp(await fs.realpath(path.join(repo,'node_modules/fflate')),path.join(root,'node_modules/fflate'),{recursive:true});
 await fs.mkdir(path.join(root,'.cache'));await fs.copyFile(path.join(repo,'.cache/pakku-1.5.0.jar'),path.join(root,'.cache/pakku-1.5.0.jar'));
-await createVerificationFixture(root);
+await nativeWorkspace(root);
 const snap=async dir=>Object.fromEntries(await Promise.all((await filesUnder(dir)).map(async n=>[n,sha256(await fs.readFile(path.join(dir,n)))])));
 const cli=async(...args)=>requireSuccess(await run(process.execPath,[path.join(root,'tools/mp.mjs'),...args],{cwd:root,capture:true}));
 const json=async(...args)=>JSON.parse((await cli(...args)).stdout);
-const target='fabric-1.21.1',source=path.join(root,'packs',target),beforeSource=await snap(path.join(repo,'packs'));
+const target='fabric-1.21.1',source=path.join(root,'packs',target),beforeSource=await snap(path.join(repo,'tests/fixtures'));
 try {
   for(const launcher of ['pcl2','hmcl']) {
     const launcherRoot=path.join(base,launcher);await fs.cp(path.join(repo,'tests/fixtures',`launcher-${launcher}`),launcherRoot,{recursive:true});
@@ -65,7 +65,7 @@ try {
   await fs.writeFile(path.join(source,'config/db-example.json'),'{}');
   const stale=await run(process.execPath,[path.join(root,'tools/mp.mjs'),'deps-accept','hmcl','--candidate',removed.id,'--accept-hash',removed.hash,'--confirm'],{cwd:root,capture:true});assert.notEqual(stale.code,0);
   assert.ok(!(await filesUnder(source)).some(n=>n.endsWith('.jar')));
-  assert.deepEqual(await snap(path.join(repo,'packs')),beforeSource);
-  console.log('PASS: Phase 3 真实 Pakku/CLI；双启动器假实例 dev→changes→collect→deploy；ServerCore/Sodium 完整候选增删、哈希确认、过期拒绝、服务端保留、禁用/未知 JAR 分类和备份恢复；正式 packs 未改变');
+  assert.deepEqual(await snap(path.join(repo,'tests/fixtures')),beforeSource);
+  console.log('PASS: Phase 3 真实 Pakku/CLI；双启动器假实例 dev→changes→collect→deploy；ServerCore/Sodium 完整候选增删、哈希确认、过期拒绝、服务端保留、禁用/未知 JAR 分类和备份恢复；启动器夹具未改变');
   console.log(`证据保留: ${base}`);
 }catch(e){console.error(`失败证据保留: ${base}`);throw e;}

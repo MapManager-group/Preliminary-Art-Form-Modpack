@@ -62,6 +62,28 @@ Remove-Item Env:MP_ICONS -ErrorAction SilentlyContinue
 
 “Git 提交”可以只暂存所选文件，或暂存后进入 cz-git；选择文件表示包含该文件的全部修改，不提供分块暂存。已有暂存内容保持原样；提交时若暂存区包含未选中的文件，会停止操作，需一并选择或先在编辑器中调整。提交使用现有 cz-git / commitlint，不推送。缺少工具时菜单给出安装提示，不自动安装环境。
 
+## 环境诊断
+
+`pnpm run mp -- doctor` 检查工具版本，并报告 PowerShell 是否可执行、版本和实际进程路径。工具 Java 固定为 Java 21；游戏 Java 由 Minecraft、Loader 和 Mod 的要求决定，由启动器单独配置。
+
+Windows 的 `pwsh` 可能指向应用执行别名。若路径存在但无法启动，查看 `Get-Command pwsh -All`，确认实际安装路径；可在当前终端显式指定：
+
+```powershell
+$env:MP_PWSH = 'C:\Tools\PowerShell\pwsh.exe' # 替换为实际路径
+pnpm run mp -- doctor
+& $env:MP_PWSH -NoProfile -File .\ci.ps1
+```
+
+`MP_PWSH` 用于 Node 发起的 PowerShell 诊断、菜单测试和 Windows 进程查询，不安装 PowerShell、不修改系统 PATH。未指定时诊断仅检查 PATH 中的候选，不搜索下载缓存；如前面的别名失败但后面的安装可用，会同时列出失败路径与实际可执行路径。PowerShell 不可用时 doctor 仍报告其他工具状态，部署的游戏运行检查不会因此被绕过。
+
+若 Git 报 `detected dubious ownership`，先确认仓库来源、当前用户和目录所有者。优先修正目录归属；确实需要访问可信的共享目录时，可仅对一次 Git 调用指定该目录：
+
+```powershell
+git -c safe.directory='D:/Projects/My-Pack' -C 'D:/Projects/My-Pack' status
+```
+
+这个参数只对该次调用有效，不会让后续 pnpm 命令自动获得信任。不要使用 `safe.directory=*`；模板不会替用户修改全局信任设置。
+
 ## 管理目标
 
 `workspace.json` 中每个条目对应一个独立 Pakku 工程：
@@ -152,12 +174,25 @@ Pakku 固定版本与 SHA-256 见 [toolchain.json](../toolchain.json)。独立�
 pnpm test
 pnpm run mp -- check --all
 pnpm run mp -- build --target client-26.2
-pnpm run mp -- build --target neoforge-1.21.1
 ```
 
 `check` 检查目录、覆盖规则、文件边界和 Pakku 数据，不更新依赖。`build` 在 `.work/` 副本执行 export，检查归档内容与覆盖文件哈希后，将结果放入 `dist/<目标名>/build-*/`。失败时保留构建副本，便于查看错误。空白服务端包可以是合法的空 ZIP；不同平台产物同名时，后收集的产物加平台前缀，避免覆盖。
 
 `build-report.json` 记录目标、Git 提交、文件哈希与 `dirty` 状态；`dirty: true` 表示构建时有未提交改动。本地允许此类构建，CI 发布要求源文件已提交。
+
+单元测试的数据独立于正式 `packs/`，可删除或改名示例 Target 后继续测试。菜单测试要求 PowerShell 7.3+；本地缺少环境时会列出跳过原因，结束时应检查通过、失败和跳过数量。CI 设置 `MP_REQUIRE_MENU_TESTS=1`，菜单环境不可用会直接失败；仅适用于某个操作系统的测试仍可在其他系统跳过。
+
+原生 Pakku 集成验证需要联网和已通过 `bootstrap` 校验的工具，全部使用临时工程及模拟实例：
+
+```powershell
+pnpm exec node tools/verify-import.mjs
+pnpm exec node tools/verify-phase1.mjs
+pnpm exec node tools/verify-phase2.mjs
+pnpm exec node tools/verify-phase3.mjs
+pnpm exec node tools/verify-phase4.mjs
+```
+
+`verify-import` 使用固定 ServerCore 版本，验证 MRPACK 导入后的 SERVER 侧别、文件哈希及客户端部署排除。`verify-phase1` 额外检查正式目标及覆盖文件，并确认已跟踪和未跟踪源文件未变；其余同步、回收、依赖审查、Apply 和 CI 验证使用 Pakku 初始化的临时工程。失败时会输出临时目录供检查，网络失败不会当成测试通过。
 
 修改 CLI 时运行 `pnpm test`；涉及 Pakku、导出或公共目标逻辑时，再执行 check 和对应构建。自动测试使用临时文件及模拟实例，游戏内效果需要在启动器中验证。
 

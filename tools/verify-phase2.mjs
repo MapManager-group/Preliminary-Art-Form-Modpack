@@ -1,4 +1,4 @@
-import {createVerificationFixture} from './verification-fixture.mjs';
+import {nativeWorkspace} from '../tests/pakku-fixture.mjs';
 // Real Pakku + CLI integration against disposable launcher fixtures, never a personal game directory.
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -19,10 +19,10 @@ for(const file of ['tools','toolchain.json','package.json'])await fs.cp(path.joi
 await fs.cp(await fs.realpath(path.join(repo,'node_modules/fflate')),path.join(root,'node_modules/fflate'),{recursive:true});
 await fs.mkdir(path.join(root,'.cache'));
 await fs.copyFile(path.join(repo,'.cache/pakku-1.5.0.jar'),path.join(root,'.cache/pakku-1.5.0.jar'));
-await createVerificationFixture(root);
+await nativeWorkspace(root);
 const cli=async(...args)=>requireSuccess(await run(process.execPath,[path.join(root,'tools/mp.mjs'),...args],{cwd:root,capture:true}));
 const snap=async dir=>Object.fromEntries(await Promise.all((await filesUnder(dir)).map(async f=>[f,sha256(await fs.readFile(path.join(dir,f)))])));
-const beforeSource=await snap(path.join(repo,'packs'));
+const beforeSource=await snap(path.join(repo,'tests/fixtures'));
 try {
   for(const launcher of ['pcl2','hmcl']) {
     const launcherRoot=path.join(base,launcher);
@@ -72,7 +72,7 @@ try {
   assert.ok(mods.some(f=>f.toLowerCase().includes('sodium')&&f.endsWith('.jar')));
   await cli('deploy','dependency','--stopped');
   await cli('unbind','dependency');
-  assert.deepEqual(await snap(path.join(repo,'packs')),beforeSource);
-  console.log('PASS: 真实 Pakku + CLI，PCL/HMCL 假实例绑定/只读预览/重复部署/单文件更新/冲突/解绑/覆盖优先级、Sodium 下载部署；正式 packs 未改变');
+  assert.deepEqual(await snap(path.join(repo,'tests/fixtures')),beforeSource);
+  console.log('PASS: 真实 Pakku + CLI，PCL/HMCL 假实例绑定/只读预览/重复部署/单文件更新/冲突/解绑/覆盖优先级、Sodium 下载部署；启动器夹具未改变');
   console.log(`验证副本与假实例保留于: ${base}`);
 }catch(e){console.error(`失败证据保留于: ${base}`);throw e;}

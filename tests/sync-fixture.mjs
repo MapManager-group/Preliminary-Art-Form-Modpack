@@ -1,3 +1,4 @@
+import {writeFixture} from './pakku-fixture.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -17,17 +18,7 @@ async function setup(t,launcher='pcl2') {
   const root=path.join(base,'project'),mcRoot=path.join(base,'launcher'),gameDir=path.join(mcRoot,'versions','Example');
   await fs.mkdir(root,{recursive:true});
   await fs.cp(path.join(repo,'tests/fixtures',`launcher-${launcher==='pcl2'?'pcl2':'hmcl'}`),mcRoot,{recursive:true});
-  // Unit fixture is independent of production packs and never invokes the network.
-  const source=path.join(root,'packs/example');
-  for(const [name,text] of Object.entries({
-    'pakku.json':JSON.stringify({name:'Fixture',version:'0.1.0',overrides:['config'],client_overrides:['client-note.txt'],server_overrides:['server-note.txt']}),
-    'pakku-lock.json':JSON.stringify({lockfile_version:2,target:'modrinth',mc_versions:['1.21.1'],loaders:{fabric:'0.16.14'},projects:[]}),
-    'config/db-example.json':'{"example":true}',
-    'client-note.txt':'client fixture', 'server-note.txt':'server fixture',
-    '.pakku/overrides/template-common.txt':'common fixture',
-    '.pakku/client-overrides/config/db-client.json':'{"templateClient":true}',
-    '.pakku/server-overrides/config/db-server.json':'{"templateServer":true}'
-  })) await save(path.join(source,name),text+'\n');
+  await writeFixture(path.join(root,'packs/example'));
   const target={id:'example',path:'packs/example',artifacts:['modrinth']};
   await atomicJson(path.join(root,'workspace.json'),{targets:[target]});
   const jar=Buffer.from('fixture-only-not-executable');

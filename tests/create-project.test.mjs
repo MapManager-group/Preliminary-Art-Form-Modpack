@@ -41,6 +41,7 @@ function native(behavior={}) {
         const f=p.files[0],side=config.projects?.[p.id.modrinth]?.side??p.side;
         return {path:'mods/'+f.name,hashes:f.hashes,fileSize:f.size,downloads:[f.url],env:{client:side==='SERVER'&&!config.export_server_side_projects_to_client?'unsupported':'required',server:side==='CLIENT'?'unsupported':'required'}};
       })};
+      if(behavior.sideDrift)for(const file of manifest.files)file.env.client='required';
       if(behavior.drift&&manifest.files[0])manifest.files[0].path='mods/changed.jar';
       const overrides={},server={},client={};
       for(const folder of ['overrides','client-overrides','server-overrides']) {
@@ -81,14 +82,15 @@ test('MRPACK 原生依赖、侧别与三种覆盖目录转换，候选确认才�
   const result=await createProject(f.root,'converted',{candidate:preview.candidate,acceptHash:preview.acceptHash,confirm:true,execute:mock.execute});
   assert.equal(result.created,true);assert.deepEqual(await fs.readFile(file),original);
   const target=(await loadWorkspace(f.root)).targets.at(-1),info=await checkTarget(f.root,target,{execute:mock.execute});
+  assert.equal(info.config.export_server_side_projects_to_client,false);
   assert.equal(info.lock.projects.length,3);assert.equal(info.mapping.length,3);
   const built=await build(f.root,target,{execute:mock.execute});assert.equal(built.artifacts.length,2);
   const server=inspectArchive(built.artifacts.find(a=>a.kind==='serverpack').bytes,'serverpack');assert.equal(Buffer.from(server['config/a.json']).toString(),'common');
 });
 test('无法识别、可选侧别、依赖元数据或导出漂移明确报告且不注册',async t=>{
-  for(const kind of ['unknown','optional','loader','drift']) {
-    const f=await setup(t),manifest=index(),mock=native({wrongLoader:kind==='loader',drift:kind==='drift'});
-    manifest.files=[dep(kind==='unknown'?'unknown':'demo',kind==='optional'?{client:'optional',server:'required'}:undefined)];
+  for(const kind of ['unknown','optional','loader','drift','side']) {
+    const f=await setup(t),manifest=index(),mock=native({wrongLoader:kind==='loader',drift:kind==='drift',sideDrift:kind==='side'});
+    manifest.files=[dep(kind==='unknown'?'unknown':'demo',kind==='optional'?{client:'optional',server:'required'}:kind==='side'?{client:'unsupported',server:'required'}:undefined)];
     const file=await pack(f,manifest,{});
     const before=await fs.readFile(path.join(f.root,'workspace.json'));
     const report=await createProject(f.root,'blocked',{name:'Blocked',platform:'modrinth',file,execute:mock.execute});

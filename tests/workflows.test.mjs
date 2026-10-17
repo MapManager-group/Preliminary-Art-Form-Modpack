@@ -29,7 +29,7 @@ test('PR 工作流仅有读取权限，不持久化凭据；Actions 固定完整
     }
     assert.equal((workflow.match(/uses: actions\/checkout@/g)||[]).length,(workflow.match(/persist-credentials: false/g)||[]).length);
   }
-  assert.match(ci,/test:\n    needs: plan\n    if: needs.plan.outputs.run_tests == 'true'/);
+  assert.match(ci,/test:\n    env:\n      MP_REQUIRE_MENU_TESTS: '1'\n    needs: plan\n    if: needs.plan.outputs.run_tests == 'true'/);
   assert.match(ci,/build:\n    needs: plan\n    if: needs.plan.outputs.has_targets == 'true'/);
   assert.match(ci,/if: always\(\)\n    needs: \[plan, test, build\]/);
 });
