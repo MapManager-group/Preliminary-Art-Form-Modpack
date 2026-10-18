@@ -1,0 +1,431 @@
+{
+  "version": 3,
+  "slotCount": 5,
+  "slotRadius": 90,
+  "radialThickness": 90,
+  "innerDetectionBoundary": 15,
+  "outerDetectionBoundary": 25,
+  "backgroundColor": "#661A150D",
+  "activationColor": "#66FFE7B0",
+  "borderColor": "#99FFE7B0",
+  "highlightBorderColor": "#99FFE7B0",
+  "showActivationZone": true,
+  "drawOuterBorders": true,
+  "drawSectorBorders": true,
+  "sectorBorderWidth": 1.5,
+  "sectorGap": 3.0,
+  "enableBackgroundBlur": false,
+  "revealAnimation": "ZOOM",
+  "revealDurationMs": 180,
+  "enableHoverAnimation": true,
+  "hoverAnimationDurationMs": 120,
+  "activationMode": "CLICK",
+  "resetCursorOnSubmenu": false,
+  "slots": [
+    {
+      "name": "客户端配置",
+      "mode": "radial:submenu",
+      "value": "",
+      "itemId": "minecraft:painting[minecraft:painting/variant\u003d\"minecraft:unpacked\"]",
+      "children": [
+        {
+          "name": "MiniHud 配置",
+          "mode": "radial:malilib",
+          "value": "MiniHUD:通用快捷键:openConfigGui",
+          "itemId": "radial:icon.text-align-left",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "Tweakeroo 配置",
+          "mode": "radial:malilib",
+          "value": "Tweakeroo:通用快捷键:openConfigGui",
+          "itemId": "radial:icon.hand-waving",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "Jade 配置",
+          "mode": "radial:keybind",
+          "value": "key.jade.config",
+          "itemId": "radial:icon.computer-tower",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "Xaero 世界地图",
+          "mode": "radial:keybind",
+          "value": "gui.xaero_open_settings",
+          "itemId": "radial:icon.map-trifold",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "Xaero 小地图",
+          "mode": "radial:keybind",
+          "value": "gui.xaero_minimap_settings",
+          "itemId": "radial:icon.compass",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "可视化按键配置",
+          "mode": "radial:keybind",
+          "value": "visualkeymap.key.open_keymap",
+          "itemId": "radial:icon.key",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "洛林工具箱配置",
+          "mode": "radial:keybind",
+          "value": "key.lorian_arch_orbit.open_config",
+          "itemId": "radial:icon.toolbox",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "Sub Slot 8",
+          "mode": "radial:empty",
+          "value": "",
+          "itemId": "minecraft:air",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        }
+      ],
+      "childSlotCount": 7,
+      "macros": []
+    },
+    {
+      "name": "服务器命令",
+      "mode": "radial:submenu",
+      "value": "",
+      "itemId": "minecraft:command_block",
+      "children": [
+        {
+          "name": "服务器菜单",
+          "mode": "radial:chat",
+          "value": "/menu",
+          "itemId": "minecraft:white_bed",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "功能菜单",
+          "mode": "radial:chat",
+          "value": "/buildertools",
+          "itemId": "minecraft:stick",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "获取特殊方块",
+          "mode": "radial:chat",
+          "value": "/buildertools special",
+          "itemId": "minecraft:structure_block",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "旗帜编辑器",
+          "mode": "radial:chat",
+          "value": "/banner",
+          "itemId": "minecraft:white_banner",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "皮革护甲编辑器",
+          "mode": "radial:chat",
+          "value": "/armorcolor",
+          "itemId": "minecraft:leather_chestplate",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "建筑增强模式",
+          "mode": "radial:chat",
+          "value": "/buildmode",
+          "itemId": "radial:effect.minecraft:haste",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "夜视切换",
+          "mode": "radial:chat",
+          "value": "/nv",
+          "itemId": "radial:effect.minecraft:night_vision",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "无惯性飞行",
+          "mode": "radial:chat",
+          "value": "/af",
+          "itemId": "radial:effect.minecraft:speed",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        }
+      ],
+      "childSlotCount": 8,
+      "macros": []
+    },
+    {
+      "name": "建筑工具",
+      "mode": "radial:submenu",
+      "value": "axiom.keybind.toggle_replace_mode_cap",
+      "itemId": "minecraft:wooden_axe",
+      "children": [
+        {
+          "name": "小木斧",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:wooden_axe",
+          "itemId": "minecraft:wooden_axe",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "羽毛",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:feather",
+          "itemId": "minecraft:feather",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "燧石",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:flint",
+          "itemId": "minecraft:flint",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "箭",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:arrow",
+          "itemId": "minecraft:arrow",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "火药",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:gunpowder",
+          "itemId": "minecraft:gunpowder",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "红砖",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:brick",
+          "itemId": "minecraft:brick",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "纸",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:paper",
+          "itemId": "minecraft:paper",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "调试棒",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:debug_stick",
+          "itemId": "minecraft:debug_stick",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "指南针",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:compass",
+          "itemId": "minecraft:compass",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        }
+      ],
+      "childSlotCount": 9,
+      "macros": []
+    },
+    {
+      "name": "创造模式物品",
+      "mode": "radial:submenu",
+      "value": "key.lorian_arch_orbit.palette_editor",
+      "itemId": "minecraft:barrier",
+      "children": [
+        {
+          "name": "屏障",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:barrier",
+          "itemId": "minecraft:barrier",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "结构空位",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:structure_void",
+          "itemId": "minecraft:structure_void",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "结构方块",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:structure_block",
+          "itemId": "minecraft:structure_block",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "光源方块",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:light",
+          "itemId": "minecraft:light",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "命令方块",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:command_block",
+          "itemId": "minecraft:command_block",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "循环型命令方块",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:repeating_command_block",
+          "itemId": "minecraft:repeating_command_block",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "连锁型命令方块",
+          "mode": "lorian_arch_orbit:pick_item",
+          "value": "minecraft:chain_command_block",
+          "itemId": "minecraft:chain_command_block",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        },
+        {
+          "name": "Sub Slot 8",
+          "mode": "radial:empty",
+          "value": "",
+          "itemId": "minecraft:air",
+          "children": [],
+          "childSlotCount": 8,
+          "macros": []
+        }
+      ],
+      "childSlotCount": 7,
+      "macros": []
+    },
+    {
+      "name": "洛林工具集",
+      "mode": "radial:keybind",
+      "value": "key.lorian_arch_orbit.palette_editor",
+      "itemId": "minecraft:beacon",
+      "childSlotCount": 8
+    },
+    {
+      "name": "",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "childSlotCount": 8
+    },
+    {
+      "name": "Empty Slot 7",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "children": [],
+      "childSlotCount": 8,
+      "macros": []
+    },
+    {
+      "name": "Empty Slot 8",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "children": [],
+      "childSlotCount": 8,
+      "macros": []
+    },
+    {
+      "name": "Empty Slot 9",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "children": [],
+      "childSlotCount": 8,
+      "macros": []
+    },
+    {
+      "name": "Empty Slot 10",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "children": [],
+      "childSlotCount": 8,
+      "macros": []
+    },
+    {
+      "name": "Empty Slot 11",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "children": [],
+      "childSlotCount": 8,
+      "macros": []
+    },
+    {
+      "name": "Empty Slot 12",
+      "mode": "radial:empty",
+      "value": "",
+      "itemId": "minecraft:air",
+      "children": [],
+      "childSlotCount": 8,
+      "macros": []
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 {
+	"version": 1,
 	"general": {
 		/* Shows the rarity of an item in its tooltip.
 		   (default: true)
@@ -164,9 +165,9 @@
 	},
 	"heldItemTooltip": {
 		/* Toggles the improved held items tooltips feature.
-		   ON/MINIMAL/OFF (default: ON)
+		   FANCY/MINIMAL/VANILLA (default: FANCY)
 		*/
-		"mode": "OFF",
+		"mode": "MINIMAL",
 		/* Shows a neat background behind the held item tooltip text.
 		   (default: true)
 		*/
@@ -184,21 +185,66 @@
 		   (default: false)
 		*/
 		"hideItemName": false,
-		/* Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.
+		/* Shows the rarity of an item in its held item tooltip.
 		   (default: true)
 		*/
-		"tiltAnimation": true,
-		/* Duration of the tilt animation in ms.
-		   (default: 300)
+		"rarityTooltip": false,
+		/* Shows the category of an item in a badge on its held item tooltip.
+		   (default: true)
 		*/
-		"tiltDuration": 300,
-		/* Magnitude of the tilt animation.
+		"itemBadges": false,
+		/* Shows the maximum hunger which can be gained from an item in its held item tooltip.
+		   (default: true)
+		*/
+		"hungerTooltip": false,
+		/* Shows the maximum saturation which can be gained from an item in its held item tooltip.
+		   (default: true)
+		*/
+		"saturationTooltip": false,
+		/* Shows a list of effects applied on consuming an item in its held item tooltip.
+		   WITH_ICONS/WITHOUT_ICONS/OFF (default: WITH_ICONS)
+		*/
+		"effectsTooltip": "WITHOUT_ICONS",
+		/* Shows the durability of an item in its held item tooltip.
+		   VALUE/PERCENTAGE/OFF (default: VALUE)
+		*/
+		"durabilityTooltip": "OFF",
+		/* Shows the durability of an item, represented by a bar, in its held item tooltip.
+		   (default: false)
+		*/
+		"durabilityBar": false,
+		/* Determines the vertical position of the held item tooltip.
+		   TOP/BOTTOM (default: BOTTOM)
+		*/
+		"relVerPos": "BOTTOM",
+		/* Determines the horizontal position of the held item tooltip.
+		   LEFT/CENTER/RIGHT (default: CENTER)
+		*/
+		"relHorPos": "CENTER",
+		/* Offsets the tooltip by the specified amount horizontally.
+		   (default: 0)
+		*/
+		"offsetX": 0,
+		/* Offsets the tooltip by the specified amount vertically.
+		   (default: 0)
+		*/
+		"offsetY": 0,
+		/* Shows a dynamic animation for the held item tooltip when scrolling the hotbar.
+		   Tilts when centered, slides in like a toast when at the sides.
+		   (default: true)
+		*/
+		"animation": false,
+		/* Duration of the animation in ms.
+		   (default: 500)
+		*/
+		"duration": 500,
+		/* Magnitude of the animation.
 		   (default: 10.0)
 		*/
-		"tiltMagnitude": 10.0,
-		/* Smoothness of the tilt animation.
+		"magnitude": 10.0,
+		/* Smoothness of the animation.
 		   (default: 2.0)
 		*/
-		"tiltEasing": 2.0
+		"easing": 2.0
 	}
 }
