@@ -29,6 +29,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 .idea/
+.temp/
 
 # Explicit authored overrides; private/runtime paths remain excluded.
 !/packs/**/.pakku/overrides/**
