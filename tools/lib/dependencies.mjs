@@ -1,3 +1,4 @@
+import {checkImportIntegrity,checkImportConfig,candidateHash} from './import-integrity.mjs';
 import { progress } from './progress.mjs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -36,14 +37,18 @@ export async function acceptDependencies(root,target,options={}) {
   if(!/^[a-f0-9-]{36}$/.test(options.candidate??'')||!options.confirm||!/^[a-f0-9]{64}$/.test(options.acceptHash??''))throw new Error('需要 --candidate <id> --accept-hash <审查的 SHA256> --confirm');
   return lockOperation(runtimeKey(await safePath(root,target.path)),async()=>{
     const base=`.work/candidates/${options.candidate}`,record=await readJson(await safePath(root,`${base}/review.json`));
+    await assertNoPendingDependencyWrite(root,target);
     const info=await sourceSnapshot(root,target);
     if(record.schema!==1||record.id!==options.candidate||record.targetId!==target.id||record.sourceFingerprint!==info.fingerprint)throw new Error('候选身份不符或正式源已变化，重新审查');
     const candidateTarget={...target,path:`${base}/project`};
     await checkTarget(root,candidateTarget,options);
     const candidate=await sourceSnapshot(root,candidateTarget);
-    for(const name of new Set([...info.source,...candidate.source]))if(name!=='pakku-lock.json' && info.hashes[name]!==candidate.hashes[name])throw new Error('候选含锁文件以外变化，拒绝接受');
+    const withConfig=record.operation==='import'&&record.importSource&&typeof record.configHash==='string';
+    if(record.importSource) {checkImportConfig(info.config,candidate.config);checkImportIntegrity(info.lock,candidate.lock);}
+    for(const name of new Set([...info.source,...candidate.source]))if(name!=='pakku-lock.json' && !(withConfig&&name==='pakku.json') && info.hashes[name]!==candidate.hashes[name])throw new Error('候选含锁文件以外变化，拒绝接受');
     const after=await sourceBytes(candidate.dir,'pakku-lock.json');
-    if(digest(after)!==record.hash||record.hash!==options.acceptHash)throw new Error('候选锁文件哈希已变化');
+    const configAfter=withConfig?await sourceBytes(candidate.dir,'pakku.json'):undefined;
+    if((withConfig&&digest(configAfter)!==record.configHash)||candidateHash(after,configAfter)!==record.hash||record.hash!==options.acceptHash)throw new Error('候选锁文件哈希已变化');
     const verifyImportSource=async()=>{if(record.importSource) {
       const input=record.importSource,runtime=await getRuntime(root,input.runtime);
       if(runtime.key!==input.key||runtime.targetId!==target.id)throw new Error('导入来源绑定已变化');
@@ -54,12 +59,78 @@ export async function acceptDependencies(root,target,options={}) {
     }};
     await verifyImportSource();
     if((await sourceSnapshot(root,target)).fingerprint!==info.fingerprint)throw new Error('验证期间源已变化');
-    return replaceSource(root,target,'pakku-lock.json',await sourceBytes(info.dir,'pakku-lock.json'),after,{operation:'accept-dependencies',candidate:record.id},{...options,beforeWrite:async()=>{
+    const writeOptions={...options,beforeWrite:async()=>{
       await options.beforeWrite?.();
       await verifyImportSource();
       if((await sourceSnapshot(root,target)).fingerprint!==info.fingerprint)throw new Error('写入前源已变化');
-    }});
+    }};
+    const metadata={operation:'accept-dependencies',candidate:record.id};
+    if(withConfig)return replaceDependencySources(root,target,[
+      {name:'pakku.json',before:await sourceBytes(info.dir,'pakku.json'),after:configAfter},
+      {name:'pakku-lock.json',before:await sourceBytes(info.dir,'pakku-lock.json'),after},
+    ],metadata,writeOptions);
+    return replaceSource(root,target,'pakku-lock.json',await sourceBytes(info.dir,'pakku-lock.json'),after,metadata,writeOptions);
   });
+}
+
+export async function assertNoPendingDependencyWrite(root,target) {
+  const collection=await localPath(root,'collect');
+  for(const entry of await fs.readdir(collection).catch(e=>{if(e.code==='ENOENT')return [];throw e;})) {
+    const previous=await optionalJson(await localPath(root,`collect/${entry}/record.json`));
+    if(previous?.targetId===target.id&&previous.files&&['applying','rollback-failed'].includes(previous.status))throw new Error(`存在未完成的源写入，请先检查备份 .local/collect/${entry}`);
+  }
+}
+
+// A config + lock acceptance has one backup and one transaction. Individual renames
+// are atomic; errors roll back our writes only. An interrupted transaction retains
+// both originals and blocks another paired write until its backup is inspected.
+async function replaceDependencySources(root,target,files,metadata,options) {
+  const dir=await safePath(root,target.path);
+  await assertNoPendingDependencyWrite(root,target);
+  for(const file of files) {
+    if(digest(await sourceBytes(dir,file.name))!==digest(file.before))throw new Error('源文件已变化');
+    if(!((await fs.stat(await safePath(dir,file.name))).mode&0o200))throw new Error('源文件只读');
+  }
+  const id=randomUUID(),base=await localPath(root,`collect/${id}`);
+  await fs.mkdir(path.join(base,'before'),{recursive:true});await fs.mkdir(path.join(base,'after'));
+  const record={schema:1,targetId:target.id,...metadata,status:'prepared',files:files.map(f=>({path:f.name,before:digest(f.before),after:digest(f.after)}))};
+  for(const file of files) {
+    await fs.writeFile(path.join(base,'before',file.name),file.before,{flag:'wx'});
+    await fs.writeFile(path.join(base,'after',file.name),file.after,{flag:'wx'});
+  }
+  const journal=path.join(base,'record.json');await atomicJson(journal,record);
+  await options.beforeWrite();
+  for(const file of files)if(digest(await sourceBytes(dir,file.name))!==digest(file.before))throw new Error('写入前源文件已变化');
+  const written=[];
+  const replace=async(file,bytes)=>{
+    const temp=await safePath(dir,`${file.name}.collect-${id}.tmp`);
+    try {await fs.writeFile(temp,bytes,{flag:'wx'});await fs.rename(temp,await safePath(dir,file.name));}
+    finally {await fs.rm(temp,{force:true});}
+  };
+  record.status='applying';await atomicJson(journal,record);
+  try {
+    progress('source.write','正在写入已确认的 Pakku 配置与锁文件');
+    for(const file of files) {
+      await options.beforeFileWrite?.(file.name,written.length);
+      if(digest(await sourceBytes(dir,file.name))!==digest(file.before))throw new Error('写入前源文件已变化');
+      await replace(file,file.after);written.push(file);
+    }
+    for(const file of files)if(digest(await sourceBytes(dir,file.name))!==digest(file.after))throw new Error('源写后校验失败');
+    record.status='committed';await atomicJson(journal,record);
+  } catch(error) {
+    try {
+      for(const file of written.reverse()) {
+        if(digest(await sourceBytes(dir,file.name))!==digest(file.after))throw new Error('源被外部修改，未覆盖');
+        await replace(file,file.before);
+      }
+      record.status='rolled-back';await atomicJson(journal,record);
+    } catch(rollback) {
+      record.status='rollback-failed';await atomicJson(journal,record);
+      throw new Error(`${error.message}；回滚失败：${rollback.message}，检查备份 .local/collect/${id}`);
+    }
+    throw error;
+  }
+  return {collected:files.map(f=>f.name).join(' / '),files:record.files,backup:`.local/collect/${id}`};
 }
 
 // Restore the deployed formal combination only when its lock still is the current source lock.

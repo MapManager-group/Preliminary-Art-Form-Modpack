@@ -10,8 +10,9 @@ import {atomicJson} from '../tools/lib/runtime-fs.mjs';
 
 const data=Array.from({length:4},(_,i)=>Buffer.from(`fixture-batch-mod-${i}`));
 const projects=data.map((bytes,i)=>({pakku_id:`new-${i}`,type:'MOD',id:{modrinth:`platform-${i}`},slug:{modrinth:`mod-${i}`},name:{modrinth:`Mod ${i}`},files:[{type:'modrinth',id:`version-${i}`,file_name:`mod-${i}.jar`,mc_versions:['1.21.1'],loaders:['fabric'],hashes:{sha512:digest(bytes,'sha512')}}]}));
-async function ready(t,{unknown=false,mutate}={}) {
+async function ready(t,{unknown=false,mutate,config,mutateConfig}={}) {
   const f=await setup(t),calls=[];
+  if(config) {const file=path.join(f.root,f.target.path,'pakku.json');await atomicJson(file,{...JSON.parse(await fs.readFile(file)),...config});}
   const lockFile=path.join(f.root,f.target.path,'pakku-lock.json'),lock=JSON.parse(await fs.readFile(lockFile));
   lock.projects=[{pakku_id:'existing',type:'MOD',name:{modrinth:'Existing dependent'},id:{modrinth:'existing'},slug:{modrinth:'existing'},files:[{type:'modrinth',required_dependencies:['platform-0']}]}];
   await atomicJson(lockFile,lock);
@@ -28,6 +29,11 @@ async function ready(t,{unknown=false,mutate}={}) {
       }
       if(candidate.projects.some(p=>p.pakku_id==='new-0'))candidate.projects[0].pakku_links=['new-0'];
       mutate?.(candidate);await atomicJson(file,candidate);
+      // Model the real serializer: known explicit defaults disappear during sync.
+      const configFile=path.join(cwd,'pakku.json'),cfg=JSON.parse(await fs.readFile(configFile));
+      for(const key of ['description','author'])if(cfg[key]==='')delete cfg[key];
+      if(cfg.export_server_side_projects_to_client===false)delete cfg.export_server_side_projects_to_client;
+      mutateConfig?.(cfg);await atomicJson(configFile,cfg);
     } else assert.equal(args.at(-1),'ls');
     return {code:0,stdout:'Pakku native fixture log\nProjects total: 5',stderr:''};
   };
@@ -140,4 +146,54 @@ test('Batch Import 同一 Project 的不同内容 JAR 不作为普通重复项�
   }}),before=await fs.readFile(f.lockFile),c=await review(f);
   assert.equal(c.blocked,true);assert.match(c.failed[0].reason,/同一 Project/);assert.equal(c.pending,0);assert.equal(c.id,undefined);
   assert.deepEqual(await fs.readFile(f.lockFile),before);
+});
+
+
+test('Batch Import 配置默认值省略随 Lock 同一候选、一次备份和确认写入',async t=>{
+  const f=await ready(t,{config:{author:'',description:'',export_server_side_projects_to_client:false}});
+  const before=await snapshot(path.join(f.root,'packs')),configFile=path.join(f.root,f.target.path,'pakku.json');
+  const original=await fs.readFile(configFile),c=await review(f);
+  assert.equal(c.blocked,false);assert.equal(c.configHash,digest(await fs.readFile(path.join(f.root,c.projectPath,'pakku.json'))));
+  assert.deepEqual(c.configChanges.sort(),['author','description','export_server_side_projects_to_client']);assert.ok(c.configDiff.text);
+  assert.deepEqual(await snapshot(path.join(f.root,'packs')),before);
+  const result=await accept(f,c);assert.equal(result.files.length,2);
+  const backups=await fs.readdir(path.join(f.root,'.local/collect'));assert.equal(backups.length,1);
+  assert.deepEqual(await fs.readFile(path.join(f.root,result.backup,'before/pakku.json')),original);
+  assert.equal(JSON.parse(await fs.readFile(configFile)).author,undefined);
+  assert.equal(JSON.parse(await fs.readFile(f.lockFile)).projects.length,5);
+});
+
+test('Batch Import 非默认配置变化一律拒绝，不隐式修改规则、路径或 Project 配置',async t=>{
+  for(const mutateConfig of [c=>c.name='changed',c=>c.version='2',c=>c.author='changed',c=>c.overrides=[],c=>c.client_overrides=[],c=>c.server_overrides=[],c=>c.paths={mods:'other'},c=>c.export_server_side_projects_to_client=true,c=>c.projects={radial:{side:'SERVER'}},c=>delete c.unknown]) {
+    const f=await ready(t,{config:{author:'',unknown:'keep'},mutateConfig}),before=await snapshot(path.join(f.root,'packs')),c=await review(f);
+    assert.equal(c.blocked,true);assert.match(c.failed[0].reason,/项目配置/);assert.equal(c.id,undefined);
+    assert.deepEqual(await snapshot(path.join(f.root,'packs')),before);
+  }
+});
+
+test('Batch Import 双文件取消、配置篡改、失败和第二次 rename 前中断不留下部分写入',async t=>{
+  for(const kind of ['cancel','tamper','failure','rollback','concurrent']) {
+    const f=await ready(t,{config:{author:''}}),c=await review(f),before=await snapshot(path.join(f.root,'packs'));
+    if(kind==='tamper')await fs.appendFile(path.join(f.root,c.projectPath,'pakku.json'),' ');
+    const extra=kind==='cancel'?{confirm:false}:kind==='failure'?{beforeWrite:()=>{throw new Error('failure');}}:kind==='rollback'||kind==='concurrent'?{beforeFileWrite:async(_name,index)=>{if(index===1){if(kind==='concurrent')await fs.writeFile(f.lockFile,'external edit');throw new Error('second write failure');}}}:{};
+    await assert.rejects(accept(f,c,extra));
+    if(kind==='concurrent') {assert.equal(await fs.readFile(f.lockFile,'utf8'),'external edit');delete before['example/pakku-lock.json'];const now=await snapshot(path.join(f.root,'packs'));delete now['example/pakku-lock.json'];assert.deepEqual(now,before);}
+    else assert.deepEqual(await snapshot(path.join(f.root,'packs')),before);
+    assert.ok(!(await fs.readdir(path.dirname(f.lockFile))).some(n=>n.endsWith('.tmp')));
+    if(kind==='rollback'||kind==='concurrent') {const backups=await fs.readdir(path.join(f.root,'.local/collect'));assert.equal(backups.length,1);assert.equal(JSON.parse(await fs.readFile(path.join(f.root,'.local/collect',backups[0],'record.json'))).status,'rolled-back');}
+  }
+});
+
+
+test('Batch Import 回滚不覆盖外部配置，未完成事务阻止再次扫描与接受',async t=>{
+  const f=await ready(t,{config:{author:''}}),c=await review(f),configFile=path.join(f.root,f.target.path,'pakku.json');
+  const oldLock=await fs.readFile(f.lockFile);
+  await assert.rejects(accept(f,c,{beforeFileWrite:async(_name,index)=>{if(index===1){await fs.writeFile(configFile,'external config');throw new Error('failure');}}}),/回滚失败/);
+  assert.equal(await fs.readFile(configFile,'utf8'),'external config');assert.deepEqual(await fs.readFile(f.lockFile),oldLock);
+  const backups=await fs.readdir(path.join(f.root,'.local/collect')),record=JSON.parse(await fs.readFile(path.join(f.root,'.local/collect',backups[0],'record.json')));
+  assert.equal(record.status,'rollback-failed');
+  // Restore readable source to test the pending-transaction guard independently.
+  await fs.copyFile(path.join(f.root,'.local/collect',backups[0],'before/pakku.json'),configFile);
+  await assert.rejects(scanImportDependencies(f.root,f.runtime,f.target),/未完成的源写入/);
+  await assert.rejects(accept(f,c),/未完成的源写入/);
 });

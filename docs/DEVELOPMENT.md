@@ -186,11 +186,14 @@ pnpm run mp -- build --target client-26.2
 
 ```powershell
 pnpm exec node tools/verify-import.mjs
+pnpm exec node tools/verify-runtime-import.mjs
 pnpm exec node tools/verify-phase1.mjs
 pnpm exec node tools/verify-phase2.mjs
 pnpm exec node tools/verify-phase3.mjs
 pnpm exec node tools/verify-phase4.mjs
 ```
+
+`verify-runtime-import` 使用固定版本的 Radial 与 Renice Shot，验证真实 Pakku 批量导入、配置默认值省略、取消、失败与双文件写入回滚。配置与 Lock 共同绑定候选审查哈希；仅允许 Pakku 1.5.0 序列化时省略已知默认值，其他配置变化仍拒绝。二者在同一备份目录保留写入前后内容；写入失败会回滚，进程意外中断或回滚失败时须先检查提示的备份，后续导入会暂停。
 
 `verify-import` 使用固定 ServerCore 版本，验证 MRPACK 导入后的 SERVER 侧别、文件哈希及客户端部署排除。`verify-phase1` 额外检查正式目标及覆盖文件，并确认已跟踪和未跟踪源文件未变；其余同步、回收、依赖审查、Apply 和 CI 验证使用 Pakku 初始化的临时工程。失败时会输出临时目录供检查，网络失败不会当成测试通过。
 
