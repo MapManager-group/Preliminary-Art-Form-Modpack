@@ -874,7 +874,7 @@
         {
             "pakku_id": "0PmlhKPp5sCUHynU",
             "type": "MOD",
-            "side": "SERVER",
+            "side": "BOTH",
             "slug": {
                 "modrinth": "c2me-fabric"
             },
@@ -1238,8 +1238,11 @@
         },
         {
             "pakku_id": "j1fYt2R7gYlTGRzq",
+            "pakku_links": [
+                "ent6yJF4cfLlyam5"
+            ],
             "type": "MOD",
-            "side": "SERVER",
+            "side": "BOTH",
             "slug": {
                 "modrinth": "zfastnoise"
             },
@@ -4019,6 +4022,45 @@
             ]
         },
         {
+            "pakku_id": "0jChyyr2KIU2igro",
+            "type": "MOD",
+            "side": "CLIENT",
+            "slug": {
+                "modrinth": "radial"
+            },
+            "name": {
+                "modrinth": "Radial"
+            },
+            "id": {
+                "modrinth": "g52fu7eA"
+            },
+            "files": [
+                {
+                    "type": "modrinth",
+                    "file_name": "radial-3.2.0+26.2.jar",
+                    "mc_versions": [
+                        "26.2"
+                    ],
+                    "loaders": [
+                        "fabric"
+                    ],
+                    "release_type": "release",
+                    "url": "https://cdn.modrinth.com/data/g52fu7eA/versions/pMOutbvD/radial-3.2.0+26.2.jar",
+                    "id": "pMOutbvD",
+                    "parent_id": "g52fu7eA",
+                    "hashes": {
+                        "sha512": "1d462be0784c0f9cefe9360253ffabd4a9acec3a55f3b3b477a0ba5cd643863eba81e3a2f9dcf9011a3c1c089f262b4fc99859005161fb5523339e711f45cc4e",
+                        "sha1": "72a2f6ba695957feef2edeabe3eb49712653f7bc"
+                    },
+                    "required_dependencies": [
+                        "P7dR8mSH"
+                    ],
+                    "size": 789066,
+                    "date_published": "2026-09-29T06:33:43.265625Z"
+                }
+            ]
+        },
+        {
             "pakku_id": "4DeQIrHLryaVKtXI",
             "type": "MOD",
             "side": "CLIENT",
@@ -4113,6 +4155,45 @@
             ]
         },
         {
+            "pakku_id": "o50dY3bo5BixgXXw",
+            "type": "MOD",
+            "side": "CLIENT",
+            "slug": {
+                "modrinth": "renice-shot"
+            },
+            "name": {
+                "modrinth": "Renice Shot"
+            },
+            "id": {
+                "modrinth": "ZDCwiIc3"
+            },
+            "files": [
+                {
+                    "type": "modrinth",
+                    "file_name": "renice-shot-1.2.1+mc26.2.jar",
+                    "mc_versions": [
+                        "26.2"
+                    ],
+                    "loaders": [
+                        "fabric"
+                    ],
+                    "release_type": "release",
+                    "url": "https://cdn.modrinth.com/data/ZDCwiIc3/versions/roOTvshj/renice-shot-1.2.1+mc26.2.jar",
+                    "id": "roOTvshj",
+                    "parent_id": "ZDCwiIc3",
+                    "hashes": {
+                        "sha512": "17b28765fa2e32b9b742208cbfb1dffeada014f96e8c85808b4bc45561e6ba68b9ecb8f35ef6621c0bdcaa26bfe0adf3a84a6704b9f82a9967fb1d4229b3da64",
+                        "sha1": "19daa73d9aab0d032eebe0ecaa5b4d684eea0882"
+                    },
+                    "required_dependencies": [
+                        "P7dR8mSH"
+                    ],
+                    "size": 51788,
+                    "date_published": "2026-09-30T23:08:54.306733Z"
+                }
+            ]
+        },
+        {
             "pakku_id": "CiYEAfiEsG4sDCHA",
             "type": "MOD",
             "side": "BOTH",
@@ -4193,7 +4274,7 @@
         {
             "pakku_id": "DZ2pxYY5i3Wbny5i",
             "type": "MOD",
-            "side": "SERVER",
+            "side": "BOTH",
             "slug": {
                 "modrinth": "simple-datapacks"
             },
@@ -4817,7 +4898,7 @@
                 "lxPuCl83DeTx0ICF"
             ],
             "type": "MOD",
-            "side": "CLIENT",
+            "side": "BOTH",
             "slug": {
                 "modrinth": "xaeros-minimap"
             },
@@ -4860,7 +4941,7 @@
                 "lxPuCl83DeTx0ICF"
             ],
             "type": "MOD",
-            "side": "CLIENT",
+            "side": "BOTH",
             "slug": {
                 "modrinth": "xaeros-world-map"
             },
@@ -5185,6 +5266,101 @@
                     "required_dependencies": [],
                     "size": 17373,
                     "date_published": "2023-06-12T08:06:07.649412Z"
+                }
+            ]
+        },
+        {
+            "pakku_id": "ent6yJF4cfLlyam5",
+            "type": "MOD",
+            "side": "BOTH",
+            "slug": {
+                "modrinth": "zconfig"
+            },
+            "name": {
+                "modrinth": "ZConfig"
+            },
+            "id": {
+                "modrinth": "4qmvXRB9"
+            },
+            "files": [
+                {
+                    "type": "modrinth",
+                    "file_name": "zconfig-1.0.0+26.x.jar",
+                    "mc_versions": [
+                        "26.1-snapshot-1",
+                        "26.1-snapshot-2",
+                        "26.1-snapshot-3",
+                        "26.1-snapshot-4",
+                        "26.1-snapshot-5",
+                        "26.1-snapshot-6",
+                        "26.1-snapshot-7",
+                        "26.1-snapshot-8",
+                        "26.1-snapshot-9",
+                        "26.1-snapshot-10",
+                        "26.1-snapshot-11",
+                        "26.1-pre-1",
+                        "26.1-pre-2",
+                        "26.1-pre-3",
+                        "26.1-rc-1",
+                        "26.1-rc-2",
+                        "26.1-rc-3",
+                        "26.1",
+                        "26.1.1-rc-1",
+                        "26.1.1",
+                        "26w14a",
+                        "26.2-snapshot-1",
+                        "26.1.2-rc-1",
+                        "26.1.2",
+                        "26.2-snapshot-2",
+                        "26.2-snapshot-3",
+                        "26.2-snapshot-4",
+                        "26.2-snapshot-5",
+                        "26.2-snapshot-6",
+                        "26.2-snapshot-7",
+                        "26.2-snapshot-8",
+                        "26.2-pre-1",
+                        "26.2-pre-2",
+                        "26.2-pre-3",
+                        "26.2-pre-4",
+                        "26.2-pre-5",
+                        "26.2-pre-6",
+                        "26.2-rc-1",
+                        "26.2-rc-2",
+                        "26.2",
+                        "26.3-snapshot-1",
+                        "26.3-snapshot-2",
+                        "26.3-snapshot-3",
+                        "26.3-snapshot-4",
+                        "26.3-snapshot-5",
+                        "26.3-snapshot-6",
+                        "26.3-snapshot-7",
+                        "26.3-snapshot-8",
+                        "26.3-snapshot-9",
+                        "26.3-snapshot-10",
+                        "26.3-pre-1",
+                        "26.3-pre-2",
+                        "26.3-pre-3",
+                        "26.3-rc-1",
+                        "26.3-rc-2",
+                        "26.3-rc-3",
+                        "26.3",
+                        "26.4-snapshot-1"
+                    ],
+                    "loaders": [
+                        "fabric",
+                        "quilt"
+                    ],
+                    "release_type": "release",
+                    "url": "https://cdn.modrinth.com/data/4qmvXRB9/versions/tsgt79sG/zconfig-1.0.0+26.x.jar",
+                    "id": "tsgt79sG",
+                    "parent_id": "4qmvXRB9",
+                    "hashes": {
+                        "sha512": "baf87ac023fd0297f531897f0dcdcac3b0b35960683090adb3350a2281a211c5134a5373730a10628300caf5711b912705f16b33a1d1a73a3a86f346bcd7c6f5",
+                        "sha1": "91dab4f25559cf79d493177fbe0a50c4083a27cb"
+                    },
+                    "required_dependencies": [],
+                    "size": 405423,
+                    "date_published": "2026-08-03T14:24:03.721934Z"
                 }
             ]
         },
