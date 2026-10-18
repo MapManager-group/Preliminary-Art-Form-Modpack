@@ -1,9 +1,9 @@
 # 仓库维护约定
 
-- 项目：Preliminary Art Form；开发别名：LorianDesign。当前正式目标为 `client-26.2`，只交付 Modrinth `.mrpack`，不新增服务端目标。
+- 项目：Preliminary Art Form；开发别名：LorianDesign。只交付 Modrinth `.mrpack`，不新增服务端目标。
 - `workspace.json` 组织目标，Pakku 配置和锁文件维护包元数据与依赖；迁移审计不作为第二套依赖清单。
 
-- 使用 pnpm 和 JavaScript ESM。项目结构见[架构说明](docs/WORKFLOW_ARCHITECTURE.md)，常用操作见[开发指南](docs/DEVELOPMENT.md)。
+- 使用 pnpm 和 JavaScript ESM。项目结构见[架构说明](docs/v2/WORKFLOW_ARCHITECTURE.md)，常用操作见[开发指南](docs/v2/DEVELOPMENT.md)。
 - `ci.ps1` 只负责本地菜单和参数转发，业务操作统一调用 `tools/mp.mjs`。自动化使用标准 CLI，不驱动人工菜单；PowerShell 参数按数组传递，不执行用户输入的命令字符串。
 - 菜单写入确认逐次收集，不能预设 `--stopped`、`--confirm` 或包哈希。直接模式不弹出菜单确认，原样保留 CLI 退出码。
 - Pakku 负责依赖解析和锁文件维护，不另建 Mod 清单。新增参数或配置字段时核对固定版本的官方文档、源码与命令帮助；锁文件通过 Pakku 修改。
@@ -18,5 +18,4 @@
 
 - 内容限制统一复用 `tools/lib/content-policy.mjs`；区分作者声明的 overrides 与实例自动发现的文件，不按普通配置关键词或扩展名添加宽泛黑名单。启动器实际版本文件按 Runtime 路径保护。
 
-- 默认设置使用 YoSBR；不要重新引入已移除的根 options.txt。新增内嵌资源记录来源、许可与校验值，不把工具缓存当作正式资源。
 - 项目保留 MIT 许可证，模板架构来源为 CC0-1.0；保持提交原子化，不夹带无关修改。
