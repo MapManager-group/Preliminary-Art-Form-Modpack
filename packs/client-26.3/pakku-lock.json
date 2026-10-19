@@ -4,7 +4,7 @@
         "26.3"
     ],
     "loaders": {
-        "fabric": "0.19.5"
+        "fabric": "0.20.0"
     },
     "projects": [
         {
