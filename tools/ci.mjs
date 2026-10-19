@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {loadWorkspace,readJson,safePath} from './lib/workspace.mjs';
 import {run,requireSuccess} from './lib/pakku.mjs';
-import {releaseTag} from './lib/github.mjs';
+import {releaseIdentity} from './lib/github.mjs';
 
 // Keep build inputs explicit: editor settings, tests and the menu do not change exported packs.
 const sharedBuildFiles=new Set(['workspace.json','toolchain.json','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','.npmrc','.gitignore','.gitattributes','.github/workflows/ci.yml','.github/workflows/release.yml']);
@@ -28,8 +28,8 @@ export function needsTests(workspace,files,all=false) {
 export async function validateTag(root,tag) {
   const workspace=await loadWorkspace(root),target=workspace.targets.find(t=>t.id===tag?.split('/')[1]);
   if(!target)throw new Error('Tag 指向未知 Target');
-  const version=releaseTag(tag,target.id),config=await readJson(await safePath(root,`${target.path}/pakku.json`));
-  if(config.version!==version)throw new Error('Tag 与 Pakku 配置版本不符');return {target,version};
+  const identity=releaseIdentity(tag,target.id),config=await readJson(await safePath(root,`${target.path}/pakku.json`));
+  if(config.version!==identity.version)throw new Error('Tag 与 Pakku 配置版本不符');return {target,...identity};
 }
 export async function ciPlan(root,event,eventName) {
   const workspace=await loadWorkspace(root);

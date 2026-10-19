@@ -164,11 +164,21 @@ test('Release Tag 与 Workspace 共用 Target ID 规则',()=>{
   assert.throws(()=>releaseTag('release/fabric-1.21.1/v0.1.0','neoforge-1.21.1'));
 });
 
-for(const id of ['fabric-1.21.1','neoforge-1.21.1'])test(`${id} 支持 Tag 校验、Draft 上传和远端 Apply`,async t=>{
+for(const [id,label,version,prerelease] of [
+  ['fabric-1.21.1','v0.1.0','0.1.0',false],['neoforge-1.21.1','v0.1.0','0.1.0',false],
+  ...[['a1.4','a1.4',true],['a2.0','a2.0',true],['b1.0','b1.0',true],['b2.3','b2.3',true],['v1.4.0','1.4.0',false],['v1.5.0-beta.1','1.5.0-beta.1',true],['v1.4.0+build-1','1.4.0+build-1',false]].map(v=>['client-26.2',...v]),
+])test(`${id}/${label} 支持 Tag 校验、Draft 类型/标题和远端 Apply`,async t=>{
   const f=await setup(t);f.target.id=id;f.runtime.targetId=id;
   await atomicJson(path.join(f.root,'workspace.json'),{targets:[f.target]});
   await atomicJson(await localPath(f.root,'runtimes.json'),{schema:1,bindings:[f.runtime]});
-  const tag=`release/${id}/v0.1.0`,bundle=await bundleFor(f);
+  const configFile=path.join(f.root,f.target.path,'pakku.json'),config=JSON.parse(await fs.readFile(configFile));
+  await atomicJson(configFile,{...config,version});
+  const tag=`release/${id}/${label}`,bundle=await bundleFor(f);
+  assert.equal(releaseTag(tag,id),version);
+  assert.equal((await validateTag(f.root,tag)).version,version);
+  await atomicJson(configFile,{...config,version:version+'0'});
+  await assert.rejects(validateTag(f.root,tag),/版本不符/);
+  await atomicJson(configFile,{...config,version});
   assert.equal((await validateTag(f.root,tag)).target.id,id);
   await assert.rejects(validateTag(f.root,`release/${id}/v9.0.0`),/版本不符/);
   const files={[bundle.name]:bundle.bytes,'build-report.json':bundle.reportBytes,SHA256SUMS:bundle.sumsBytes};
@@ -178,13 +188,25 @@ for(const id of ['fabric-1.21.1','neoforge-1.21.1'])test(`${id} 支持 Tag 校�
     const u=String(url);
     if(u.includes('/git/ref/tags/'))return Response.json({object:{type:'commit',sha:'a'.repeat(40)}});
     if(u.includes('/releases/tags/'))return created?Response.json({tag_name:tag,draft:true,assets}):new Response('',{status:404});
-    if(u.endsWith('/releases')){const body=JSON.parse(options.body);assert.equal(body.tag_name,tag);assert.equal(body.draft,true);created=true;return Response.json({id:9,draft:true});}
+    if(u.endsWith('/releases')){const body=JSON.parse(options.body);assert.equal(body.tag_name,tag);assert.equal(body.draft,true);assert.equal(body.name,`${id} ${label}`);assert.equal(body.prerelease,prerelease);created=true;return Response.json({id:9,draft:true});}
     if(u.startsWith('https://uploads.github.com/')){uploads++;return Response.json({digest:'sha256:'+digest(options.body)});}
     const match=u.match(/\/releases\/assets\/(\d+)$/);if(match)return new Response(files[assets[Number(match[1])-1].name]);
     throw new Error('unexpected request');
   };
   assert.equal((await publishDraft(f.root,{repo:'owner/repo',tag,directory:'.work/bundle',publish:true,fetch,token:'test-only'})).draft,true);
   assert.equal(uploads,3);
+  await assert.rejects(publishDraft(f.root,{repo:'owner/repo',tag,directory:'.work/bundle',publish:true,fetch}),/拒绝覆盖/);
+  // A wrong report version must fail before any publishing request or Runtime write.
+  const wrong=await bundleFor(f,(_entries,index)=>index.versionId=version+'0');
+  await assert.rejects(publishDraft(f.root,{repo:'owner/repo',tag,directory:'.work/bundle',publish:true,fetch}),/报告/);
+  const mismatchFetch=async(url,options)=>{
+    if(String(url).includes('/releases/tags/'))return Response.json({tag_name:tag,assets:assets.map(a=>a.name==='build-report.json'?{...a,digest:'sha256:'+digest(wrong.reportBytes)}:a)});
+    if(String(url).endsWith('/releases/assets/2'))return new Response(wrong.reportBytes);
+    return fetch(url,options);
+  };
+  const runtimeBefore=await snapshot(f.gameDir);
+  await assert.rejects(apply(f.root,f.runtime,f.target,{repo:'owner/repo',release:tag,fetch:mismatchFetch,...stopped}),/版本与构建报告不符/);
+  assert.deepEqual(await snapshot(f.gameDir),runtimeBefore);
   const before=await snapshot(f.base),options={repo:'owner/repo',release:tag,fetch,...stopped};
   await apply(f.root,f.runtime,f.target,options);assert.deepEqual(await snapshot(f.base),before);
   await apply(f.root,f.runtime,f.target,{...options,confirm:true,sha256:digest(bundle.bytes)});
@@ -206,4 +228,20 @@ test('Apply 支持默认 options、根目录配置和脚本，但不能触碰实
   const bad=await bundleFor(f,e=>e['overrides/Example.json']=strToU8('{}'));
   await assert.rejects(apply(f.root,f.runtime,f.target,{file:bad.file,...stopped}),/实际启动器版本文件/);
   assert.deepEqual(await snapshot(f.gameDir),before);
+});
+
+
+test('Release 版本拒绝不完整格式、额外路径、前缀重复、前导零与非法 SemVer 标识',()=>{
+  for(const version of ['', 'a', 'b', 'a1', 'b1.0.0', 'a1.4-beta', 'b1.0+meta', 'a01.4', 'b1.00', 'A1.4', 'va1.4', 'vb1.0', '1.4.0', 'v1.4', 'v01.4.0', 'v1.04.0', 'v1.4.00', 'v1.4.0-', 'v1.4.0-beta..1', 'v1.4.0-beta.01', 'v1.4.0-beta_1', 'v1.4.0+', 'v1.4.0+meta..x', 'v1.4.0/extra','a1.4/extra','b1.0\n','a1.4 '])assert.throws(()=>releaseTag(`release/client-26.2/${version}`,'client-26.2'),version);
+  for(const label of ['a1.4','b1.0','v1.4.0']) {
+    assert.throws(()=>releaseTag(`release/client-26.2/${label}`,'client-26.3'));
+    assert.throws(()=>releaseTag(`release/bad_target/${label}`,'bad_target'));
+  }
+});
+
+test('Release 工作流触发 Alpha、Beta、SemVer 标签并保留 Draft 权限隔离',async()=>{
+  const yaml=await fs.readFile(new URL('../.github/workflows/release.yml',import.meta.url),'utf8');
+  assert.match(yaml,/tags: \['release\/\*\/a\*', 'release\/\*\/b\*', 'release\/\*\/v\*'\]/);
+  assert.match(yaml,/permissions:\s+contents: read/);assert.match(yaml,/draft:[\s\S]+contents: write/);
+  assert.match(yaml,/node tools\/ci.mjs tag/);assert.match(yaml,/node tools\/release.mjs --publish/);
 });

@@ -7,7 +7,7 @@
 | 工作流 | 触发方式 | 结果 |
 | --- | --- | --- |
 | `ci.yml` | PR、任意分支推送、手动运行 | 检查与预览包 |
-| `release.yml` | 推送 `release/<目标名>/v<版本>` 标签 | GitHub 发布草稿 |
+| `release.yml` | 推送 `release/<目标名>/a*`、`b*` 或 `v*` 标签 | GitHub 发布草稿 |
 
 创建自己的仓库后，在 Actions 中启用工作流。分支规则包含带 `/` 的名称，不需要按默认分支修改；标签推送由发布工作流处理。分支保护可将 **Required checks** 设为必需检查。
 
@@ -37,22 +37,42 @@ PR 判断整个分支的累计差异；若先前已修改包源，后续只改�
 
 ## 创建发布草稿
 
-先修改 Pakku 包版本，完成检查、构建并提交：
+版本规则如下；`a`、`b` 是包版本的一部分，只有 SemVer 标签额外带 `v`：
+
+| 类型 | `pakku.json` 的 version | Tag | 发布类型 |
+| --- | --- | --- | --- |
+| Alpha | `a1.4` | `release/client-26.2/a1.4` | Pre-release |
+| Beta | `b1.0` | `release/client-26.3/b1.0` | Pre-release |
+| Stable | `1.4.0` | `release/client-26.2/v1.4.0` | 正式 Release |
+| SemVer 预发布 | `1.5.0-beta.1` | `release/client-26.2/v1.5.0-beta.1` | Pre-release |
+
+Alpha / Beta 格式为 `a<主版本>.<次版本>`、`b<主版本>.<次版本>`，数字为非负整数，不使用前导零。`v` 后遵循 [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html)，必须包含主、次、修订三个数字；可带预发布标识及构建元数据。仅含构建元数据的版本仍为正式版。所有版本均按完整字符串比对，不转换或截断。
+
+创建 Tag 前，先将对应 Target 的 `pakku.json` 中 `version` 更新为表中的完整版本字符串，完成检查和构建，并提交、推送所有正式源文件。示例 Target ID 需先存在于 `workspace.json`；不要给不存在的目标打标签。
 
 ```powershell
-pnpm run mp -- pakku --target client-26.2 -- cfg --version A1.3.1
+pnpm run mp -- pakku --target client-26.2 -- cfg --version a1.4
 pnpm run mp -- check --all
 pnpm run mp -- build --target client-26.2
 ```
 
-提交后创建并推送标签：
+源提交推送完成后，为本次版本选择相应标签（以下是独立发布示例）：
 
-```powershell
-git tag release/client-26.2/vA1.3.1
-git push origin release/client-26.2/vA1.3.1
+```bash
+# Alpha
+git tag release/client-26.2/a1.4
+git push origin release/client-26.2/a1.4
+
+# Beta
+git tag release/client-26.3/b1.0
+git push origin release/client-26.3/b1.0
+
+# Stable
+git tag release/client-26.2/v1.4.0
+git push origin release/client-26.2/v1.4.0
 ```
 
-标签中的目标和版本必须与 Pakku 工程一致。工作流从该提交构建，上传包、校验清单和来源报告，创建草稿。检查文件及游戏表现后，在 GitHub 手动公开。
+工作流检查 Tag、Target、包版本和构建报告是否一致，再创建 **Draft**。标题保留标签版本，例如 `client-26.2 a1.4`、`client-26.3 b1.0`、`client-26.2 v1.4.0`。Alpha、Beta 和 SemVer 预发布草稿会勾选 Pre-release；稳定版草稿不勾选。检查产物、校验清单及游戏表现后，在 GitHub 手动公开。
 
 已有同名标签对应的 Release（包括草稿）不会被覆盖。上传中断时，先检查留下的草稿和错误日志，再决定如何处理，重复运行不会自动清理旧草稿。
 
@@ -76,8 +96,10 @@ pnpm run mp -- apply hmcl-dev --file 'D:\Downloads\preview\Preliminary Art Form-
 
 ```powershell
 pnpm run mp -- apply hmcl-dev --repo MapManager-group/Preliminary-Art-Form-Modpack --run 123456789
-pnpm run mp -- apply hmcl-dev --repo MapManager-group/Preliminary-Art-Form-Modpack --release release/client-26.2/vA1.3.1
+pnpm run mp -- apply hmcl-dev --repo MapManager-group/Preliminary-Art-Form-Modpack --release release/client-26.2/a1.4
 ```
+
+Release 下载和 Apply 使用同一套版本规则，可将上述 `--release` 替换为 `release/client-26.2/a1.4` 或 `release/client-26.3/b1.0`；必须选择绑定了相应 Target 的实例。Tag、构建报告和 MRPACK 内版本必须一致。
 
 远端入口同样默认预览，确认时追加 `--sha256 <packageHash> --confirm --stopped`。包发生变化后必须重新预览。遇到内容相同的已有文件，可用 `--adopt-existing` 接管；内容不同则先解决冲突。失败恢复与本地 deploy 相同。
 

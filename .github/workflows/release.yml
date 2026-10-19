@@ -1,7 +1,7 @@
 name: Draft Release
 on:
   push:
-    tags: ['release/*/v*']
+    tags: ['release/*/a*', 'release/*/b*', 'release/*/v*']
 permissions:
   contents: read
 concurrency:

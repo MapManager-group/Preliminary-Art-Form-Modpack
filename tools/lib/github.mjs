@@ -5,10 +5,19 @@ import {isTargetId} from './workspace.mjs';
 export function repository(value) {
   if(!/^[A-Za-z0-9_-]+\/[A-Za-z0-9_.-]+$/.test(value??'')||value.split('/').some(s=>s==='.'||s==='..'))throw new Error('需要明确 --repo owner/repository');return value;
 }
-export function releaseTag(tag,targetId) {
-  const m=typeof tag==='string'?tag.match(/^release\/([^/]+)\/v([0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?)$/):null;
-  if(!m||tag.trim()!==tag||!isTargetId(m[1])||m[1]!==targetId||m[2].includes('..'))throw new Error('Release Tag 必须为 release/<target>/v<semver>');return m[2];
+// Keep version strings intact; only the SemVer tag marker "v" is removed.
+export function releaseIdentity(tag,targetId) {
+  const m=typeof tag==='string'?tag.match(/^release\/([^/]+)\/([^/]+)$/):null;
+  const invalid=()=>{throw new Error('Release Tag 必须为 release/<target>/a<整数>.<整数>、b<整数>.<整数> 或 v<SemVer>');};
+  if(!m||tag.trim()!==tag||!isTargetId(m[1])||m[1]!==targetId)return invalid();
+  const label=m[2];
+  if(/^[ab](0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/.test(label))return {version:label,label,prerelease:true};
+  // SemVer 2.0.0: numeric prerelease identifiers cannot have leading zeroes.
+  const semver=label.match(/^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/);
+  if(!semver||semver[4]?.split('.').some(id=>/^[0-9]+$/.test(id)&&id.length>1&&id[0]==='0'))return invalid();
+  return {version:label.slice(1),label,prerelease:semver[4]!==undefined};
 }
+export function releaseTag(tag,targetId) {return releaseIdentity(tag,targetId).version;}
 export function githubClient(options={}) {
   const request=options.fetch??fetch,token=options.token??process.env.GH_TOKEN??process.env.GITHUB_TOKEN;
   const headers={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(token?{Authorization:`Bearer ${token}`}:{})};
