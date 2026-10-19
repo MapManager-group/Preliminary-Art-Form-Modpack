@@ -1,5 +1,6 @@
 {
   "keybinds": {
+    "useVanillaMovement": true,
     "regularKeybinds": {
       "rotateCamera": "mouseright",
       "pickBlock": "ctrl+mouseleft",
@@ -113,17 +114,17 @@
     "globalHotbars": false
   },
   "capabilities": {
-    "bulldozer": true,
+    "bulldozer": false,
     "replaceMode": false,
     "typeReplace": false,
     "forcePlace": false,
     "noUpdates": false,
-    "tinker": true,
-    "infiniteReach": true,
+    "tinker": false,
+    "infiniteReach": false,
     "infiniteReachLimit": 24,
     "fastPlace": false,
-    "angelPlacement": true,
-    "noClip": true,
+    "angelPlacement": false,
+    "noClip": false,
     "phantom": false
   },
   "blockAttributes": {
@@ -214,6 +215,7 @@
     "tallGrassIsActuallyNotTall": false,
     "disableChunkRenderOverrider": false,
     "hadEditorUIOpen": false,
-    "blueprintBrowserDirSize": 175
+    "blueprintBrowserDirSize": 175,
+    "usedBuilderToolFill": false
   }
 }
