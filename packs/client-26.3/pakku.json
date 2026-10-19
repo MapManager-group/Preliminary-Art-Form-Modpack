@@ -1,0 +1,254 @@
+{
+    "name": "Preliminary Art Form",
+    "version": "A1.4",
+    "description": "A comprehensive building and architectural design modpack.",
+    "author": "LorianStudio",
+    "projects": {
+        "zV5r3pPn": {
+            "side": "CLIENT"
+        },
+        "PRy8Khga": {
+            "side": "CLIENT"
+        },
+        "g96Z4WVZ": {
+            "side": "CLIENT"
+        },
+        "oRvsIBeW": {
+            "side": "CLIENT"
+        },
+        "m5T5xmUy": {
+            "side": "CLIENT"
+        },
+        "M08ruV16": {
+            "side": "CLIENT"
+        },
+        "89Wsn8GD": {
+            "side": "CLIENT"
+        },
+        "DnNYdJsx": {
+            "side": "CLIENT"
+        },
+        "Wb5oqrBJ": {
+            "side": "CLIENT"
+        },
+        "pbnlOdwp": {
+            "side": "CLIENT"
+        },
+        "65UyswbY": {
+            "side": "CLIENT"
+        },
+        "HVnmMxH1": {
+            "side": "CLIENT"
+        },
+        "R6NEzAwj": {
+            "side": "CLIENT"
+        },
+        "1IjD5062": {
+            "side": "CLIENT"
+        },
+        "LQ3K71Q1": {
+            "side": "CLIENT"
+        },
+        "8H6RXl2q": {
+            "side": "CLIENT"
+        },
+        "5eVpQJSP": {
+            "side": "CLIENT"
+        },
+        "nSRLvOHG": {
+            "side": "CLIENT"
+        },
+        "4das1Fjq": {
+            "side": "CLIENT"
+        },
+        "5ZwdcRci": {
+            "side": "CLIENT"
+        },
+        "YL57xq9U": {
+            "side": "CLIENT"
+        },
+        "p8RJPJIC": {
+            "side": "CLIENT"
+        },
+        "yBW8D80W": {
+            "side": "CLIENT"
+        },
+        "uLbm7CG6": {
+            "side": "CLIENT"
+        },
+        "bEpr0Arc": {
+            "side": "CLIENT"
+        },
+        "L4pt5egz": {
+            "side": "CLIENT"
+        },
+        "x9BrsVME": {
+            "side": "CLIENT"
+        },
+        "GcWjdA9I": {
+            "side": "CLIENT"
+        },
+        "UMxybHE8": {
+            "side": "CLIENT"
+        },
+        "mOgUt4GM": {
+            "side": "CLIENT"
+        },
+        "qap5C41G": {
+            "side": "CLIENT"
+        },
+        "aC3cM3Vq": {
+            "side": "CLIENT"
+        },
+        "z440MEwJ": {
+            "side": "CLIENT"
+        },
+        "AtOSAunf": {
+            "side": "CLIENT"
+        },
+        "8Pq6Exn2": {
+            "side": "CLIENT"
+        },
+        "kFU5UCQz": {
+            "side": "CLIENT"
+        },
+        "g52fu7eA": {
+            "side": "CLIENT"
+        },
+        "Bh37bMuy": {
+            "side": "CLIENT"
+        },
+        "mkaaIIAt": {
+            "side": "CLIENT"
+        },
+        "ZDCwiIc3": {
+            "side": "CLIENT"
+        },
+        "kp31625Q": {
+            "side": "CLIENT"
+        },
+        "6pdhya1q": {
+            "side": "CLIENT"
+        },
+        "AANobbMI": {
+            "side": "CLIENT"
+        },
+        "PtjYWJkn": {
+            "side": "CLIENT"
+        },
+        "EIa1eiMm": {
+            "side": "CLIENT"
+        },
+        "LH6juGaI": {
+            "side": "CLIENT"
+        },
+        "yfDziwn1": {
+            "side": "CLIENT"
+        },
+        "t5wuYk45": {
+            "side": "CLIENT"
+        },
+        "rIC2XJV4": {
+            "side": "CLIENT"
+        },
+        "NSLJJooQ": {
+            "side": "CLIENT"
+        },
+        "f1l4fX9A": {
+            "side": "CLIENT"
+        },
+        "EnPUzSTg": {
+            "side": "CLIENT"
+        },
+        "WwbubTsV": {
+            "side": "CLIENT"
+        },
+        "w7ThoJFB": {
+            "side": "CLIENT"
+        },
+        "lhGA9TYQ": {
+            "side": "BOTH"
+        },
+        "N6n5dqoA": {
+            "side": "BOTH"
+        },
+        "9s6osm5g": {
+            "side": "BOTH"
+        },
+        "e0M1UDsY": {
+            "side": "BOTH"
+        },
+        "VSNURh3q": {
+            "side": "BOTH"
+        },
+        "QwxR6Gcd": {
+            "side": "BOTH"
+        },
+        "P7dR8mSH": {
+            "side": "BOTH"
+        },
+        "Ha28R6CL": {
+            "side": "BOTH"
+        },
+        "OnlVIpq5": {
+            "side": "BOTH"
+        },
+        "ohNO6lps": {
+            "side": "BOTH"
+        },
+        "nvQzSEkH": {
+            "side": "BOTH"
+        },
+        "RTWpcTBp": {
+            "side": "BOTH"
+        },
+        "WKwQAwke": {
+            "side": "BOTH"
+        },
+        "gvQqBUqZ": {
+            "side": "BOTH"
+        },
+        "xAGJ6rQS": {
+            "side": "BOTH"
+        },
+        "TjSm1wrD": {
+            "side": "BOTH"
+        },
+        "qQyHxfxd": {
+            "side": "BOTH"
+        },
+        "c7m1mi73": {
+            "side": "BOTH"
+        },
+        "nfn13YXA": {
+            "side": "BOTH"
+        },
+        "Ps1zyz6x": {
+            "side": "BOTH"
+        },
+        "Re6xQ62Z": {
+            "side": "BOTH"
+        },
+        "eXts2L7r": {
+            "side": "BOTH"
+        },
+        "1u6JkXh5": {
+            "side": "BOTH"
+        },
+        "1bokaNcj": {
+            "side": "BOTH"
+        },
+        "NcUtCpym": {
+            "side": "BOTH"
+        },
+        "1eAoo2KR": {
+            "side": "BOTH"
+        },
+        "4qmvXRB9": {
+            "side": "BOTH"
+        },
+        "vEC2jm6I": {
+            "side": "SERVER"
+        }
+    }
+}

@@ -7,6 +7,13 @@
       "artifacts": [
         "modrinth"
       ]
+    },
+    {
+      "id": "client-26.3",
+      "path": "packs/client-26.3",
+      "artifacts": [
+        "modrinth"
+      ]
     }
   ]
 }

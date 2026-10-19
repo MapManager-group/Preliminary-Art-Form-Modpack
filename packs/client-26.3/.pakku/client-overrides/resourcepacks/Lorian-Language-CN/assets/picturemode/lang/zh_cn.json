@@ -1,0 +1,61 @@
+{
+  "gui.picturemode": "拍照模式",
+  "gui.picturemode.takeScreenshot": "截取截图",
+  "gui.picturemode.time": "时间：%s",
+  "gui.picturemode.fog": "雾：%s%%",
+  "gui.picturemode.tilt": "倾斜：%s",
+  "gui.picturemode.intensity": "强度：%s%%",
+  "gui.picturemode.shader": "滤镜",
+  //? if >=1.21.11 {
+  "gui.picturemode.shader.incompatible": "滤镜与改进的透明度不兼容。请将其关闭以使用滤镜。",
+  //? } else {
+  /*"gui.picturemode.shader.incompatible": "滤镜与极佳画质不兼容。请切换到精致画质以使用滤镜。",
+  *///? }
+  "gui.picturemode.default": "默认",
+  "gui.picturemode.none": "无",
+  "gui.picturemode.degrees": "%s度",
+  "gui.picturemode.centerCamera": "居中相机",
+  "gui.picturemode.showPlayer": "显示玩家：%s",
+  "gui.picturemode.helpText": "单击并拖动以移动和旋转。",
+
+  "key.picturemode.open": "打开拍照模式",
+
+  "shader.picturemode.blur": "模糊",
+  "shader.picturemode.distantblur": "远景模糊",
+  "shader.picturemode.eerie": "阴森",
+  "shader.picturemode.inverted": "反转",
+  "shader.picturemode.outline": "轮廓",
+  "shader.picturemode.outline2": "素描",
+  "shader.picturemode.sepia": "怀旧",
+  "shader.picturemode.silhouette": "剪影",
+  "shader.picturemode.tiltshift": "移轴",
+  "shader.picturemode.vignette": "暗角",
+
+  "picturemode.config.title": "模组选项",
+  "picturemode.config.buttonInPauseMenu.name": "暂停界面中的按钮",
+  "picturemode.config.buttonInPauseMenu.desc": "此选项决定是否在暂停界面中显示拍照模式。",
+  "picturemode.config.preserveSettings.name": "保留设置",
+  "picturemode.config.preserveSettings.desc": "此选项决定关闭拍照模式时是否保留当前设置。",
+  "picturemode.config.format.name": "图像格式",
+  "picturemode.config.format.desc": "截图保存的格式。",
+  "picturemode.config.format.png": "PNG（无损）",
+  "picturemode.config.format.jpg": "JPEG（有损）",
+  "picturemode.config.format.tga": "TGA（无损，未压缩）",
+  "picturemode.config.format.bmp": "BMP（无损，未压缩）",
+
+  "picturemode.config.screenshotSettings.name": "截图设置",
+  "picturemode.config.screenshotSettings.defaultRes": "默认",
+  "picturemode.config.screenshotSettings.fixedWidth.name": "固定宽度",
+  "picturemode.config.screenshotSettings.fixedWidth.desc": "截图时使用的固定宽度。",
+  "picturemode.config.screenshotSettings.fixedHeight.name": "固定高度",
+  "picturemode.config.screenshotSettings.fixedHeight.desc": "截图时使用的固定高度。",
+  "picturemode.config.screenshotSettings.resMultiplier.name": "分辨率倍数",
+  "picturemode.config.screenshotSettings.resMultiplier.desc": "截图时使用的宽度和高度的倍数。",
+  "picturemode.config.screenshotSettings.resMultiplier.display": "%sx (%sx%s)",
+  "picturemode.config.screenshotSettings.frameDelay.name": "帧延迟",
+  "picturemode.config.screenshotSettings.frameDelay.desc": "截图时延迟的帧数。\n\n如果截图中出现图形伪影，请调整此值。",
+
+  "picturemode.config.format.jpg.settings": "JPEG格式设置",
+  "picturemode.config.format.jpg.quality.name": "质量",
+  "picturemode.config.format.jpg.quality.desc": "使用JPEG时截图的质量。质量值越高，每张截图占用的磁盘空间越多。\n\n（0为最低质量，100为最高质量。）"
+}
